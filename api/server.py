@@ -132,9 +132,33 @@ def api_scan():
 
     payload = request.get_json(silent=True) or {}
     address = str(payload.get("address") or "").strip()
+    network = str(payload.get("network") or "").strip().lower()
     publish = bool(payload.get("publish"))
     notify = bool(payload.get("notify"))
     use_cached = bool(payload.get("use_cached"))
+
+    is_solana = (network == "solana") or (len(address) >= 32 and not address.startswith("0x"))
+
+    if is_solana:
+        report = payload.get("report")
+        if not report:
+            return jsonify({"ok": False, "error": "Solana requests require a report payload"}), 400
+
+        telegram_result = None
+        if notify:
+            try:
+                telegram_result = notify_solana_report(report)
+            except Exception as exc:
+                return jsonify({"ok": False, "error": f"Solana Telegram alert failed: {exc}", "report": report}), 400
+
+        return jsonify(
+            {
+                "ok": True,
+                "report": report,
+                "published": None,
+                "telegram": telegram_result,
+            }
+        )
 
     if not Web3.is_address(address):
         return jsonify({"ok": False, "error": "Invalid Avalanche token address"}), 400
@@ -603,6 +627,36 @@ def notify_report(report: dict[str, Any], publish_result: dict[str, Any] | None)
         lines.append("")
         lines.append("<b>Signals:</b>")
         lines.extend([f"• {escape_html(reason)}" for reason in clean_reasons[:6]])
+
+    result = send_telegram_alert(
+        bot_token=bot_token,
+        chat_id=chat_id,
+        message="\n".join(lines),
+        parse_mode="HTML",
+    )
+    return {"ok": True, "response": result.get("ok", False)}
+
+
+def notify_solana_report(report: dict[str, Any]) -> dict[str, Any]:
+    bot_token = require_env("TELEGRAM_BOT_TOKEN")
+    chat_id = "@RugBusterAlerts"
+
+    lines = [
+        "🛡️ <b>RugBuster Solana Alert</b>",
+        f"💎 <b>Token:</b> {escape_html(report.get('token_name', 'Unknown'))} ({escape_html(report.get('symbol', 'SOL'))})",
+        f"🔑 <b>Mint:</b> <code>{escape_html(report.get('address', 'Unknown'))}</code>",
+        f"📉 <b>Rug Risk Score:</b> <b>{report.get('rug_score', 0)}/100</b> ({escape_html(report.get('rug_status', 'UNKNOWN'))})",
+        f"✅ <b>Verdict:</b> {escape_html(report.get('verdict', 'Scanned via RugCheck'))}",
+    ]
+
+    reasons = report.get("rug_reasons") or []
+    if reasons:
+        lines.append("")
+        lines.append("<b>Risk Factors:</b>")
+        lines.extend([f"• {escape_html(reason)}" for reason in reasons[:6]])
+
+    lines.append("")
+    lines.append(f"🔗 <a href=\"https://rugcheck.xyz/tokens/{report.get('address')}\">RugCheck Report</a>")
 
     result = send_telegram_alert(
         bot_token=bot_token,

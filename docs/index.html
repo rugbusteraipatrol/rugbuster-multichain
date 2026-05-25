@@ -2236,6 +2236,10 @@
     clearTerminal();
     document.getElementById('riskMeter').style.display = 'none';
     document.getElementById('tokenImageWrap').style.display = 'none';
+    setAlertButtonState(false, 'SEND ALERT');
+    setPublishButtonState(false, 'PUBLISH REPORT');
+    lastScannedAddress = null;
+    lastScanData = null;
 
     const short = address.length > 16 ? address.slice(0, 8) + '...' + address.slice(-6) : address;
     const isSOL = address.length >= 32 && !address.startsWith('0x');
@@ -2367,6 +2371,16 @@
 
     setRiskMeter(displayScore);
     showTokenImage(tokenImage, tokenName, address);
+
+    lastScannedAddress = address;
+    lastScanData = {
+      tokenName: tokenName,
+      symbol: symUpper || 'SOL',
+      rugScore: displayScore,
+      rugReasons: allFlags,
+      verdict: risk >= 75 ? 'HIGH RISK — POTENTIAL RUG / SCAM' : risk >= 40 ? 'MEDIUM RISK — PROCEED WITH CAUTION' : 'APPEARS CLEAN'
+    };
+    setAlertButtonState(true, 'SEND ALERT');
 
     if (risk >= 75) {
       const dangerList = dangerFlags.map(f => `• ${f}`).join('<br>');
@@ -2943,10 +2957,30 @@
   }
 
   async function postTelegramAlert(address) {
+    const isSolanaAddress = address.length >= 32 && !address.startsWith('0x');
+    const bodyPayload = {
+      address,
+      notify: true,
+      use_cached: true
+    };
+    if (isSolanaAddress && lastScanData) {
+      bodyPayload.network = 'solana';
+      bodyPayload.report = {
+        address: address,
+        token_name: lastScanData.tokenName || 'Unknown',
+        symbol: lastScanData.symbol || 'SOL',
+        rug_score: lastScanData.rugScore || 0,
+        rug_status: lastScanData.rugScore >= 75 ? 'HIGH' : lastScanData.rugScore >= 40 ? 'ELEVATED' : 'LOW',
+        rug_reasons: lastScanData.rugReasons || [],
+        network: 'Solana',
+        source: 'rugcheck',
+        verdict: lastScanData.verdict || 'Scanned via RugCheck'
+      };
+    }
     const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address, notify: true, use_cached: true })
+      body: JSON.stringify(bodyPayload)
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.ok) {
