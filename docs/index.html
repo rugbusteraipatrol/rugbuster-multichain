@@ -2979,15 +2979,16 @@
 
       message += `🔗 <a href="https://rugcheck.xyz/tokens/${address}">RugCheck Report</a>`;
 
+      const params = new URLSearchParams();
+      params.append('chat_id', chatId);
+      params.append('text', message);
+      params.append('parse_mode', 'HTML');
+      params.append('disable_web_page_preview', 'true');
+
       const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message,
-          parse_mode: 'HTML',
-          disable_web_page_preview: true
-        })
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString()
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) {
