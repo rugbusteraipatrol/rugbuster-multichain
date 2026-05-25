@@ -1597,22 +1597,16 @@
   // =====================
   // STATE MANAGEMENT
   // =====================
-  let activeNetwork = 'solana'; // default to Solana
-  
-  // Solana State
-  let solanaConnected = false;
-  let solanaAddress = null;
-  const RECEIVER = 'GwRUadL58katT5SJAeyNZSPFSgJfMP6Tng2dSQDEkhQA';
-  const SOL_PRICE = 145; // approx USD per SOL for demo
-  
-  // Avalanche State
-  let avalancheConnected = false;
-  let avalancheAddress = null;
+  let activeNetwork = 'solana'; // 'solana' or 'avalanche'
+  let walletConnected = false;
+  let walletAddress = null;
   let connectedProvider = null;
   let lastScannedAddress = null;
   let lastScanData = null;
   let apexPortfolioAddress = null;
   let walletListenersInstalled = false;
+  
+  const RECEIVER = 'GwRUadL58katT5SJAeyNZSPFSgJfMP6Tng2dSQDEkhQA';
   const REGISTRY_ADDRESS = '0x5F30276B3A5079E088Ec3072884286de5a868355';
   const REGISTRY_ABI = [
     'function owner() view returns (address)',
@@ -1620,6 +1614,7 @@
     'function setReviewer(address reviewer, bool authorized) external',
     'function updateScore(address token, uint8 score, bytes32 metadataHash) external'
   ];
+  const SOL_PRICE = 145; // approx USD per SOL for demo
   let selectedCurrency = 'SOL';
   let currentPlan = null;
   let currentPrice = 0;
@@ -1629,10 +1624,12 @@
   const RUGBUSTER_API = (window.RUGBUSTER_API || 'https://web-production-376bf.up.railway.app').replace(/\/$/, '');
 
   // =====================
-  // GENERAL WALLET HANDLERS
+  // GENERAL WALLET HELPER
   // =====================
   function isWalletConnected() {
-    return activeNetwork === 'solana' ? solanaConnected : avalancheConnected;
+    const correctProvider = (activeNetwork === 'solana' && connectedProvider === 'solana') || 
+                            (activeNetwork === 'avalanche' && connectedProvider === 'evm');
+    return walletConnected && correctProvider;
   }
 
   function connectWallet() {
@@ -1647,10 +1644,6 @@
   // SOLANA WALLET FLOW
   // =====================
   async function connectPhantom() {
-    const btn = document.getElementById('walletBtn');
-    const btnText = document.getElementById('walletBtnText');
-    const walletIcon = document.getElementById('walletIconEmoji');
-
     if (!window.solana || !window.solana.isPhantom) {
       document.getElementById('walletModalBody').innerHTML = `
         <div style="text-align:center;padding:24px 0;">
@@ -1668,18 +1661,23 @@
 
     try {
       const resp = await window.solana.connect();
-      solanaAddress = resp.publicKey.toString();
-      solanaConnected = true;
+      walletAddress = resp.publicKey.toString();
+      walletConnected = true;
+      connectedProvider = 'solana';
       closeWalletModal();
 
       updateWalletButtonState();
       renderPortfolioHeader();
 
-      // Auto scan Spl portfolio
+      // Show SPL list and hide empty panel
+      document.getElementById('portfolioList').style.display = 'block';
+      document.getElementById('portfolioEmpty').style.display = 'none';
+      
+      // Auto scan SPL portfolio
       await scanPortfolio();
 
     } catch(err) {
-      console.log('Phantom wallet connect cancelled');
+      console.log('Phantom connect cancelled', err);
     }
   }
 
@@ -1707,16 +1705,16 @@
       await ensureAvalancheChain();
 
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      avalancheAddress = accounts[0];
-      avalancheConnected = true;
+      walletAddress = accounts[0];
+      walletConnected = true;
       connectedProvider = 'evm';
       closeWalletModal();
-      apexPortfolioAddress = avalancheAddress;
+      apexPortfolioAddress = walletAddress;
       
       updateWalletButtonState();
       renderPortfolioHeader();
 
-      // Auto scan portfolio
+      // Auto scan Avalanche portfolio
       await scanPortfolio();
 
     } catch(err) {
@@ -1725,20 +1723,18 @@
   }
 
   function disconnectWallet() {
-    if (activeNetwork === 'solana') {
+    if (connectedProvider === 'solana') {
       if (window.solana) window.solana.disconnect();
-      solanaConnected = false;
-      solanaAddress = null;
-    } else {
-      avalancheConnected = false;
-      avalancheAddress = null;
-      connectedProvider = null;
-      apexPortfolioAddress = null;
     }
+    walletConnected = false;
+    walletAddress = null;
+    connectedProvider = null;
+    apexPortfolioAddress = null;
+    
     updateWalletButtonState();
     renderPortfolioHeader();
 
-    // Reset portfolio ui
+    // Reset portfolio UI
     document.getElementById('portfolioList').style.display = 'none';
     document.getElementById('portfolioSummary').style.display = 'none';
     document.getElementById('portfolioEmpty').style.display = 'block';
@@ -1747,24 +1743,23 @@
   async function syncConnectedWallet(options = {}) {
     const { silent = false } = options;
     if (activeNetwork === 'solana') {
-      // SPL connection sync
       if (window.solana && window.solana.isConnected) {
-        solanaAddress = window.solana.publicKey.toString();
-        solanaConnected = true;
+        walletAddress = window.solana.publicKey.toString();
+        walletConnected = true;
+        connectedProvider = 'solana';
       }
     } else {
-      // EVM C-Chain sync
       if (!window.ethereum) return;
       try {
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
         if (accounts && accounts.length > 0) {
-          avalancheAddress = accounts[0];
-          avalancheConnected = true;
+          walletAddress = accounts[0];
+          walletConnected = true;
           connectedProvider = 'evm';
-          apexPortfolioAddress = avalancheAddress;
+          apexPortfolioAddress = walletAddress;
         } else {
-          avalancheConnected = false;
-          avalancheAddress = null;
+          walletConnected = false;
+          walletAddress = null;
           connectedProvider = null;
           apexPortfolioAddress = null;
         }
@@ -1782,13 +1777,13 @@
     window.ethereum.on('accountsChanged', accounts => {
       if (activeNetwork !== 'avalanche') return;
       if (accounts && accounts.length > 0) {
-        avalancheAddress = accounts[0];
-        avalancheConnected = true;
+        walletAddress = accounts[0];
+        walletConnected = true;
         connectedProvider = 'evm';
-        apexPortfolioAddress = avalancheAddress;
+        apexPortfolioAddress = walletAddress;
         updateWalletButtonState();
         renderPortfolioHeader();
-        termLine(`<span class="t-out">// Active EVM wallet switched to ${shortAddress(avalancheAddress)}</span>`);
+        termLine(`<span class="t-out">// Active EVM wallet switched to ${shortAddress(walletAddress)}</span>`);
         termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
       } else {
         disconnectWallet();
@@ -1838,55 +1833,31 @@
 
     if (!btn || !btnText || !walletIcon) return;
 
-    if (activeNetwork === 'solana') {
-      if (solanaConnected && solanaAddress) {
-        const short = solanaAddress.slice(0,4) + '...' + solanaAddress.slice(-4);
-        btnText.textContent = short;
-        walletIcon.textContent = '👻';
-        btn.style.background = 'rgba(0,255,136,0.1)';
-        btn.style.borderColor = 'var(--neon-green)';
-        btn.style.boxShadow = '0 0 20px rgba(0,255,136,0.2)';
-        btn.onclick = disconnectWallet;
+    const correctProvider = (activeNetwork === 'solana' && connectedProvider === 'solana') || 
+                            (activeNetwork === 'avalanche' && connectedProvider === 'evm');
 
-        if (scanInput && !scanInput.value) {
-          scanInput.placeholder = `Solana wallet connected: ${short} — paste token address to scan`;
-        }
-      } else {
-        btnText.textContent = 'Connect Solana Wallet';
-        walletIcon.textContent = '👻';
-        btn.style.background = 'transparent';
-        btn.style.boxShadow = 'none';
-        btn.style.borderColor = 'rgba(0,245,255,0.3)';
-        btn.onclick = connectWallet;
+    if (walletConnected && walletAddress && correctProvider) {
+      const short = walletAddress.slice(0,4) + '...' + walletAddress.slice(-4);
+      btnText.textContent = short;
+      walletIcon.textContent = connectedProvider === 'solana' ? '👻' : '🦊';
+      btn.style.background = 'rgba(0,255,136,0.1)';
+      btn.style.borderColor = 'var(--neon-green)';
+      btn.style.boxShadow = '0 0 20px rgba(0,255,136,0.2)';
+      btn.onclick = disconnectWallet;
 
-        if (scanInput && !scanInput.value) {
-          scanInput.placeholder = 'Paste Solana token address (mints)...';
-        }
+      if (scanInput && !scanInput.value) {
+        scanInput.placeholder = `${activeNetwork === 'solana' ? 'Solana' : 'Avalanche'} wallet connected: ${short} — paste token address to scan`;
       }
     } else {
-      if (avalancheConnected && avalancheAddress) {
-        const short = avalancheAddress.slice(0,4) + '...' + avalancheAddress.slice(-4);
-        btnText.textContent = short;
-        walletIcon.textContent = '🦊';
-        btn.style.background = 'rgba(0,255,136,0.1)';
-        btn.style.borderColor = 'var(--neon-green)';
-        btn.style.boxShadow = '0 0 20px rgba(0,255,136,0.2)';
-        btn.onclick = disconnectWallet;
+      btnText.textContent = activeNetwork === 'solana' ? 'Connect Solana Wallet' : 'Connect Avalanche Wallet';
+      walletIcon.textContent = activeNetwork === 'solana' ? '👻' : '🦊';
+      btn.style.background = 'transparent';
+      btn.style.boxShadow = 'none';
+      btn.style.borderColor = 'rgba(0,245,255,0.3)';
+      btn.onclick = connectWallet;
 
-        if (scanInput && !scanInput.value) {
-          scanInput.placeholder = `Avalanche wallet connected: ${short} — paste token address to scan`;
-        }
-      } else {
-        btnText.textContent = 'Connect Avalanche Wallet';
-        walletIcon.textContent = '🦊';
-        btn.style.background = 'transparent';
-        btn.style.boxShadow = 'none';
-        btn.style.borderColor = 'rgba(0,245,255,0.3)';
-        btn.onclick = connectWallet;
-
-        if (scanInput && !scanInput.value) {
-          scanInput.placeholder = 'Paste Avalanche token address (0x)...';
-        }
+      if (scanInput && !scanInput.value) {
+        scanInput.placeholder = activeNetwork === 'solana' ? 'Paste Solana token address (mints)...' : 'Paste Avalanche token address (0x)...';
       }
     }
   }
@@ -1897,34 +1868,21 @@
     
     if (!state || !connectBtn) return;
 
-    if (activeNetwork === 'solana') {
-      if (solanaConnected && solanaAddress) {
-        state.textContent = 'PORTFOLIO LINKED — SCANNING LIVE HOLDINGS';
-        state.style.color = 'var(--neon-green)';
-        connectBtn.textContent = 'CONNECTED';
-        connectBtn.style.borderColor = 'rgba(0,255,136,0.45)';
-        connectBtn.style.color = 'var(--neon-green)';
-      } else {
-        state.textContent = 'CONNECT A SOLANA WALLET TO START';
-        state.style.color = 'var(--text-muted)';
-        connectBtn.textContent = 'CONNECT SOLANA WALLET';
-        connectBtn.style.borderColor = 'rgba(0,245,255,0.2)';
-        connectBtn.style.color = 'var(--text-muted)';
-      }
+    const correctProvider = (activeNetwork === 'solana' && connectedProvider === 'solana') || 
+                            (activeNetwork === 'avalanche' && connectedProvider === 'evm');
+
+    if (walletConnected && walletAddress && correctProvider) {
+      state.textContent = 'PORTFOLIO LINKED — SCANNING LIVE HOLDINGS';
+      state.style.color = 'var(--neon-green)';
+      connectBtn.textContent = 'CONNECTED';
+      connectBtn.style.borderColor = 'rgba(0,255,136,0.45)';
+      connectBtn.style.color = 'var(--neon-green)';
     } else {
-      if (avalancheConnected && avalancheAddress) {
-        state.textContent = 'PORTFOLIO LINKED — SCANNING LIVE HOLDINGS';
-        state.style.color = 'var(--neon-green)';
-        connectBtn.textContent = 'CONNECTED';
-        connectBtn.style.borderColor = 'rgba(0,255,136,0.45)';
-        connectBtn.style.color = 'var(--neon-green)';
-      } else {
-        state.textContent = 'CONNECT AN AVALANCHE WALLET TO START';
-        state.style.color = 'var(--text-muted)';
-        connectBtn.textContent = 'CONNECT AVALANCHE WALLET';
-        connectBtn.style.borderColor = 'rgba(0,245,255,0.2)';
-        connectBtn.style.color = 'var(--text-muted)';
-      }
+      state.textContent = activeNetwork === 'solana' ? 'CONNECT A SOLANA WALLET TO START' : 'CONNECT AN AVALANCHE WALLET TO START';
+      state.style.color = 'var(--text-muted)';
+      connectBtn.textContent = activeNetwork === 'solana' ? 'CONNECT SOLANA WALLET' : 'CONNECT AVALANCHE WALLET';
+      connectBtn.style.borderColor = 'rgba(0,245,255,0.2)';
+      connectBtn.style.color = 'var(--text-muted)';
     }
   }
 
@@ -2008,7 +1966,7 @@
       renderPortfolioHeader();
       
       // If Solana wallet is connected, scan SPL tokens!
-      if (solanaConnected) {
+      if (walletConnected && connectedProvider === 'solana') {
         scanPortfolio();
       }
     } else {
@@ -2045,7 +2003,7 @@
       renderPortfolioHeader();
       
       // If Avalanche wallet is connected, scan Avalanche ERC20s!
-      if (avalancheConnected) {
+      if (walletConnected && connectedProvider === 'evm') {
         scanPortfolio();
       }
     }
@@ -2055,6 +2013,10 @@
   // DUAL PORTFOLIO ENGINE
   // =====================
   async function scanPortfolio() {
+    const correctProvider = (activeNetwork === 'solana' && connectedProvider === 'solana') || 
+                            (activeNetwork === 'avalanche' && connectedProvider === 'evm');
+    if (!walletConnected || !walletAddress || !correctProvider) return;
+
     if (activeNetwork === 'solana') {
       await scanPortfolioSolana();
     } else {
@@ -2063,8 +2025,6 @@
   }
 
   async function scanPortfolioSolana() {
-    if (!solanaConnected || !solanaAddress) return;
-
     const btn      = document.getElementById('portfolioRefreshBtn');
     const status   = document.getElementById('portfolioState');
     const list     = document.getElementById('portfolioList');
@@ -2093,7 +2053,7 @@
           body: JSON.stringify({
             jsonrpc:'2.0', id:1,
             method:'getTokenAccountsByOwner',
-            params:[solanaAddress, {programId: prog}, {encoding:'jsonParsed'}]
+            params:[walletAddress, {programId: prog}, {encoding:'jsonParsed'}]
           })
         });
         const data = await res.json();
@@ -2218,11 +2178,6 @@
   }
 
   async function scanPortfolioAvalanche() {
-    if (!apexPortfolioAddress) {
-      document.getElementById('portfolioState').textContent = 'CONNECT AN AVALANCHE WALLET FIRST';
-      return;
-    }
-
     const refreshBtn = document.getElementById('portfolioRefreshBtn');
     refreshBtn.disabled = true;
     refreshBtn.textContent = 'SCANNING...';
@@ -2832,7 +2787,7 @@
     await termLineDelay(`<span class="t-out">Preparing reviewer authorization flow...</span>`, 180);
 
     try {
-      if (!avalancheConnected || connectedProvider !== 'evm' || !window.ethereum) {
+      if (!walletConnected || connectedProvider !== 'evm' || !window.ethereum) {
         throw new Error('Connect your owner MetaMask wallet first');
       }
 
@@ -2858,7 +2813,6 @@
 
       await termLineDelay(`<span class="t-success">✓ Reviewer wallet authorized for direct publish.</span>`, 220);
       await termLineDelay(`<span class="t-out">// TX: ${tx.hash}</span>`, 120);
-      await termLineDelay(`<span class="t-out">// Gas used: ${receipt.gasUsed.toString()}</span>`, 120);
       setAuthorizeReviewerButtonState(true, 'AUTHORIZED');
       setTimeout(() => setAuthorizeReviewerButtonState(true, 'AUTHORIZE REVIEWER'), 2600);
     } catch (err) {
@@ -2880,7 +2834,7 @@
     await termLineDelay(`<span class="t-out">Preparing mainnet registry write...</span>`, 220);
 
     try {
-      if (avalancheConnected && connectedProvider === 'evm' && window.ethereum) {
+      if (walletConnected && connectedProvider === 'evm' && window.ethereum) {
         const { signer, contract } = await getRegistryContractWithSigner();
         const signerAddress = await signer.getAddress();
         const isReviewer = await isAuthorizedReviewerAddress(signerAddress);
@@ -2902,7 +2856,6 @@
         );
         const receipt = await tx.wait();
         await termLineDelay(`<span class="t-success">✓ Registry publish confirmed from connected wallet.</span>`, 220);
-        await termLineDelay(`<span class="t-out">// TX: ${tx.hash}</span>`, 120);
         setPublishButtonState(true, 'PUBLISHED');
         setTimeout(() => setPublishButtonState(true, 'PUBLISH REPORT'), 2600);
       } else {
@@ -3156,6 +3109,15 @@
     };
   }
 
+  function normalizeReasons(reasons, highPattern, mediumPattern) {
+    const list = Array.isArray(reasons) ? reasons : [];
+    return {
+      high: list.filter(reason => highPattern.test(reason)).map(reason => `✗ ${reason}`),
+      medium: list.filter(reason => !highPattern.test(reason) && mediumPattern.test(reason)).map(reason => `⚡ ${reason}`),
+      neutral: list.filter(reason => !highPattern.test(reason) && !mediumPattern.test(reason)),
+    };
+  }
+
   function normalizeApexApiReport(report) {
     const sourceMap = {
       dexscreener: 'RugBuster API (DexScreener + on-chain)',
@@ -3231,15 +3193,6 @@
 
   function toNumberOrNull(value) {
     return value === null || value === undefined || value === '' ? null : Number(value);
-  }
-
-  function normalizeReasons(reasons, highPattern, mediumPattern) {
-    const list = Array.isArray(reasons) ? reasons : [];
-    return {
-      high: list.filter(reason => highPattern.test(reason)).map(reason => `✗ ${reason}`),
-      medium: list.filter(reason => !highPattern.test(reason) && mediumPattern.test(reason)).map(reason => `⚡ ${reason}`),
-      neutral: list.filter(reason => !highPattern.test(reason) && !mediumPattern.test(reason)),
-    };
   }
 
   function formatCompactTokenBalance(value) {
@@ -3396,9 +3349,8 @@
 
   window.addEventListener('load', async () => {
     installWalletListeners();
-    // Initially check connected wallets
     await syncConnectedWallet({ silent: true });
-    // Default system initialization (Solana setup)
+    // Initialize default system setup
     switchNetwork('solana');
   });
 
