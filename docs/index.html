@@ -854,6 +854,39 @@
     <li><a href="#scanner">Scanner</a></li>
     <li><a href="#how">How</a></li>
     <li><a href="#pricing">Access</a></li>
+    <li>
+      <div class="network-toggle-container" style="
+        display: flex;
+        align-items: center;
+        border: 1px solid rgba(0, 245, 255, 0.2);
+        padding: 2px;
+        background: rgba(5, 8, 17, 0.6);
+      ">
+        <button id="toggleSolanaBtn" onclick="switchNetwork('solana')" style="
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 1px;
+          padding: 6px 14px;
+          background: var(--neon-cyan);
+          color: var(--dark-bg);
+          border: none;
+          cursor: crosshair;
+          transition: all 0.2s;
+          font-weight: bold;
+        ">SOLANA</button>
+        <button id="toggleAvalancheBtn" onclick="switchNetwork('avalanche')" style="
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 1px;
+          padding: 6px 14px;
+          background: transparent;
+          color: var(--text-muted);
+          border: none;
+          cursor: crosshair;
+          transition: all 0.2s;
+        ">AVALANCHE</button>
+      </div>
+    </li>
     <li><a href="#scanner" class="nav-cta">Scan Now</a></li>
     <li>
       <button id="walletBtn" onclick="connectWallet()" style="
@@ -862,16 +895,16 @@
         letter-spacing:2px;
         padding:8px 20px;
         background:transparent;
-        border:1px solid var(--neon-green);
-        color:var(--neon-green);
+        border:1px solid var(--neon-cyan);
+        color:var(--neon-cyan);
         cursor:crosshair;
         text-transform:uppercase;
         transition:all 0.2s;
-        text-shadow:0 0 8px rgba(0,255,136,0.4);
+        text-shadow:0 0 8px rgba(0,245,255,0.4);
         display:flex;align-items:center;gap:8px;
-      " onmouseover="this.style.background='rgba(0,255,136,0.1)'" onmouseout="if(!walletConnected)this.style.background='transparent'">
-        <span style="font-size:16px;">🦊</span>
-        <span id="walletBtnText">Connect Avalanche Wallet</span>
+      " onmouseover="this.style.background='rgba(0,245,255,0.1)'" onmouseout="if(!isWalletConnected())this.style.background='transparent'">
+        <span id="walletIconEmoji" style="font-size:16px;">👻</span>
+        <span id="walletBtnText">Connect Solana Wallet</span>
       </button>
     </li>
   </ul>
@@ -896,43 +929,71 @@
     position:relative;
   ">
     <button onclick="closeWalletModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:var(--text-muted);font-size:20px;cursor:crosshair;">✕</button>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon-cyan);margin-bottom:24px;">// SELECT AVALANCHE WALLET</div>
+    <div id="walletModalTitle" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon-cyan);margin-bottom:24px;">// SELECT SOLANA WALLET</div>
     <div id="walletModalBody">
-      <!-- metamask option -->
-      <div onclick="connectMetaMask()" style="
-        border:1px solid rgba(0,245,255,0.15);
-        padding:20px 24px;
-        margin-bottom:12px;
-        cursor:crosshair;
-        display:flex;align-items:center;gap:16px;
-        transition:all 0.2s;
-        background:rgba(0,245,255,0.02);
-      " onmouseover="this.style.borderColor='rgba(0,245,255,0.5)';this.style.background='rgba(0,245,255,0.05)'"
-         onmouseout="this.style.borderColor='rgba(0,245,255,0.15)';this.style.background='rgba(0,245,255,0.02)'">
-        <span style="font-size:32px;">🦊</span>
-        <div style="text-align:left;">
-          <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">MetaMask</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Avalanche C-Chain / EVM wallet</div>
+      <!-- EVM options (MetaMask & Core) -->
+      <div id="evmWalletOptions" style="display:none;">
+        <!-- metamask option -->
+        <div onclick="connectMetaMask()" style="
+          border:1px solid rgba(0,245,255,0.15);
+          padding:20px 24px;
+          margin-bottom:12px;
+          cursor:crosshair;
+          display:flex;align-items:center;gap:16px;
+          transition:all 0.2s;
+          background:rgba(0,245,255,0.02);
+        " onmouseover="this.style.borderColor='rgba(0,245,255,0.5)';this.style.background='rgba(0,245,255,0.05)'"
+           onmouseout="this.style.borderColor='rgba(0,245,255,0.15)';this.style.background='rgba(0,245,255,0.02)'">
+          <span style="font-size:32px;">🦊</span>
+          <div style="text-align:left;">
+            <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">MetaMask</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Avalanche C-Chain / EVM wallet</div>
+          </div>
+          <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-green);letter-spacing:2px;">RECOMMENDED</div>
         </div>
-        <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-green);letter-spacing:2px;">RECOMMENDED</div>
-      </div>
-      <div style="
-        border:1px solid rgba(255,255,255,0.08);
-        padding:20px 24px;
-        display:flex;align-items:center;gap:16px;
-        background:rgba(255,255,255,0.01);
-      ">
-        <span style="font-size:32px;">🔗</span>
-        <div style="text-align:left;">
-          <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Any EVM Wallet</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Core, Rabby, Brave, or other injected wallets</div>
+        <div style="
+          border:1px solid rgba(255,255,255,0.08);
+          padding:20px 24px;
+          display:flex;align-items:center;gap:16px;
+          background:rgba(255,255,255,0.01);
+        ">
+          <span style="font-size:32px;">🔗</span>
+          <div style="text-align:left;">
+            <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Any EVM Wallet</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Core, Rabby, Brave, or other injected wallets</div>
+          </div>
+          <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SUPPORTED</div>
         </div>
-        <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SUPPORTED</div>
+        <div style="margin-top:18px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-muted);text-align:left;">
+          Portfolio scan uses your connected Avalanche wallet.<br>
+          Connected reviewer wallets can publish directly from their own AVAX balance.<br>
+          If no reviewer wallet is connected, <span style="color:var(--neon-cyan);">PUBLISH REPORT</span> falls back to the RugBuster backend wallet.
+        </div>
       </div>
-      <div style="margin-top:18px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-muted);text-align:left;">
-        Portfolio scan uses your connected Avalanche wallet.<br>
-        Connected reviewer wallets can publish directly from their own AVAX balance.<br>
-        If no reviewer wallet is connected, <span style="color:var(--neon-cyan);">PUBLISH REPORT</span> falls back to the RugBuster backend wallet.
+      
+      <!-- Solana options (Phantom) -->
+      <div id="solanaWalletOptions">
+        <div onclick="connectPhantom()" style="
+          border:1px solid rgba(0,245,255,0.15);
+          padding:20px 24px;
+          margin-bottom:12px;
+          cursor:crosshair;
+          display:flex;align-items:center;gap:16px;
+          transition:all 0.2s;
+          background:rgba(0,245,255,0.02);
+        " onmouseover="this.style.borderColor='rgba(0,245,255,0.5)';this.style.background='rgba(0,245,255,0.05)'"
+           onmouseout="this.style.borderColor='rgba(0,245,255,0.15)';this.style.background='rgba(0,245,255,0.02)'">
+          <span style="font-size:32px;">👻</span>
+          <div style="text-align:left;">
+            <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Phantom</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Solana native wallet</div>
+          </div>
+          <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-green);letter-spacing:2px;">RECOMMENDED</div>
+        </div>
+        <div style="margin-top:18px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-muted);text-align:left;">
+          Portfolio scan uses your connected Solana wallet.<br>
+          Connected wallets can scan local SPL token assets in real-time.
+        </div>
       </div>
     </div>
   </div>
@@ -1147,8 +1208,8 @@
   <div class="terminal-wrap z1">
     <div>
       <div class="section-label">// live threat scanner</div>
-      <h2 class="section-title">Scan Any<br><span>Token Now</span></h2>
-      <p class="section-desc" style="margin-bottom:32px;">Paste any Apex or Avalanche token address. Our engine analyzes live chain and market signals in real-time.</p>
+      <h2 class="section-title">Scan Any<br><span id="heroChain">Solana</span> Token</h2>
+      <p class="section-desc" id="heroDesc" style="margin-bottom:32px;">Paste any Solana token address. Our engine analyzes live chain and market signals in real-time.</p>
 
       <!-- INPUT -->
       <div style="margin-bottom:16px;">
@@ -1169,7 +1230,7 @@
           <input
             id="scanInput"
             type="text"
-            placeholder="Paste token address (Apex / Avalanche)..."
+            placeholder="Paste Solana token address (mints)..."
             style="
               flex:1;
               background:transparent;
@@ -1199,6 +1260,7 @@
             color:rgba(0,245,255,0.58);
             cursor:crosshair;
             transition:all 0.2s;
+            display: none;
           " onmouseover="if(!this.disabled){this.style.color='var(--neon-cyan)'}" onmouseout="if(!this.disabled){this.style.color='rgba(0,245,255,0.58)'}">
             AUTHORIZE REVIEWER
           </button>
@@ -1212,6 +1274,7 @@
             color:rgba(255,0,200,0.58);
             cursor:crosshair;
             transition:all 0.2s;
+            display: none;
           " onmouseover="if(!this.disabled){this.style.color='var(--neon-pink)'}" onmouseout="if(!this.disabled){this.style.color='rgba(255,0,200,0.58)'}" disabled>
             PUBLISH REPORT
           </button>
@@ -1228,7 +1291,7 @@
           " onmouseover="if(!this.disabled){this.style.color='var(--neon-green)'}" onmouseout="if(!this.disabled){this.style.color='rgba(0,255,136,0.55)'}" disabled>
             SEND ALERT
           </button>
-          <button onclick="loadExample('apex')" style="
+          <button id="exampleBtn" onclick="loadExample('solana')" style="
             font-family:'Share Tech Mono',monospace;
             font-size:11px;
             letter-spacing:2px;
@@ -1308,7 +1371,7 @@
     </div>
   </div>
 
-  <div class="monitor-panel z1">
+  <div class="monitor-panel z1" id="monitorPanel" style="display: none;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
       <div>
         <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;">// monitored sources</div>
@@ -1351,11 +1414,11 @@
         <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;">// my portfolio scan</div>
         <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-top:6px;">Wallet Threat Surface</div>
       </div>
-      <div id="portfolioState" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">CONNECT AN AVALANCHE WALLET TO START</div>
+      <div id="portfolioState" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">CONNECT A SOLANA WALLET TO START</div>
     </div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
-      <button id="portfolioConnectBtn" onclick="connectApexWallet()" class="btn-secondary" style="font-size:11px;padding:12px 24px;">CONNECT AVALANCHE WALLET</button>
+      <button id="portfolioConnectBtn" onclick="connectWallet()" class="btn-secondary" style="font-size:11px;padding:12px 24px;">CONNECT SOLANA WALLET</button>
       <button id="portfolioRefreshBtn" onclick="scanPortfolio()" style="
         font-family:'Share Tech Mono',monospace;
         font-size:11px;
@@ -1374,7 +1437,7 @@
 
     <div id="portfolioList" style="display:none;"></div>
     <div id="portfolioEmpty" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.9;border:1px solid rgba(0,245,255,0.08);background:rgba(0,245,255,0.03);padding:18px 20px;">
-      Connect an Avalanche wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
+      Connect a Solana wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
     </div>
   </div>
 </div>
@@ -1532,9 +1595,24 @@
 
 <script>
   // =====================
-  // WALLET & PAYMENT LOGIC
+  // STATE MANAGEMENT
   // =====================
+  let activeNetwork = 'solana'; // default to Solana
+  
+  // Solana State
+  let solanaConnected = false;
+  let solanaAddress = null;
   const RECEIVER = 'GwRUadL58katT5SJAeyNZSPFSgJfMP6Tng2dSQDEkhQA';
+  const SOL_PRICE = 145; // approx USD per SOL for demo
+  
+  // Avalanche State
+  let avalancheConnected = false;
+  let avalancheAddress = null;
+  let connectedProvider = null;
+  let lastScannedAddress = null;
+  let lastScanData = null;
+  let apexPortfolioAddress = null;
+  let walletListenersInstalled = false;
   const REGISTRY_ADDRESS = '0x5F30276B3A5079E088Ec3072884286de5a868355';
   const REGISTRY_ABI = [
     'function owner() view returns (address)',
@@ -1542,94 +1620,19 @@
     'function setReviewer(address reviewer, bool authorized) external',
     'function updateScore(address token, uint8 score, bytes32 metadataHash) external'
   ];
-  const SOL_PRICE = 145; // approx USD per SOL for demo
-  let walletConnected = false;
-  let walletAddress = null;
-  let connectedProvider = null;
   let selectedCurrency = 'SOL';
   let currentPlan = null;
   let currentPrice = 0;
-  let lastScannedAddress = null;
-  let lastScanData = null;
-  let apexPortfolioAddress = null;
-  let walletListenersInstalled = false;
 
-  function updateWalletButtonState() {
-    const btn = document.getElementById('walletBtn');
-    const btnText = document.getElementById('walletBtnText');
-    const scanInput = document.getElementById('scanInput');
+  const RUGCHECK_API = 'https://api.rugcheck.xyz/v1';
+  const DEXSCREENER_API = 'https://api.dexscreener.com/latest/dex/tokens';
+  const RUGBUSTER_API = (window.RUGBUSTER_API || 'https://web-production-376bf.up.railway.app').replace(/\/$/, '');
 
-    if (!btn || !btnText) return;
-
-    if (walletConnected && walletAddress) {
-      const short = walletAddress.slice(0,4) + '...' + walletAddress.slice(-4);
-      btnText.textContent = short;
-      btn.style.background = 'rgba(0,255,136,0.1)';
-      btn.style.borderColor = 'var(--neon-green)';
-      btn.style.boxShadow = '0 0 20px rgba(0,255,136,0.2)';
-      btn.onclick = disconnectWallet;
-
-      if (scanInput && !scanInput.value) {
-        scanInput.placeholder = `Avalanche wallet connected: ${short} — paste token address to scan`;
-      }
-    } else {
-      btnText.textContent = 'Connect Avalanche Wallet';
-      btn.style.background = 'transparent';
-      btn.style.boxShadow = 'none';
-      btn.style.borderColor = 'rgba(0,255,255,0.3)';
-      btn.onclick = connectWallet;
-
-      if (scanInput && !scanInput.value) {
-        scanInput.placeholder = 'Paste token address (Apex / Avalanche)...';
-      }
-    }
-  }
-
-  async function syncConnectedWallet(options = {}) {
-    const { silent = false } = options;
-    if (!window.ethereum) return;
-
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts && accounts.length > 0) {
-        walletAddress = accounts[0];
-        walletConnected = true;
-        connectedProvider = 'evm';
-      } else {
-        walletConnected = false;
-        walletAddress = null;
-        connectedProvider = null;
-      }
-      updateWalletButtonState();
-    } catch (err) {
-      if (!silent) console.log('Wallet sync failed', err);
-    }
-  }
-
-  function installWalletListeners() {
-    if (!window.ethereum || walletListenersInstalled) return;
-    walletListenersInstalled = true;
-
-    window.ethereum.on('accountsChanged', accounts => {
-      if (accounts && accounts.length > 0) {
-        walletAddress = accounts[0];
-        walletConnected = true;
-        connectedProvider = 'evm';
-        apexPortfolioAddress = walletAddress;
-        updateWalletButtonState();
-        renderPortfolioHeader();
-        termLine(`<span class="t-out">// Active wallet switched to ${shortAddress(walletAddress)}</span>`);
-        termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-      } else {
-        disconnectWallet();
-        renderPortfolioHeader();
-      }
-    });
-
-    window.ethereum.on('chainChanged', async () => {
-      await syncConnectedWallet({ silent: true });
-      renderPortfolioHeader();
-    });
+  // =====================
+  // GENERAL WALLET HANDLERS
+  // =====================
+  function isWalletConnected() {
+    return activeNetwork === 'solana' ? solanaConnected : avalancheConnected;
   }
 
   function connectWallet() {
@@ -1638,6 +1641,166 @@
 
   function closeWalletModal() {
     document.getElementById('walletModal').style.display = 'none';
+  }
+
+  // =====================
+  // SOLANA WALLET FLOW
+  // =====================
+  async function connectPhantom() {
+    const btn = document.getElementById('walletBtn');
+    const btnText = document.getElementById('walletBtnText');
+    const walletIcon = document.getElementById('walletIconEmoji');
+
+    if (!window.solana || !window.solana.isPhantom) {
+      document.getElementById('walletModalBody').innerHTML = `
+        <div style="text-align:center;padding:24px 0;">
+          <div style="font-size:48px;margin-bottom:16px;">👻</div>
+          <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-bottom:12px;">Phantom Not Found</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-muted);margin-bottom:24px;line-height:2;">
+            Install Phantom wallet to continue.<br>It's free and takes 2 minutes.
+          </div>
+          <a href="https://phantom.app" target="_blank" class="btn-primary" style="font-size:11px;padding:13px 32px;text-decoration:none;display:inline-block;">
+            Install Phantom →
+          </a>
+        </div>`;
+      return;
+    }
+
+    try {
+      const resp = await window.solana.connect();
+      solanaAddress = resp.publicKey.toString();
+      solanaConnected = true;
+      closeWalletModal();
+
+      updateWalletButtonState();
+      renderPortfolioHeader();
+
+      // Auto scan Spl portfolio
+      await scanPortfolio();
+
+    } catch(err) {
+      console.log('Phantom wallet connect cancelled');
+    }
+  }
+
+  // =====================
+  // AVALANCHE WALLET FLOW
+  // =====================
+  async function connectMetaMask() {
+    if (!window.ethereum) {
+      document.getElementById('walletModalBody').innerHTML = `
+        <div style="text-align:center;padding:24px 0;">
+          <div style="font-size:48px;margin-bottom:16px;">🦊</div>
+          <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-bottom:12px;">MetaMask Not Found</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-muted);margin-bottom:24px;line-height:2;">
+            Install MetaMask or another EVM wallet to continue.<br>This Apex flow uses Avalanche C-Chain wallets.
+          </div>
+          <a href="https://metamask.io/download/" target="_blank" class="btn-primary" style="font-size:11px;padding:13px 32px;text-decoration:none;display:inline-block;">
+            Install MetaMask →
+          </a>
+        </div>`;
+      return;
+    }
+
+    try {
+      installWalletListeners();
+      await ensureAvalancheChain();
+
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      avalancheAddress = accounts[0];
+      avalancheConnected = true;
+      connectedProvider = 'evm';
+      closeWalletModal();
+      apexPortfolioAddress = avalancheAddress;
+      
+      updateWalletButtonState();
+      renderPortfolioHeader();
+
+      // Auto scan portfolio
+      await scanPortfolio();
+
+    } catch(err) {
+      console.log('MetaMask connect failed', err);
+    }
+  }
+
+  function disconnectWallet() {
+    if (activeNetwork === 'solana') {
+      if (window.solana) window.solana.disconnect();
+      solanaConnected = false;
+      solanaAddress = null;
+    } else {
+      avalancheConnected = false;
+      avalancheAddress = null;
+      connectedProvider = null;
+      apexPortfolioAddress = null;
+    }
+    updateWalletButtonState();
+    renderPortfolioHeader();
+
+    // Reset portfolio ui
+    document.getElementById('portfolioList').style.display = 'none';
+    document.getElementById('portfolioSummary').style.display = 'none';
+    document.getElementById('portfolioEmpty').style.display = 'block';
+  }
+
+  async function syncConnectedWallet(options = {}) {
+    const { silent = false } = options;
+    if (activeNetwork === 'solana') {
+      // SPL connection sync
+      if (window.solana && window.solana.isConnected) {
+        solanaAddress = window.solana.publicKey.toString();
+        solanaConnected = true;
+      }
+    } else {
+      // EVM C-Chain sync
+      if (!window.ethereum) return;
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts && accounts.length > 0) {
+          avalancheAddress = accounts[0];
+          avalancheConnected = true;
+          connectedProvider = 'evm';
+          apexPortfolioAddress = avalancheAddress;
+        } else {
+          avalancheConnected = false;
+          avalancheAddress = null;
+          connectedProvider = null;
+          apexPortfolioAddress = null;
+        }
+      } catch (err) {
+        if (!silent) console.log('EVM Wallet sync failed', err);
+      }
+    }
+    updateWalletButtonState();
+  }
+
+  function installWalletListeners() {
+    if (!window.ethereum || walletListenersInstalled) return;
+    walletListenersInstalled = true;
+
+    window.ethereum.on('accountsChanged', accounts => {
+      if (activeNetwork !== 'avalanche') return;
+      if (accounts && accounts.length > 0) {
+        avalancheAddress = accounts[0];
+        avalancheConnected = true;
+        connectedProvider = 'evm';
+        apexPortfolioAddress = avalancheAddress;
+        updateWalletButtonState();
+        renderPortfolioHeader();
+        termLine(`<span class="t-out">// Active EVM wallet switched to ${shortAddress(avalancheAddress)}</span>`);
+        termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+      } else {
+        disconnectWallet();
+        renderPortfolioHeader();
+      }
+    });
+
+    window.ethereum.on('chainChanged', async () => {
+      if (activeNetwork !== 'avalanche') return;
+      await syncConnectedWallet({ silent: true });
+      renderPortfolioHeader();
+    });
   }
 
   async function ensureAvalancheChain() {
@@ -1667,349 +1830,790 @@
     }
   }
 
-  async function connectMetaMask() {
-    if (!window.ethereum) {
-      document.getElementById('walletModalBody').innerHTML = `
-        <div style="text-align:center;padding:24px 0;">
-          <div style="font-size:48px;margin-bottom:16px;">🦊</div>
-          <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-bottom:12px;">MetaMask Not Found</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-muted);margin-bottom:24px;line-height:2;">
-            Install MetaMask or another EVM wallet to continue.<br>This Apex flow uses Avalanche C-Chain wallets.
-          </div>
-          <a href="https://metamask.io/download/" target="_blank" class="btn-primary" style="font-size:11px;padding:13px 32px;text-decoration:none;display:inline-block;">
-            Install MetaMask →
-          </a>
-        </div>`;
-      return;
+  function updateWalletButtonState() {
+    const btn = document.getElementById('walletBtn');
+    const btnText = document.getElementById('walletBtnText');
+    const walletIcon = document.getElementById('walletIconEmoji');
+    const scanInput = document.getElementById('scanInput');
+
+    if (!btn || !btnText || !walletIcon) return;
+
+    if (activeNetwork === 'solana') {
+      if (solanaConnected && solanaAddress) {
+        const short = solanaAddress.slice(0,4) + '...' + solanaAddress.slice(-4);
+        btnText.textContent = short;
+        walletIcon.textContent = '👻';
+        btn.style.background = 'rgba(0,255,136,0.1)';
+        btn.style.borderColor = 'var(--neon-green)';
+        btn.style.boxShadow = '0 0 20px rgba(0,255,136,0.2)';
+        btn.onclick = disconnectWallet;
+
+        if (scanInput && !scanInput.value) {
+          scanInput.placeholder = `Solana wallet connected: ${short} — paste token address to scan`;
+        }
+      } else {
+        btnText.textContent = 'Connect Solana Wallet';
+        walletIcon.textContent = '👻';
+        btn.style.background = 'transparent';
+        btn.style.boxShadow = 'none';
+        btn.style.borderColor = 'rgba(0,245,255,0.3)';
+        btn.onclick = connectWallet;
+
+        if (scanInput && !scanInput.value) {
+          scanInput.placeholder = 'Paste Solana token address (mints)...';
+        }
+      }
+    } else {
+      if (avalancheConnected && avalancheAddress) {
+        const short = avalancheAddress.slice(0,4) + '...' + avalancheAddress.slice(-4);
+        btnText.textContent = short;
+        walletIcon.textContent = '🦊';
+        btn.style.background = 'rgba(0,255,136,0.1)';
+        btn.style.borderColor = 'var(--neon-green)';
+        btn.style.boxShadow = '0 0 20px rgba(0,255,136,0.2)';
+        btn.onclick = disconnectWallet;
+
+        if (scanInput && !scanInput.value) {
+          scanInput.placeholder = `Avalanche wallet connected: ${short} — paste token address to scan`;
+        }
+      } else {
+        btnText.textContent = 'Connect Avalanche Wallet';
+        walletIcon.textContent = '🦊';
+        btn.style.background = 'transparent';
+        btn.style.boxShadow = 'none';
+        btn.style.borderColor = 'rgba(0,245,255,0.3)';
+        btn.onclick = connectWallet;
+
+        if (scanInput && !scanInput.value) {
+          scanInput.placeholder = 'Paste Avalanche token address (0x)...';
+        }
+      }
     }
+  }
 
-    try {
-      installWalletListeners();
-      await ensureAvalancheChain();
+  function renderPortfolioHeader() {
+    const state = document.getElementById('portfolioState');
+    const connectBtn = document.getElementById('portfolioConnectBtn');
+    
+    if (!state || !connectBtn) return;
 
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      walletAddress = accounts[0];
-      walletConnected = true;
-      connectedProvider = 'evm';
-      closeWalletModal();
-      apexPortfolioAddress = walletAddress;
+    if (activeNetwork === 'solana') {
+      if (solanaConnected && solanaAddress) {
+        state.textContent = 'PORTFOLIO LINKED — SCANNING LIVE HOLDINGS';
+        state.style.color = 'var(--neon-green)';
+        connectBtn.textContent = 'CONNECTED';
+        connectBtn.style.borderColor = 'rgba(0,255,136,0.45)';
+        connectBtn.style.color = 'var(--neon-green)';
+      } else {
+        state.textContent = 'CONNECT A SOLANA WALLET TO START';
+        state.style.color = 'var(--text-muted)';
+        connectBtn.textContent = 'CONNECT SOLANA WALLET';
+        connectBtn.style.borderColor = 'rgba(0,245,255,0.2)';
+        connectBtn.style.color = 'var(--text-muted)';
+      }
+    } else {
+      if (avalancheConnected && avalancheAddress) {
+        state.textContent = 'PORTFOLIO LINKED — SCANNING LIVE HOLDINGS';
+        state.style.color = 'var(--neon-green)';
+        connectBtn.textContent = 'CONNECTED';
+        connectBtn.style.borderColor = 'rgba(0,255,136,0.45)';
+        connectBtn.style.color = 'var(--neon-green)';
+      } else {
+        state.textContent = 'CONNECT AN AVALANCHE WALLET TO START';
+        state.style.color = 'var(--text-muted)';
+        connectBtn.textContent = 'CONNECT AVALANCHE WALLET';
+        connectBtn.style.borderColor = 'rgba(0,245,255,0.2)';
+        connectBtn.style.color = 'var(--text-muted)';
+      }
+    }
+  }
+
+  // =====================
+  // MULTI-CHAIN SYSTEM TOGGLING
+  // =====================
+  function switchNetwork(net) {
+    activeNetwork = net;
+    
+    const solBtn = document.getElementById('toggleSolanaBtn');
+    const avaxBtn = document.getElementById('toggleAvalancheBtn');
+    const heroChain = document.getElementById('heroChain');
+    const heroDesc = document.getElementById('heroDesc');
+    const scanInput = document.getElementById('scanInput');
+    const exampleBtn = document.getElementById('exampleBtn');
+    const monitorPanel = document.getElementById('monitorPanel');
+    const authReviewerBtn = document.getElementById('authorizeReviewerBtn');
+    const publishBtn = document.getElementById('publishBtn');
+    
+    const evmWalletOpts = document.getElementById('evmWalletOptions');
+    const solWalletOpts = document.getElementById('solanaWalletOptions');
+    const walletModalTitle = document.getElementById('walletModalTitle');
+    
+    const portfolioEmpty = document.getElementById('portfolioEmpty');
+    const portfolioList = document.getElementById('portfolioList');
+    const portfolioSummary = document.getElementById('portfolioSummary');
+    
+    // Reset scanner UI state
+    clearTerminal();
+    document.getElementById('terminalBody').innerHTML = `
+      <div><span class="t-prompt">RB&gt;</span> <span class="t-out">System ready. Awaiting target address...</span></div>
+      <div><span class="t-out">// Paste a ${net === 'solana' ? 'Solana mint' : 'Avalanche 0x'} address and hit SCAN</span></div>
+      <div><span class="t-out">// Powered by RugBuster ${net === 'solana' ? 'Solana threat engine' : 'API + Avalanche live market data'}</span></div>
+      <div><span class="t-pink">// ENGINE: RUGBUSTER ${net === 'solana' ? 'SOLANA v1.0' : 'APEX v1.0'} — ONLINE</span></div>
+      <div>&nbsp;</div>
+      <div><span class="t-prompt">RB&gt;</span> <span class="cursor"></span></div>
+    `;
+    
+    document.getElementById('scoreBoard').style.display = 'none';
+    document.getElementById('riskMeter').style.display = 'none';
+    if (document.getElementById('tokenImageWrap')) {
+      document.getElementById('tokenImageWrap').style.display = 'none';
+    }
+    
+    // Hide lists and reset empty descriptions
+    if (portfolioList) portfolioList.style.display = 'none';
+    if (portfolioSummary) portfolioSummary.style.display = 'none';
+    if (portfolioEmpty) portfolioEmpty.style.display = 'block';
+
+    if (net === 'solana') {
+      solBtn.style.background = 'var(--neon-cyan)';
+      solBtn.style.color = 'var(--dark-bg)';
+      solBtn.style.fontWeight = 'bold';
+      
+      avaxBtn.style.background = 'transparent';
+      avaxBtn.style.color = 'var(--text-muted)';
+      avaxBtn.style.fontWeight = 'normal';
+      
+      if (heroChain) heroChain.innerHTML = 'Solana';
+      if (heroDesc) heroDesc.textContent = 'Paste any Solana token address. Our engine analyzes live chain and market signals in real-time.';
+      
+      if (authReviewerBtn) authReviewerBtn.style.display = 'none';
+      if (publishBtn) publishBtn.style.display = 'none';
+      if (monitorPanel) monitorPanel.style.display = 'none';
+      
+      if (exampleBtn) {
+        exampleBtn.setAttribute('onclick', "loadExample('solana')");
+      }
+      
+      if (evmWalletOpts) evmWalletOpts.style.display = 'none';
+      if (solWalletOpts) solWalletOpts.style.display = 'block';
+      if (walletModalTitle) walletModalTitle.textContent = '// SELECT SOLANA WALLET';
+      
+      if (portfolioEmpty) {
+        portfolioEmpty.innerHTML = `
+          Connect a Solana wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
+        `;
+      }
+      
       updateWalletButtonState();
       renderPortfolioHeader();
-
-    } catch(err) {
-      console.log('Wallet connect cancelled or failed', err);
-    }
-  }
-
-  function disconnectWallet() {
-    walletConnected = false;
-    walletAddress = null;
-    connectedProvider = null;
-    apexPortfolioAddress = null;
-    updateWalletButtonState();
-  }
-
-  function openPayment(plan, price, e) {
-    e.preventDefault();
-    currentPlan = plan;
-    currentPrice = parseInt(price);
-
-    document.getElementById('payPlanName').textContent = plan.toUpperCase();
-
-    if (price === '0') {
-      document.getElementById('payPlanPrice').textContent = 'FREE';
-      document.getElementById('payPlanPrice').style.color = 'var(--neon-green)';
-      document.getElementById('payBtn').textContent = '⚡ ACTIVATE FREE PLAN';
-      document.getElementById('payBtn').style.background = 'var(--neon-green)';
-      document.getElementById('paySOL').style.display = 'none';
-      document.getElementById('payUSDC').style.display = 'none';
+      
+      // If Solana wallet is connected, scan SPL tokens!
+      if (solanaConnected) {
+        scanPortfolio();
+      }
     } else {
-      document.getElementById('payPlanPrice').textContent = '$' + price + '/mo';
-      document.getElementById('payPlanPrice').style.color = 'var(--neon-pink)';
-      document.getElementById('payBtn').textContent = '⚡ CONFIRM PAYMENT';
-      document.getElementById('payBtn').style.background = 'var(--neon-pink)';
-      document.getElementById('paySOL').style.display = 'block';
-      document.getElementById('payUSDC').style.display = 'block';
-      const solAmt = (currentPrice / SOL_PRICE).toFixed(3);
-      document.getElementById('solAmount').textContent = `≈ ${solAmt} SOL`;
-      document.getElementById('usdcAmount').textContent = `${currentPrice} USDC`;
-      selectCurrency('SOL');
+      avaxBtn.style.background = 'var(--neon-pink)';
+      avaxBtn.style.color = 'var(--dark-bg)';
+      avaxBtn.style.fontWeight = 'bold';
+      
+      solBtn.style.background = 'transparent';
+      solBtn.style.color = 'var(--text-muted)';
+      solBtn.style.fontWeight = 'normal';
+      
+      if (heroChain) heroChain.innerHTML = 'Avalanche';
+      if (heroDesc) heroDesc.textContent = 'Paste any Avalanche token address. Our engine analyzes live chain and market signals in real-time.';
+      
+      if (authReviewerBtn) authReviewerBtn.style.display = 'inline-block';
+      if (publishBtn) publishBtn.style.display = 'inline-block';
+      if (monitorPanel) monitorPanel.style.display = 'block';
+      
+      if (exampleBtn) {
+        exampleBtn.setAttribute('onclick', "loadExample('apex')");
+      }
+      
+      if (evmWalletOpts) evmWalletOpts.style.display = 'block';
+      if (solWalletOpts) solWalletOpts.style.display = 'none';
+      if (walletModalTitle) walletModalTitle.textContent = '// SELECT AVALANCHE WALLET';
+      
+      if (portfolioEmpty) {
+        portfolioEmpty.innerHTML = `
+          Connect an Avalanche wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
+        `;
+      }
+      
+      updateWalletButtonState();
+      renderPortfolioHeader();
+      
+      // If Avalanche wallet is connected, scan Avalanche ERC20s!
+      if (avalancheConnected) {
+        scanPortfolio();
+      }
     }
+  }
 
-    if (walletConnected && walletAddress) {
-      const short = walletAddress.slice(0,6) + '...' + walletAddress.slice(-6);
-      document.getElementById('payFromAddr').textContent = short;
-      document.getElementById('walletPayInfo').style.display = 'block';
-      document.getElementById('connectFirst').style.display = 'none';
+  // =====================
+  // DUAL PORTFOLIO ENGINE
+  // =====================
+  async function scanPortfolio() {
+    if (activeNetwork === 'solana') {
+      await scanPortfolioSolana();
     } else {
-      document.getElementById('walletPayInfo').style.display = 'none';
-      if (currentPrice > 0) document.getElementById('connectFirst').style.display = 'block';
-    }
-
-    document.getElementById('paymentModal').style.display = 'flex';
-  }
-
-  function closePaymentModal() {
-    document.getElementById('paymentModal').style.display = 'none';
-  }
-
-  function selectCurrency(cur) {
-    selectedCurrency = cur;
-    const solEl = document.getElementById('paySOL');
-    const usdcEl = document.getElementById('payUSDC');
-    if (cur === 'SOL') {
-      solEl.style.borderColor = 'rgba(0,245,255,0.6)';
-      solEl.style.background = 'rgba(0,245,255,0.08)';
-      usdcEl.style.borderColor = 'rgba(255,255,255,0.08)';
-      usdcEl.style.background = 'transparent';
-    } else {
-      usdcEl.style.borderColor = 'rgba(0,245,255,0.6)';
-      usdcEl.style.background = 'rgba(0,245,255,0.08)';
-      solEl.style.borderColor = 'rgba(255,255,255,0.08)';
-      solEl.style.background = 'transparent';
+      await scanPortfolioAvalanche();
     }
   }
 
-  async function simulatePayment() {
-    if (currentPrice > 0 && !walletConnected) {
-      document.getElementById('connectFirst').style.display = 'block';
-      connectWallet();
+  async function scanPortfolioSolana() {
+    if (!solanaConnected || !solanaAddress) return;
+
+    const btn      = document.getElementById('portfolioRefreshBtn');
+    const status   = document.getElementById('portfolioState');
+    const list     = document.getElementById('portfolioList');
+    const summary  = document.getElementById('portfolioSummary');
+    const empty    = document.getElementById('portfolioEmpty');
+
+    btn.textContent = '⏳ SCANNING...';
+    btn.disabled = true;
+    status.textContent = 'Fetching Solana SPL balances...';
+    list.innerHTML = '';
+    summary.style.display = 'none';
+    empty.style.display = 'none';
+    list.style.display = 'block';
+
+    let mints = [];
+    const programs = [
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',  // SPL Token
+      'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'   // Token-2022
+    ];
+
+    for (const prog of programs) {
+      try {
+        const res = await fetch('https://api.mainnet-beta.solana.com', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            jsonrpc:'2.0', id:1,
+            method:'getTokenAccountsByOwner',
+            params:[solanaAddress, {programId: prog}, {encoding:'jsonParsed'}]
+          })
+        });
+        const data = await res.json();
+        const accounts = data.result?.value || [];
+        for (const acc of accounts) {
+          const info = acc.account?.data?.parsed?.info;
+          if (!info) continue;
+          const bal = parseFloat(info.tokenAmount?.uiAmount || 0);
+          if (bal <= 0) continue; // skip zero-balance tokens
+          mints.push({
+            mint:     info.mint,
+            balance:  bal,
+            decimals: info.tokenAmount?.decimals || 0
+          });
+        }
+      } catch(e) { console.warn('Solana RPC error:', e); }
+    }
+
+    mints = mints.filter((m,i,a) => a.findIndex(x=>x.mint===m.mint)===i);
+
+    if (mints.length === 0) {
+      list.innerHTML = `<div style="text-align:center;padding:60px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-muted);">
+        // No SPL tokens found in this Solana address</div>`;
+      status.textContent = 'PORTFOLIO STATUS — NO ASSETS DETECTED';
+      btn.textContent = '⚡ RESCAN';
+      btn.disabled = false;
       return;
     }
 
-    const btn = document.getElementById('payBtn');
-    btn.textContent = '⏳ PROCESSING...';
-    btn.style.opacity = '0.7';
-    btn.disabled = true;
-
-    // Simulate transaction delay
-    await new Promise(r => setTimeout(r, 2200));
-
-    closePaymentModal();
-    showSuccess(currentPlan);
-  }
-
-  function showSuccess(plan) {
-    document.getElementById('successPlan').textContent = plan.toUpperCase() + ' ACTIVATED';
-    const addr = walletAddress
-      ? walletAddress.slice(0,8) + '...' + walletAddress.slice(-8)
-      : 'DEMO MODE';
-    document.getElementById('successAddr').innerHTML =
-      `<span style="color:var(--text-muted);">WALLET:</span> ${addr}`;
-    document.getElementById('successModal').style.display = 'flex';
-  }
-
-  function closeSuccess() {
-    document.getElementById('successModal').style.display = 'none';
-    const btn = document.getElementById('payBtn');
-    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
-  }
-
-  // Close modals on backdrop click
-  document.getElementById('walletModal').addEventListener('click', e => {
-    if (e.target === document.getElementById('walletModal')) closeWalletModal();
-  });
-  document.getElementById('paymentModal').addEventListener('click', e => {
-    if (e.target === document.getElementById('paymentModal')) closePaymentModal();
-  });
-
-  const RUGCHECK_API = 'https://api.rugcheck.xyz/v1';
-  const DEXSCREENER_API = 'https://api.dexscreener.com/latest/dex/tokens';
-  const RUGBUSTER_API = (window.RUGBUSTER_API || 'https://web-production-376bf.up.railway.app').replace(/\/$/, '');
-
-  // Glitch effect on stat numbers
-  document.querySelectorAll('.stat-number').forEach(el => {
-    const original = el.textContent;
-    el.addEventListener('mouseenter', () => {
-      let i = 0;
-      const chars = '0123456789ABCDEF$%#@!';
-      const interval = setInterval(() => {
-        el.textContent = original.split('').map((c, idx) =>
-          idx < i ? original[idx] : chars[Math.floor(Math.random() * chars.length)]
-        ).join('');
-        i++;
-        if (i > original.length) { el.textContent = original; clearInterval(interval); }
-      }, 40);
-    });
-  });
-
-  // Enter key on input
-  document.getElementById('scanInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') runScan();
-  });
-
-  function loadExample(type) {
-    const examples = {
-      apex: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
-    };
-    document.getElementById('scanInput').value = examples[type] || examples.apex;
-  }
-
-  function formatUsd(value) {
-    if (value === null || value === undefined || value === '') return 'UNKNOWN';
-    const num = Number(value);
-    if (!Number.isFinite(num)) return 'UNKNOWN';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      notation: num >= 1000000 ? 'compact' : 'standard',
-      maximumFractionDigits: num >= 1000 ? 1 : 2
-    }).format(num);
-  }
-
-  function isApexAddress(address) {
-    return /^0x[a-fA-F0-9]{40}$/.test(address);
-  }
-
-  function shortAddress(address) {
-    return address.length > 16 ? address.slice(0, 8) + '...' + address.slice(-6) : address;
-  }
-
-  function sortDeep(value) {
-    if (Array.isArray(value)) return value.map(sortDeep);
-    if (value && typeof value === 'object') {
-      return Object.keys(value).sort().reduce((acc, key) => {
-        acc[key] = sortDeep(value[key]);
-        return acc;
-      }, {});
+    // Render scanning placeholders
+    for (const t of mints) {
+      const row = document.createElement('div');
+      row.className = 'portfolio-row scanning';
+      row.id = `port-${t.mint}`;
+      row.innerHTML = `
+        <div class="port-icon">◎</div>
+        <div>
+          <div class="port-name" style="color:var(--text-muted);font-size:11px;">${t.mint.slice(0,8)}...${t.mint.slice(-4)}</div>
+          <div class="port-flags">Scanning...</div>
+        </div>
+        <div class="port-balance">${t.balance.toLocaleString(undefined,{maximumFractionDigits:4})}</div>
+        <div class="port-risk r-scan">— / —</div>`;
+      list.appendChild(row);
     }
-    return value;
-  }
 
-  function stableJson(value) {
-    return JSON.stringify(sortDeep(value));
-  }
+    status.textContent = `Scanning ${mints.length} tokens...`;
 
-  async function sha256Bytes32(value) {
-    const encoded = new TextEncoder().encode(stableJson(value));
-    const digest = await crypto.subtle.digest('SHA-256', encoded);
-    const bytes = Array.from(new Uint8Array(digest));
-    return `0x${bytes.map(b => b.toString(16).padStart(2, '0')).join('')}`;
-  }
+    let done=0, dangerCount=0, warnCount=0, safeCount=0;
+    const CONCURRENCY = 4;
 
-  async function getRegistryContractWithSigner() {
-    if (!window.ethereum || !window.ethers) {
-      throw new Error('MetaMask or another EVM wallet is required');
+    async function processSolanaToken(t) {
+      const result = await getTokenRiskQuick(t.mint);
+      done++;
+      status.textContent = `Scanning ${done} / ${mints.length}...`;
+
+      const row = document.getElementById(`port-${t.mint}`);
+      if (!row) return;
+
+      const name   = result.name   || `${t.mint.slice(0,6)}...${t.mint.slice(-4)}`;
+      const symbol = result.symbol || '???';
+      const flags  = [...result.danger, ...result.warn];
+      const flagTxt = flags.length ? flags.slice(0,2).join(' · ') + (flags.length>2?` +${flags.length-2} more`:'') : 'No flags';
+
+      let rowClass='safe', riskClass='r-safe', riskTxt;
+      if (result.risk >= 75) {
+        rowClass='danger'; riskClass='r-danger'; riskTxt=`${result.risk}% HIGH`; dangerCount++;
+      } else if (result.risk >= 40) {
+        rowClass='warning'; riskClass='r-warning'; riskTxt=`${result.risk}% MED`; warnCount++;
+      } else {
+        riskTxt=`${result.risk}% LOW`; safeCount++;
+      }
+
+      const imgHtml = result.image
+        ? `<img src="${result.image}" onerror="this.parentElement.textContent='◎'" alt=""/>`
+        : '◎';
+
+      row.className = `portfolio-row ${rowClass === 'danger' ? 'risk' : rowClass === 'warning' ? 'warn' : ''}`;
+      row.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="port-icon" style="width:34px;height:34px;border:1px solid rgba(0,245,255,0.2);display:flex;align-items:center;justify-content:center;overflow:hidden;">${imgHtml}</div>
+          <div>
+            <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">${name}</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-cyan);letter-spacing:2px;">${symbol}</div>
+            <div class="port-flags" style="font-family:'Share Tech Mono',monospace;font-size:10px;margin-top:4px;color:${rowClass==='danger'?'#ff3d3d':rowClass==='warning'?'var(--neon-orange)':'var(--text-muted)'};">${flagTxt}</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">BALANCE</div>
+          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">${t.balance.toLocaleString(undefined,{maximumFractionDigits:4})}</div>
+        </div>
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">VALUE</div>
+          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">N/A</div>
+        </div>
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">RUG</div>
+          <div style="font-family:'Orbitron',monospace;font-size:13px;color:${rowClass==='danger'?'#ff3d3d':rowClass==='warning'?'var(--neon-orange)':'var(--neon-green)'};">${riskTxt}</div>
+        </div>
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SPEC</div>
+          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-muted);">—</div>
+        </div>`;
+
+      // Update Summary
+      summary.innerHTML = `
+        <span style="color:var(--neon-cyan);">TOKENS:</span> ${done}
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <span style="color:${dangerCount ? '#ff5f57' : 'var(--neon-green)'};">SUSPICIOUS:</span> ${dangerCount}
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <span style="color:${warnCount ? 'var(--neon-orange)' : 'var(--text-muted)'};">UNKNOWN:</span> ${warnCount}
+      `;
+      summary.style.display = 'block';
     }
-    await ensureAvalancheChain();
-    const provider = new window.ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const contract = new window.ethers.Contract(REGISTRY_ADDRESS, REGISTRY_ABI, signer);
-    return { provider, signer, contract };
+
+    for (let i = 0; i < mints.length; i += CONCURRENCY) {
+      await Promise.all(mints.slice(i, i + CONCURRENCY).map(processSolanaToken));
+    }
+
+    status.textContent = `✓ Scan complete — ${dangerCount} high risk, ${warnCount} medium, ${safeCount} clean`;
+    btn.textContent = '⚡ RESCAN';
+    btn.disabled = false;
   }
 
-  async function isAuthorizedReviewerAddress(address) {
-    const { contract } = await getRegistryContractWithSigner();
-    const [owner, reviewer] = await Promise.all([
-      contract.owner(),
-      contract.authorizedReviewers(address)
-    ]);
-    return owner.toLowerCase() === address.toLowerCase() || Boolean(reviewer);
-  }
+  async function scanPortfolioAvalanche() {
+    if (!apexPortfolioAddress) {
+      document.getElementById('portfolioState').textContent = 'CONNECT AN AVALANCHE WALLET FIRST';
+      return;
+    }
 
-  async function authorizeReviewerWallet() {
-    setAuthorizeReviewerButtonState(false, 'AUTHORIZING...');
-    await termLineDelay(`<span class="t-out">RB&gt; authorize-reviewer --mainnet</span>`, 120);
-    await termLineDelay(`<span class="t-out">Preparing reviewer authorization flow...</span>`, 180);
+    const refreshBtn = document.getElementById('portfolioRefreshBtn');
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = 'SCANNING...';
+    document.getElementById('portfolioState').textContent = 'QUERYING WALLET BALANCES AND SCORING TOKENS';
 
     try {
-      if (!walletConnected || connectedProvider !== 'evm' || !window.ethereum) {
-        throw new Error('Connect your owner MetaMask wallet first');
-      }
-
-      const reviewerInput = window.prompt('Enter the Avalanche C-Chain wallet address to authorize for direct publish:');
-      if (!reviewerInput) {
-        throw new Error('Authorization canceled');
-      }
-
-      const reviewerAddress = window.ethers.getAddress(reviewerInput.trim());
-      const { signer, contract } = await getRegistryContractWithSigner();
-      const signerAddress = await signer.getAddress();
-      const ownerAddress = await contract.owner();
-
-      if (signerAddress.toLowerCase() !== ownerAddress.toLowerCase()) {
-        throw new Error(`Connected wallet ${shortAddress(signerAddress)} is not the registry owner`);
-      }
-
-      await termLineDelay(`<span class="t-out">// Owner wallet: ${shortAddress(signerAddress)}</span>`, 120);
-      await termLineDelay(`<span class="t-out">// Reviewer wallet: ${shortAddress(reviewerAddress)}</span>`, 120);
-
-      const tx = await contract.setReviewer(reviewerAddress, true);
-      const receipt = await tx.wait();
-
-      await termLineDelay(`<span class="t-success">✓ Reviewer wallet authorized for direct publish.</span>`, 220);
-      await termLineDelay(`<span class="t-out">// TX: ${tx.hash}</span>`, 120);
-      await termLineDelay(`<span class="t-out">// Gas used: ${receipt.gasUsed.toString()}</span>`, 120);
-      await termLineDelay(`<span class="t-out">// ${shortAddress(reviewerAddress)} can now publish reports from its own AVAX balance.</span>`, 120);
-      setAuthorizeReviewerButtonState(true, 'AUTHORIZED');
-      setTimeout(() => setAuthorizeReviewerButtonState(true, 'AUTHORIZE REVIEWER'), 2600);
+      const data = await fetchPortfolioScanFromApi(apexPortfolioAddress);
+      renderPortfolio(data.entries, data.suspicious);
     } catch (err) {
-      await termLineDelay(`<span class="t-danger">✗ REVIEWER AUTH FAILED: ${err.message}</span>`, 220);
-      await termLineDelay(`<span class="t-out">// Connect the owner wallet and confirm the target Avalanche address.</span>`, 120);
-      setAuthorizeReviewerButtonState(true, 'AUTHORIZE REVIEWER');
+      document.getElementById('portfolioPanel').classList.remove('alert');
+      document.getElementById('portfolioEmpty').style.display = 'block';
+      document.getElementById('portfolioList').style.display = 'none';
+      document.getElementById('portfolioSummary').style.display = 'none';
+      document.getElementById('portfolioState').textContent = `PORTFOLIO SCAN FAILED // ${err.message}`;
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = 'REFRESH PORTFOLIO';
+    }
+  }
+
+  // =====================
+  // DUAL CHAIN THREAT SCANNERS
+  // =====================
+  async function runScan() {
+    if (activeNetwork === 'solana') {
+      await runScanSolana();
+    } else {
+      await runScanAvalanche();
+    }
+  }
+
+  async function runScanSolana() {
+    const address = document.getElementById('scanInput').value.trim();
+    if (!address) {
+      document.getElementById('scanInput').style.borderColor = '#ff3d3d';
+      setTimeout(() => document.getElementById('scanInput').style.borderColor = '', 1000);
+      return;
     }
 
-    termLine('');
+    clearTerminal();
+    document.getElementById('riskMeter').style.display = 'none';
+    document.getElementById('tokenImageWrap').style.display = 'none';
+
+    const short = address.length > 16 ? address.slice(0, 8) + '...' + address.slice(-6) : address;
+    const isSOL = address.length >= 32 && !address.startsWith('0x');
+
+    if (!isSOL) {
+      termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-danger">Unsupported address format</span>`);
+      termLine(`<span class="t-out">// Use a Solana mint address (typically 32-44 characters).</span>`);
+      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+      return;
+    }
+
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">scan ${short} --chain SOLANA --deep --ai</span>`);
+    await termLineDelay(`<span class="t-out">Initializing threat engine...</span>`, 300);
+    await termLineDelay(`<span class="t-out">Connecting to RugCheck API...</span>`, 500);
+    await termLineDelay(`<span class="t-out">Fetching full token report...</span>`, 700);
+
+    let data = {};
+    let rugcheckOk = false;
+    try {
+      const res = await fetch(`${RUGCHECK_API}/tokens/${encodeURIComponent(address)}/report`);
+      if (res.ok) {
+        data = await res.json();
+        rugcheckOk = true;
+      } else {
+        await termLineDelay(`<span class="t-warn">⚡ RugCheck: token not indexed (HTTP ${res.status}) — limited data available</span>`, 400);
+      }
+    } catch(err) {
+      await termLineDelay(`<span class="t-warn">⚡ RugCheck unreachable — limited data available</span>`, 400);
+    }
+
+    const tokenMeta  = data.tokenMeta || data.fileMeta || {};
+    const tokenName  = tokenMeta.name
+      ? `${tokenMeta.name}${tokenMeta.symbol ? ' (' + tokenMeta.symbol + ')' : ''}`
+      : short;
+    const tokenImage = tokenMeta.image || null;
+
+    const tokenData  = data.token || {};
+    const mintAuth   = tokenData.mintAuthority;
+    const freezeAuth = tokenData.freezeAuthority;
+    const topHolders = data.topHolders || [];
+    const markets    = data.markets || [];
+    const lpLocked   = data.lpLockedPct || 0;
+    const mutable    = tokenMeta.mutable || false;
+
+    const SYSTEM_ADDR = '11111111111111111111111111111111';
+    const dangerFlags = [];
+    const warnFlags   = [];
+
+    if (mintAuth && mintAuth !== SYSTEM_ADDR) {
+      dangerFlags.push('✗ Mint Authority Active — dev can print unlimited tokens');
+    }
+    if (freezeAuth && freezeAuth !== SYSTEM_ADDR) {
+      dangerFlags.push('✗ Freeze Authority Active — wallets can be frozen');
+    }
+    if (topHolders.length > 0) {
+      const top1  = topHolders[0].pct || 0;
+      const top5  = topHolders.slice(0,5).reduce((s,h) => s + (h.pct||0), 0);
+      if (top1 > 50)       dangerFlags.push(`✗ Top holder owns ${top1.toFixed(1)}% of supply — extreme concentration`);
+      else if (top1 > 20)  warnFlags.push(`⚡ Top holder owns ${top1.toFixed(1)}% of supply`);
+      if (top5 > 80)       warnFlags.push(`⚡ Top 5 holders own ${top5.toFixed(1)}% of supply`);
+    }
+    if (markets.length > 0 && lpLocked === 0) {
+      warnFlags.push('⚡ Liquidity not locked — rug pull possible');
+    } else if (lpLocked > 0 && lpLocked < 50) {
+      warnFlags.push(`⚡ Only ${lpLocked.toFixed(0)}% of LP locked`);
+    }
+    if (mutable) warnFlags.push('⚡ Mutable metadata — can be changed by dev');
+
+    (data.risks || []).forEach(r => {
+      if (r.level === 'danger') dangerFlags.push(`✗ ${r.name || '?'}`);
+      else if (r.level === 'warn') warnFlags.push(`⚡ ${r.name || '?'}`);
+    });
+
+    const BLUE_CHIPS = ['JUP','BONK','WIF','SOL','USDC','USDT','RAY','ORCA'];
+    const symUpper   = (tokenMeta.symbol || '').toUpperCase();
+    const isKnownSafe = BLUE_CHIPS.some(x => symUpper.includes(x));
+
+    let risk;
+    if (isKnownSafe)              risk = 5;
+    else if (dangerFlags.length)  risk = 85;
+    else if (warnFlags.length >= 2) risk = 65;
+    else if (warnFlags.length)    risk = 45;
+    else                          risk = 15;
+
+    const allFlags = [...dangerFlags, ...warnFlags];
+
+    await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">SOLANA</span>`, 200);
+    await termLineDelay(`<span class="t-cyan">✓ Token:</span>    <span class="t-cmd">${tokenName}</span>`, 250);
+    await termLineDelay(`<span class="t-cyan">✓ Address:</span>  <span class="t-out">${short}</span>`, 200);
+    const mintDisplay   = !rugcheckOk ? ['t-out','— Unknown'] : mintAuth && mintAuth !== SYSTEM_ADDR ? ['t-danger','🚨 Active'] : ['t-success','✅ Disabled'];
+    const freezeDisplay = !rugcheckOk ? ['t-out','— Unknown'] : freezeAuth && freezeAuth !== SYSTEM_ADDR ? ['t-danger','🚨 Active'] : ['t-success','✅ Disabled'];
+    await termLineDelay(`<span class="t-cyan">✓ Mint Auth:</span>   <span class="${mintDisplay[0]}">${mintDisplay[1]}</span>`, 200);
+    await termLineDelay(`<span class="t-cyan">✓ Freeze Auth:</span> <span class="${freezeDisplay[0]}">${freezeDisplay[1]}</span>`, 200);
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-out">── RISK FLAGS ─────────────────────────────</span>`, 300);
+
+    if (allFlags.length === 0) {
+      await termLineDelay(`<span class="t-success">  ✓ No risk flags found</span>`, 300);
+    }
+    for (let i = 0; i < allFlags.length; i++) {
+      const f   = allFlags[i];
+      const cls = f.startsWith('✗') ? 't-danger' : 't-warn';
+      await termLineDelay(`<span class="${cls}">  ${f}</span>`, 100 + i * 70);
+    }
+
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-out">── VERDICT ────────────────────────────────</span>`, 200);
+
+    if (!rugcheckOk && allFlags.length === 0) {
+      await termLineDelay(`<span class="t-warn">  ⚡ THREAT LEVEL : UNKNOWN</span>`, 250);
+      await termLineDelay(`<span class="t-warn">  ⚡ RESULT       : NOT INDEXED — token not found in RugCheck database</span>`, 200);
+    } else if (risk >= 75) {
+      await termLineDelay(`<span class="t-danger">  ⚠ THREAT LEVEL : CRITICAL</span>`, 250);
+      await termLineDelay(`<span class="t-danger">  ⚠ RESULT       : HIGH RISK — POTENTIAL RUG / SCAM</span>`, 200);
+      await termLineDelay(`<span class="t-danger">  ✗ DO NOT INTERACT WITH THIS TOKEN</span>`, 200);
+    } else if (risk >= 40) {
+      await termLineDelay(`<span class="t-warn">  ⚡ THREAT LEVEL : ELEVATED</span>`, 250);
+      await termLineDelay(`<span class="t-warn">  ⚡ RESULT       : MEDIUM RISK — PROCEED WITH CAUTION</span>`, 200);
+    } else {
+      await termLineDelay(`<span class="t-success">  ✓ THREAT LEVEL : LOW</span>`, 250);
+      await termLineDelay(`<span class="t-success">  ✓ RESULT       : APPEARS CLEAN</span>`, 200);
+    }
+
+    const displayScore = Math.max(0, Math.min(100, risk));
+
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by RugCheck.xyz</span>`, 200);
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+
+    setRiskMeter(displayScore);
+    showTokenImage(tokenImage, tokenName, address);
+
+    if (risk >= 75) {
+      const dangerList = dangerFlags.map(f => `• ${f}`).join('<br>');
+      setTimeout(() => {
+        showCriticalAlert(
+          'HIGH RISK TOKEN DETECTED',
+          `Token: <span style="color:#ff3d3d">${tokenName}</span><br>
+           Address: <span style="color:var(--text-muted)">${short}</span><br>
+           Risk Score: <span style="color:#ff3d3d;font-size:18px">${risk}%</span><br><br>
+           ${dangerList ? `<span style="color:#ff3d3d">${dangerList}</span><br><br>` : ''}
+           <span style="color:#ff3d3d">⚠ DO NOT BUY — DO NOT INTERACT</span>`
+        );
+      }, 800);
+    }
   }
 
-  function formatCompactTokenBalance(value) {
-    if (value === null || value === undefined || Number.isNaN(Number(value))) return 'UNKNOWN';
-    const num = Number(value);
-    if (num >= 1000000) return `${(num / 1000000).toFixed(2)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(2)}K`;
-    if (num >= 1) return num.toFixed(4);
-    if (num === 0) return '0';
-    return num.toPrecision(4);
+  async function runScanAvalanche() {
+    const address = document.getElementById('scanInput').value.trim();
+    if (!address) {
+      document.getElementById('scanInput').style.borderColor = '#ff3d3d';
+      setTimeout(() => document.getElementById('scanInput').style.borderColor = '', 1000);
+      return;
+    }
+
+    clearTerminal();
+    document.getElementById('scoreBoard').style.display = 'none';
+    document.getElementById('tokenImageWrap').style.display = 'none';
+    setAlertButtonState(false, 'SEND ALERT');
+    setPublishButtonState(false, 'PUBLISH REPORT');
+    lastScannedAddress = null;
+    lastScanData = null;
+
+    const short = shortAddress(address);
+    const isAPEX = isApexAddress(address);
+
+    if (!isAPEX) {
+      termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-danger">Unsupported address format</span>`);
+      termLine(`<span class="t-out">// Use an Apex / Avalanche 0x token address.</span>`);
+      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+      return;
+    }
+
+    const chain = 'APEX/AVALANCHE';
+
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">scan ${short} --chain ${chain} --deep --ai</span>`);
+    await termLineDelay(`<span class="t-out">Initializing threat engine...</span>`, 300);
+    await termLineDelay(`<span class="t-out">Connecting to Avalanche live market feeds...</span>`, 500);
+    await termLineDelay(`<span class="t-out">Fetching Apex token pairs and liquidity...</span>`, 700);
+
+    let apexData;
+    try {
+      apexData = await fetchApexScan(address);
+    } catch (err) {
+      await termLineDelay(`<span class="t-danger">✗ SCAN FAILED: ${err.message}</span>`, 400);
+      await termLineDelay(`<span class="t-out">// Ensure this is an Avalanche token address with live liquidity.</span>`, 200);
+      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+      return;
+    }
+
+    const rugFlags = [
+      ...apexData.rugReasons.high,
+      ...apexData.rugReasons.medium,
+      ...apexData.rugReasons.neutral.map(reason => `· ${reason}`)
+    ];
+    const speculationFlags = [
+      ...apexData.speculationReasons.high,
+      ...apexData.speculationReasons.medium,
+      ...apexData.speculationReasons.neutral.map(reason => `· ${reason}`)
+    ];
+
+    await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">APEX / AVALANCHE</span>`, 200);
+    await termLineDelay(`<span class="t-cyan">✓ Token:</span>    <span class="t-cmd">${apexData.tokenName}</span>`, 220);
+    await termLineDelay(`<span class="t-cyan">✓ Address:</span>  <span class="t-out">${short}</span>`, 180);
+    await termLineDelay(`<span class="t-cyan">✓ Primary DEX:</span> <span class="t-cmd">${apexData.dexId}</span>`, 180);
+    await termLineDelay(`<span class="t-cyan">✓ Pair:</span>     <span class="t-out">${apexData.pairLabel}</span>`, 180);
+    await termLineDelay(`<span class="t-cyan">✓ Liquidity:</span> <span class="t-cmd">${formatUsd(apexData.liquidityUsd)}</span>`, 180);
+    await termLineDelay(`<span class="t-cyan">✓ FDV:</span>      <span class="t-cmd">${formatUsd(apexData.fdv)}</span>`, 180);
+    await termLineDelay(`<span class="t-cyan">✓ 24h Volume:</span> <span class="t-cmd">${formatUsd(apexData.volume24h)}</span>`, 180);
+    await termLineDelay(`<span class="t-cyan">✓ 24h Flow:</span> <span class="t-out">${apexData.buys24h === null || apexData.sells24h === null ? 'UNKNOWN' : `${apexData.buys24h} buys / ${apexData.sells24h} sells`}</span>`, 180);
+    await termLineDelay(`<span class="t-cyan">✓ 24h Price:</span> <span class="${apexData.priceChange24h !== null && apexData.priceChange24h < 0 ? 't-warn' : 't-success'}">${apexData.priceChange24h === null ? 'UNKNOWN' : `${apexData.priceChange24h.toFixed(1)}%`}</span>`, 180);
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-out">── RUG SCORE // ON-CHAIN FACTS ───────────</span>`, 260);
+    await termLineDelay(`<span class="${apexData.rugStatus === 'HIGH' ? 't-danger' : apexData.rugStatus === 'ELEVATED' ? 't-warn' : apexData.rugStatus === 'LOW' ? 't-success' : 't-out'}">  ${apexData.rugStatus} : ${apexData.rugScore === null ? 'UNKNOWN' : apexData.rugScore}</span>`, 180);
+    if (!rugFlags.length) {
+      await termLineDelay(`<span class="t-success">  ✓ No hard-fact rug flags detected</span>`, 220);
+    }
+    for (let i = 0; i < rugFlags.length; i++) {
+      const flag = rugFlags[i];
+      const cls = flag.startsWith('✗') ? 't-danger' : flag.startsWith('⚡') ? 't-warn' : 't-out';
+      await termLineDelay(`<span class="${cls}">  ${flag}</span>`, 90 + i * 60);
+    }
+
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-out">── SPECULATION SCORE // MARKET DATA ──────</span>`, 200);
+    await termLineDelay(`<span class="${apexData.speculationStatus === 'HIGH' ? 't-danger' : apexData.speculationStatus === 'ELEVATED' ? 't-warn' : apexData.speculationStatus === 'LOW' ? 't-success' : 't-out'}">  ${apexData.speculationStatus} : ${apexData.speculationScore === null ? 'UNKNOWN' : apexData.speculationScore}</span>`, 180);
+    if (!speculationFlags.length) {
+      await termLineDelay(`<span class="t-success">  ✓ No market-structure speculation flags detected</span>`, 220);
+    }
+    for (let i = 0; i < speculationFlags.length; i++) {
+      const flag = speculationFlags[i];
+      const cls = flag.startsWith('✗') ? 't-danger' : flag.startsWith('⚡') ? 't-warn' : 't-out';
+      await termLineDelay(`<span class="${cls}">  ${flag}</span>`, 90 + i * 60);
+    }
+
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-out">── FINAL READOUT ──────────────────────────</span>`, 200);
+
+    if (apexData.rugStatus === 'HIGH') {
+      await termLineDelay(`<span class="t-danger">  ⚠ RUG STATUS   : HIGH</span>`, 230);
+      await termLineDelay(`<span class="t-danger">  ⚠ RESULT       : HARD ON-CHAIN FACTS LOOK BAD</span>`, 200);
+      await termLineDelay(`<span class="t-danger">  ✗ DO NOT INTERACT WITHOUT MANUAL REVIEW</span>`, 180);
+    } else if (apexData.speculationStatus === 'HIGH') {
+      await termLineDelay(`<span class="t-danger">  ⚠ SPECULATION  : HIGH</span>`, 230);
+      await termLineDelay(`<span class="t-danger">  ⚠ RESULT       : MARKET DEPTH LOOKS DANGEROUS</span>`, 200);
+      await termLineDelay(`<span class="t-danger">  ✗ EXIT LIQUIDITY MAY BE TOO THIN FOR SAFE SIZE</span>`, 180);
+    } else if (apexData.speculationStatus === 'ELEVATED') {
+      await termLineDelay(`<span class="t-warn">  ⚠ SPECULATION  : ELEVATED</span>`, 230);
+      await termLineDelay(`<span class="t-warn">  ⚠ RESULT       : LOW RUG RISK, BUT MARKET DEPTH IS SHALLOW</span>`, 200);
+      await termLineDelay(`<span class="t-warn">  ⚡ TREAT THIS AS A SPECULATIVE POSITION, NOT A STABLE ONE</span>`, 180);
+    } else if (apexData.speculationStatus === 'UNKNOWN') {
+      await termLineDelay(`<span class="t-out">  · SPECULATION  : UNKNOWN</span>`, 230);
+      await termLineDelay(`<span class="t-out">  · RESULT       : NO LIQUIDITY EVIDENCE, DO NOT GUESS</span>`, 200);
+    } else {
+      await termLineDelay(`<span class="t-success">  ✓ RUG STATUS   : ${apexData.rugStatus}</span>`, 230);
+      await termLineDelay(`<span class="t-success">  ✓ SPECULATION  : ${apexData.speculationStatus}</span>`, 200);
+    }
+
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by ${apexData.source || 'RugBuster Avalanche data'}</span>`, 200);
+    if (apexData.pairUrl) {
+      await termLineDelay(`<span class="t-out">// Pair URL: ${apexData.pairUrl}</span>`, 120);
+    }
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+
+    setScoreMeter('rugScore', apexData.rugScore, apexData.rugStatus, '· UNKNOWN — ON-CHAIN FACTS ARE INCOMPLETE');
+    setScoreMeter('specScore', apexData.speculationScore, apexData.speculationStatus, '· UNKNOWN — NO LIVE LIQUIDITY EVIDENCE');
+    showTokenImage(apexData.tokenImage, apexData.tokenName, address);
+    
+    lastScannedAddress = address;
+    lastScanData = apexData;
+    
+    setAlertButtonState(true, 'SEND ALERT');
+    setPublishButtonState(true, 'PUBLISH REPORT');
+
+    if (apexData.rugStatus === 'HIGH' || apexData.speculationStatus === 'HIGH') {
+      const dangerList = [...apexData.rugReasons.high, ...apexData.speculationReasons.high].map(flag => `• ${flag.replace(/^[✗⚡·]\s*/, '')}`).join('<br>');
+      setTimeout(() => {
+        showCriticalAlert(
+          apexData.rugStatus === 'HIGH' ? 'HIGH RUG RISK DETECTED' : 'HIGH SPECULATION DETECTED',
+          `Token: <span style="color:#ff3d3d">${apexData.tokenName}</span><br>
+           Address: <span style="color:var(--text-muted)">${short}</span><br>
+           Rug Score: <span style="color:#ff3d3d;font-size:18px">${apexData.rugScore === null ? 'UNKNOWN' : `${apexData.rugScore}%`}</span><br>
+           Speculation Score: <span style="color:#ff3d3d;font-size:18px">${apexData.speculationScore === null ? 'UNKNOWN' : `${apexData.speculationScore}%`}</span><br><br>
+           ${dangerList ? `<span style="color:#ff3d3d">${dangerList}</span><br><br>` : ''}
+           <span style="color:#ff3d3d">⚠ REVIEW THE HARD FACTS AND MARKET EVIDENCE BEFORE TOUCHING THIS TOKEN</span>`
+        );
+      }, 800);
+    }
   }
 
-  function termLine(html) {
-    const body = document.getElementById('terminalBody');
-    const line = document.createElement('div');
-    line.innerHTML = html;
-    // Remove old cursor
-    const oldCursor = body.querySelector('.cursor');
-    if (oldCursor) oldCursor.parentElement.remove();
-    body.appendChild(line);
-    body.scrollTop = body.scrollHeight;
+  // =====================
+  // SOLANA HELPER THREAT GETTER
+  // =====================
+  async function getTokenRiskQuick(mint) {
+    let data = {};
+    try {
+      const res = await fetch(`${RUGCHECK_API}/tokens/${encodeURIComponent(mint)}/report`);
+      if (res.ok) data = await res.json();
+    } catch(e) {}
+
+    const SYSTEM = '11111111111111111111111111111111';
+    const tokenData  = data.token || {};
+    const mintAuth   = tokenData.mintAuthority;
+    const freezeAuth = tokenData.freezeAuthority;
+    const topHolders = data.topHolders || [];
+    const markets    = data.markets    || [];
+    const lpLocked   = data.lpLockedPct || 0;
+    const meta       = data.tokenMeta  || {};
+
+    const danger = [], warn = [];
+
+    if (mintAuth   && mintAuth   !== SYSTEM) danger.push('Mint Authority Active');
+    if (freezeAuth && freezeAuth !== SYSTEM) danger.push('Freeze Authority Active');
+
+    if (topHolders.length) {
+      const t1 = topHolders[0].pct || 0;
+      const t5 = topHolders.slice(0,5).reduce((s,h)=>s+(h.pct||0),0);
+      if (t1 > 50)  danger.push(`Top holder ${t1.toFixed(0)}%`);
+      else if(t1>20) warn.push(`Top holder ${t1.toFixed(0)}%`);
+      if (t5 > 80)  warn.push(`Top 5 own ${t5.toFixed(0)}%`);
+    }
+    if (markets.length && lpLocked === 0) warn.push('LP not locked');
+    if (meta.mutable) warn.push('Mutable metadata');
+    (data.risks||[]).forEach(r => {
+      if(r.level==='danger') danger.push(r.name||'?');
+      else if(r.level==='warn') warn.push(r.name||'?');
+    });
+
+    const CHIPS = ['JUP','BONK','WIF','SOL','USDC','USDT','RAY','ORCA'];
+    const sym = (meta.symbol || '').toUpperCase();
+    const safe = CHIPS.some(x => sym.includes(x));
+
+    let risk;
+    if (safe)              risk = 5;
+    else if (danger.length) risk = 85;
+    else if (warn.length>=2) risk = 65;
+    else if (warn.length)   risk = 45;
+    else                    risk = 15;
+
+    const name   = meta.name   || null;
+    const symbol = meta.symbol || null;
+    const image  = meta.image  || null;
+    return {risk, danger, warn, name, symbol, image, hasData: Object.keys(data).length > 0};
   }
 
-  function termLineDelay(html, delay) {
-    return new Promise(r => setTimeout(() => { termLine(html); r(); }, delay));
-  }
-
-  function clearTerminal() {
-    const body = document.getElementById('terminalBody');
-    body.innerHTML = '';
-  }
-
-  function setAlertButtonState(enabled, text = 'SEND ALERT') {
-    const btn = document.getElementById('sendAlertBtn');
-    btn.disabled = !enabled;
-    btn.textContent = text;
-    btn.style.opacity = enabled ? '1' : '0.6';
-    btn.style.borderColor = enabled ? 'rgba(0,255,136,0.45)' : 'rgba(0,255,136,0.22)';
-    btn.style.color = enabled ? 'var(--neon-green)' : 'rgba(0,255,136,0.55)';
-  }
-
-  function setPublishButtonState(enabled, text = 'PUBLISH REPORT') {
-    const btn = document.getElementById('publishBtn');
-    btn.disabled = !enabled;
-    btn.textContent = text;
-    btn.style.opacity = enabled ? '1' : '0.6';
-    btn.style.borderColor = enabled ? 'rgba(255,0,200,0.45)' : 'rgba(255,0,200,0.22)';
-    btn.style.color = enabled ? 'var(--neon-pink)' : 'rgba(255,0,200,0.58)';
-  }
-
-  function setAuthorizeReviewerButtonState(enabled, text = 'AUTHORIZE REVIEWER') {
-    const btn = document.getElementById('authorizeReviewerBtn');
-    if (!btn) return;
-    btn.disabled = !enabled;
-    btn.textContent = text;
-    btn.style.opacity = enabled ? '1' : '0.6';
-    btn.style.borderColor = enabled ? 'rgba(0,245,255,0.45)' : 'rgba(0,245,255,0.22)';
-    btn.style.color = enabled ? 'var(--neon-cyan)' : 'rgba(0,245,255,0.58)';
-  }
-
+  // =====================
+  // AVALANCHE SCORES & RENDERING
+  // =====================
   function scorePresentation(status) {
     if (status === 'HIGH') {
       return { color: '#ff3d3d', label: 'HIGH', text: '⚠ HIGH RISK — HARD EVIDENCE LOOKS BAD' };
@@ -2054,6 +2658,42 @@
     }, 100);
   }
 
+  function setRiskMeter(score) {
+    const meter = document.getElementById('riskMeter');
+    const bar = document.getElementById('riskBar');
+    const scoreEl = document.getElementById('riskScore');
+    const label = document.getElementById('riskLabel');
+    meter.style.display = 'block';
+
+    let color, labelText;
+    if (score >= 75) {
+      color = '#ff3d3d';
+      labelText = '⚠ HIGH RISK — LIKELY RUG / SCAM';
+    } else if (score >= 45) {
+      color = 'var(--neon-orange)';
+      labelText = '⚡ MEDIUM RISK — PROCEED WITH CAUTION';
+    } else {
+      color = 'var(--neon-green)';
+      labelText = '✓ LOW RISK — LOOKS CLEAN';
+    }
+
+    bar.style.background = color;
+    scoreEl.style.color = color;
+    scoreEl.style.textShadow = `0 0 20px ${color}`;
+    label.style.color = color;
+    label.textContent = labelText;
+
+    setTimeout(() => {
+      bar.style.width = score + '%';
+      let current = 0;
+      const step = setInterval(() => {
+        current += 2;
+        scoreEl.textContent = Math.min(current, score);
+        if (current >= score) clearInterval(step);
+      }, 20);
+    }, 100);
+  }
+
   function portfolioRowClass(report) {
     if (report.rug_status === 'HIGH' || report.rug_status === 'ELEVATED' || report.speculation_status === 'HIGH') return 'risk';
     if (report.rug_status === 'UNKNOWN' || report.speculation_status === 'UNKNOWN' || report.speculation_status === 'ELEVATED') return 'warn';
@@ -2065,40 +2705,6 @@
     if (report.speculation_status === 'HIGH') return 'HIGH SPECULATION';
     if (report.rug_status === 'UNKNOWN' || report.speculation_status === 'UNKNOWN') return 'UNKNOWN / REVIEW';
     return 'LOOKS CLEAN';
-  }
-
-  async function connectApexWallet() {
-    if (!window.ethereum) {
-      document.getElementById('portfolioState').textContent = 'NO EVM WALLET DETECTED';
-      return;
-    }
-
-    try {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0xa86a' }]
-        });
-      } catch (switchErr) {
-        console.warn('Could not switch to Avalanche automatically:', switchErr);
-      }
-
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      if (!accounts || !accounts.length) {
-        throw new Error('Wallet connection returned no accounts');
-      }
-
-      apexPortfolioAddress = accounts[0];
-      document.getElementById('portfolioWallet').textContent = `WALLET // ${shortAddress(apexPortfolioAddress)}`;
-      document.getElementById('portfolioState').textContent = 'PORTFOLIO LINKED — SCANNING LIVE HOLDINGS';
-      document.getElementById('portfolioRefreshBtn').disabled = false;
-      document.getElementById('portfolioConnectBtn').textContent = 'CONNECTED';
-      document.getElementById('portfolioConnectBtn').style.borderColor = 'rgba(0,255,136,0.45)';
-      document.getElementById('portfolioConnectBtn').style.color = 'var(--neon-green)';
-      await scanPortfolio();
-    } catch (err) {
-      document.getElementById('portfolioState').textContent = `WALLET CONNECT FAILED // ${err.message}`;
-    }
   }
 
   async function fetchPortfolioScanFromApi(address) {
@@ -2150,7 +2756,6 @@
       empty.innerHTML = `
         <div style="font-family:'Orbitron',monospace;font-size:18px;color:var(--text-primary);margin-bottom:8px;">Wallet is clean, but empty.</div>
         <div style="margin-bottom:8px;">No Avalanche ERC-20 holdings were detected in this address.</div>
-        <div style="color:var(--neon-cyan);">That is a valid result — not a scanner error.</div>
       `;
       return;
     }
@@ -2198,93 +2803,356 @@
     `).join('');
   }
 
-  async function scanPortfolio() {
-    if (!apexPortfolioAddress) {
-      document.getElementById('portfolioState').textContent = 'CONNECT AN AVALANCHE WALLET FIRST';
-      return;
+  // =====================
+  // AVALANCHE ON-CHAIN WRITES & SIGNING
+  // =====================
+  async function getRegistryContractWithSigner() {
+    if (!window.ethereum || !window.ethers) {
+      throw new Error('MetaMask or another EVM wallet is required');
     }
+    await ensureAvalancheChain();
+    const provider = new window.ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const contract = new window.ethers.Contract(REGISTRY_ADDRESS, REGISTRY_ABI, signer);
+    return { provider, signer, contract };
+  }
 
-    const refreshBtn = document.getElementById('portfolioRefreshBtn');
-    refreshBtn.disabled = true;
-    refreshBtn.textContent = 'SCANNING...';
-    document.getElementById('portfolioState').textContent = 'QUERYING WALLET BALANCES AND SCORING TOKENS';
+  async function isAuthorizedReviewerAddress(address) {
+    const { contract } = await getRegistryContractWithSigner();
+    const [owner, reviewer] = await Promise.all([
+      contract.owner(),
+      contract.authorizedReviewers(address)
+    ]);
+    return owner.toLowerCase() === address.toLowerCase() || Boolean(reviewer);
+  }
+
+  async function authorizeReviewerWallet() {
+    setAuthorizeReviewerButtonState(false, 'AUTHORIZING...');
+    await termLineDelay(`<span class="t-out">RB&gt; authorize-reviewer --mainnet</span>`, 120);
+    await termLineDelay(`<span class="t-out">Preparing reviewer authorization flow...</span>`, 180);
 
     try {
-      const data = await fetchPortfolioScanFromApi(apexPortfolioAddress);
-      renderPortfolio(data.entries, data.suspicious);
-    } catch (err) {
-      document.getElementById('portfolioPanel').classList.remove('alert');
-      document.getElementById('portfolioEmpty').style.display = 'block';
-      document.getElementById('portfolioList').style.display = 'none';
-      document.getElementById('portfolioSummary').style.display = 'none';
-      document.getElementById('portfolioState').textContent = `PORTFOLIO SCAN FAILED // ${err.message}`;
-    } finally {
-      refreshBtn.disabled = false;
-      refreshBtn.textContent = 'REFRESH PORTFOLIO';
-    }
-  }
-
-  function showCriticalAlert(title, body) {
-    document.getElementById('alertTitle').textContent = title;
-    document.getElementById('alertBody').innerHTML = body;
-    const modal = document.getElementById('criticalAlert');
-    modal.style.display = 'flex';
-  }
-
-  function closeAlert() {
-    document.getElementById('criticalAlert').style.display = 'none';
-  }
-
-  async function showTokenImage(imageUrl, name, address) {
-    const wrap   = document.getElementById('tokenImageWrap');
-    const imgEl  = document.getElementById('tokenImage');
-    const nameEl = document.getElementById('tokenImageName');
-    const symEl  = document.getElementById('tokenImageSymbol');
-
-    // Extract name / symbol from "Name (SYM)" format
-    const match = name.match(/^(.+?)\s*\(([^)]+)\)$/);
-    const displayName = match ? match[1] : name;
-    const displaySym  = match ? match[2] : '';
-
-    nameEl.textContent = displayName;
-    symEl.textContent  = displaySym;
-
-    if (imageUrl) {
-      imgEl.src = imageUrl;
-      imgEl.style.display = 'block';
-      wrap.style.display  = 'block';
-      return;
-    }
-
-    // Fallback: try DexScreener for image
-    try {
-      const dex = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`);
-      const dexData = await dex.json();
-      const pairs = dexData.pairs || [];
-      const img = pairs[0]?.info?.imageUrl;
-      if (img) {
-        imgEl.src = img;
-        imgEl.style.display = 'block';
-        wrap.style.display  = 'block';
-        return;
+      if (!avalancheConnected || connectedProvider !== 'evm' || !window.ethereum) {
+        throw new Error('Connect your owner MetaMask wallet first');
       }
-    } catch(e) { /* silent */ }
 
-    // No image found — show name card only (no img)
-    imgEl.style.display = 'none';
-    wrap.style.display  = 'block';
+      const reviewerInput = window.prompt('Enter the Avalanche C-Chain wallet address to authorize for direct publish:');
+      if (!reviewerInput) {
+        throw new Error('Authorization canceled');
+      }
+
+      const reviewerAddress = window.ethers.getAddress(reviewerInput.trim());
+      const { signer, contract } = await getRegistryContractWithSigner();
+      const signerAddress = await signer.getAddress();
+      const ownerAddress = await contract.owner();
+
+      if (signerAddress.toLowerCase() !== ownerAddress.toLowerCase()) {
+        throw new Error(`Connected wallet ${shortAddress(signerAddress)} is not the registry owner`);
+      }
+
+      await termLineDelay(`<span class="t-out">// Owner wallet: ${shortAddress(signerAddress)}</span>`, 120);
+      await termLineDelay(`<span class="t-out">// Reviewer wallet: ${shortAddress(reviewerAddress)}</span>`, 120);
+
+      const tx = await contract.setReviewer(reviewerAddress, true);
+      const receipt = await tx.wait();
+
+      await termLineDelay(`<span class="t-success">✓ Reviewer wallet authorized for direct publish.</span>`, 220);
+      await termLineDelay(`<span class="t-out">// TX: ${tx.hash}</span>`, 120);
+      await termLineDelay(`<span class="t-out">// Gas used: ${receipt.gasUsed.toString()}</span>`, 120);
+      setAuthorizeReviewerButtonState(true, 'AUTHORIZED');
+      setTimeout(() => setAuthorizeReviewerButtonState(true, 'AUTHORIZE REVIEWER'), 2600);
+    } catch (err) {
+      await termLineDelay(`<span class="t-danger">✗ REVIEWER AUTH FAILED: ${err.message}</span>`, 220);
+      setAuthorizeReviewerButtonState(true, 'AUTHORIZE REVIEWER');
+    }
+
+    termLine('');
   }
 
-  function toNumberOrNull(value) {
-    return value === null || value === undefined || value === '' ? null : Number(value);
+  async function publishCurrentReport() {
+    if (!lastScannedAddress || !lastScanData) {
+      termLine(`<span class="t-warn">⚡ Scan a token first before publishing to the registry.</span>`);
+      return;
+    }
+
+    setPublishButtonState(false, 'PUBLISHING...');
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">publish ${shortAddress(lastScannedAddress)} --registry</span>`);
+    await termLineDelay(`<span class="t-out">Preparing mainnet registry write...</span>`, 220);
+
+    try {
+      if (avalancheConnected && connectedProvider === 'evm' && window.ethereum) {
+        const { signer, contract } = await getRegistryContractWithSigner();
+        const signerAddress = await signer.getAddress();
+        const isReviewer = await isAuthorizedReviewerAddress(signerAddress);
+
+        if (!isReviewer) {
+          throw new Error('Connected wallet is not an authorized reviewer yet. Owner must approve it before direct publish.');
+        }
+
+        if (lastScanData.rugScore === null || lastScanData.rugScore === undefined) {
+          throw new Error('Cannot publish without a Rug Score');
+        }
+
+        const metadataHash = await sha256Bytes32({ report: lastScanData });
+        await termLineDelay(`<span class="t-out">// Signing with connected wallet ${shortAddress(signerAddress)}</span>`, 120);
+        const tx = await contract.updateScore(
+          lastScannedAddress,
+          Number(lastScanData.rugScore),
+          metadataHash
+        );
+        const receipt = await tx.wait();
+        await termLineDelay(`<span class="t-success">✓ Registry publish confirmed from connected wallet.</span>`, 220);
+        await termLineDelay(`<span class="t-out">// TX: ${tx.hash}</span>`, 120);
+        setPublishButtonState(true, 'PUBLISHED');
+        setTimeout(() => setPublishButtonState(true, 'PUBLISH REPORT'), 2600);
+      } else {
+        const response = await postRegistryPublish(lastScannedAddress);
+        if (!response.published || !response.published.tx_hash) {
+          throw new Error('Registry API did not confirm on-chain publication');
+        }
+        await termLineDelay(`<span class="t-success">✓ Registry publish confirmed via backend signer.</span>`, 220);
+        setPublishButtonState(true, 'PUBLISHED');
+        setTimeout(() => setPublishButtonState(true, 'PUBLISH REPORT'), 2600);
+      }
+    } catch (err) {
+      await termLineDelay(`<span class="t-danger">✗ REGISTRY PUBLISH FAILED: ${err.message}</span>`, 220);
+      setPublishButtonState(true, 'PUBLISH REPORT');
+    }
+
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
   }
 
-  function normalizeReasons(reasons, highPattern, mediumPattern) {
-    const list = Array.isArray(reasons) ? reasons : [];
+  async function sendTelegramAlert() {
+    if (!lastScannedAddress || !lastScanData) {
+      termLine(`<span class="t-warn">⚡ Scan a token first before sending an alert.</span>`);
+      return;
+    }
+
+    setAlertButtonState(false, 'SENDING...');
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">send-alert ${shortAddress(lastScannedAddress)} --telegram</span>`);
+    await termLineDelay(`<span class="t-out">Packaging final readout for Telegram...</span>`, 220);
+
+    try {
+      const response = await postTelegramAlert(lastScannedAddress);
+      if (!response.telegram || response.telegram.ok !== true) {
+        throw new Error('Telegram API did not confirm delivery');
+      }
+      await termLineDelay(`<span class="t-success">✓ Telegram alert delivered successfully.</span>`, 220);
+      setAlertButtonState(true, 'ALERT SENT');
+      setTimeout(() => setAlertButtonState(true, 'SEND ALERT'), 2400);
+    } catch (err) {
+      await termLineDelay(`<span class="t-danger">✗ TELEGRAM ALERT FAILED: ${err.message}</span>`, 220);
+      setAlertButtonState(true, 'SEND ALERT');
+    }
+
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+  }
+
+  // =====================
+  // AVALANCHE API CONSUMERS
+  // =====================
+  async function fetchApexScan(address) {
+    try {
+      return await fetchApexScanFromApi(address);
+    } catch (apiErr) {
+      console.warn('RugBuster API unavailable, falling back to DexScreener:', apiErr);
+      return await fetchApexScanFromDex(address);
+    }
+  }
+
+  async function fetchApexScanFromApi(address) {
+    const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok || !data.report) {
+      throw new Error(data.error || `HTTP ${res.status} — RugBuster API unavailable`);
+    }
+    return normalizeApexApiReport(data.report);
+  }
+
+  async function postTelegramAlert(address) {
+    const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address, notify: true, use_cached: true })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || `HTTP ${res.status} — Telegram alert failed`);
+    }
+    return data;
+  }
+
+  async function postRegistryPublish(address) {
+    const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address, publish: true, use_cached: true })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || `HTTP ${res.status} — Registry publish failed`);
+    }
+    return data;
+  }
+
+  async function fetchApexScanFromDex(address) {
+    const res = await fetch(`${DEXSCREENER_API}/${encodeURIComponent(address)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status} — token not found or unsupported`);
+
+    const data = await res.json();
+    const avalanchePairs = (data.pairs || []).filter(pair => (pair.chainId || '').toLowerCase() === 'avalanche');
+    if (!avalanchePairs.length) {
+      throw new Error('Token not found on Avalanche liquidity venues');
+    }
+
+    const bestPair = avalanchePairs.sort((a, b) => {
+      const liqA = Number(a.liquidity?.usd || 0);
+      const liqB = Number(b.liquidity?.usd || 0);
+      return liqB - liqA;
+    })[0];
+
+    const normalized = address.toLowerCase();
+    const tokenSide = [bestPair.baseToken, bestPair.quoteToken].find(token => (token?.address || '').toLowerCase() === normalized) || bestPair.baseToken;
+    const pairSide = tokenSide === bestPair.baseToken ? bestPair.quoteToken : bestPair.baseToken;
+
+    const liquidityUsd = toNumberOrNull(bestPair.liquidity?.usd);
+    const fdv = toNumberOrNull(bestPair.fdv || bestPair.marketCap);
+    const marketCap = toNumberOrNull(bestPair.marketCap);
+    const volume24h = toNumberOrNull(bestPair.volume?.h24);
+    const priceChange24h = toNumberOrNull(bestPair.priceChange?.h24);
+    const txns24h = bestPair.txns?.h24 || {};
+    const buys24h = toNumberOrNull(txns24h.buys);
+    const sells24h = toNumberOrNull(txns24h.sells);
+    const imageUrl = bestPair.info?.imageUrl || null;
+    const rugScore = null;
+    const rugStatus = 'UNKNOWN';
+    const rugReasons = {
+      high: [],
+      medium: ['⚡ Rug score unavailable in client-only fallback'],
+      neutral: []
+    };
+
+    const speculationReasons = { high: [], medium: [], neutral: [] };
+    let speculationScore = 20;
+
+    if (liquidityUsd === null) {
+      speculationScore = null;
+      speculationReasons.medium.push('⚡ No priced liquidity evidence available');
+    } else {
+      if (liquidityUsd < 5000) {
+        speculationReasons.high.push(`✗ Very thin live liquidity at ${formatUsd(liquidityUsd)}`);
+        speculationScore += 42;
+      } else if (liquidityUsd < 25000) {
+        speculationReasons.high.push(`✗ Thin live liquidity at ${formatUsd(liquidityUsd)}`);
+        speculationScore += 24;
+      } else if (liquidityUsd < 100000) {
+        speculationReasons.medium.push(`⚡ Shallow live liquidity at ${formatUsd(liquidityUsd)}`);
+        speculationScore += 8;
+      } else if (liquidityUsd >= 500000) {
+        speculationScore -= 10;
+        speculationReasons.neutral.push(`Deep live liquidity at ${formatUsd(liquidityUsd)}`);
+      } else {
+        speculationScore -= 2;
+        speculationReasons.neutral.push(`Meaningful live liquidity at ${formatUsd(liquidityUsd)}`);
+      }
+
+      if (fdv && fdv > 0) {
+        const liquidityRatio = liquidityUsd / fdv;
+        if (liquidityRatio < 0.01) {
+          speculationReasons.high.push('✗ Liquidity to FDV ratio is under 1% — exit liquidity risk is extreme');
+          speculationScore += 45;
+        } else if (liquidityRatio < 0.03) {
+          speculationReasons.high.push('✗ Liquidity to FDV ratio is under 3% — market depth is dangerously thin');
+          speculationScore += 35;
+        } else if (liquidityRatio < 0.05) {
+          speculationReasons.high.push('✗ Liquidity to FDV ratio is under 5% — exit liquidity looks fragile');
+          speculationScore += 28;
+        } else if (liquidityRatio < 0.15) {
+          speculationReasons.medium.push('⚡ Liquidity to FDV ratio is under 15% — market depth is shallow');
+          speculationScore += 14;
+        } else if (liquidityRatio >= 0.3) {
+          speculationScore -= 8;
+          speculationReasons.neutral.push('Liquidity to FDV ratio is very healthy');
+        } else if (liquidityRatio >= 0.15) {
+          speculationScore -= 4;
+          speculationReasons.neutral.push('Liquidity to FDV ratio is healthy');
+        }
+      }
+
+      if (volume24h === null) {
+        speculationReasons.medium.push('⚡ 24h volume unavailable');
+      } else if (volume24h < 10000) {
+        speculationReasons.medium.push(`⚡ Low 24h volume at ${formatUsd(volume24h)}`);
+        speculationScore += 10;
+      } else if (volume24h >= 100000) {
+        speculationScore -= 4;
+        speculationReasons.neutral.push(`Strong 24h volume at ${formatUsd(volume24h)}`);
+      }
+
+      if (priceChange24h === null) {
+        speculationReasons.medium.push('⚡ 24h price change unavailable');
+      } else {
+        const absMove = Math.abs(priceChange24h);
+        if (absMove >= 60) {
+          speculationReasons.high.push(`✗ Very high 24h volatility at ${priceChange24h.toFixed(1)}%`);
+          speculationScore += 18;
+        } else if (absMove >= 25) {
+          speculationReasons.medium.push(`⚡ Elevated 24h volatility at ${priceChange24h.toFixed(1)}%`);
+          speculationScore += 8;
+        } else {
+          speculationReasons.neutral.push(`24h volatility is moderate at ${priceChange24h.toFixed(1)}%`);
+        }
+      }
+
+      if (buys24h === null || sells24h === null) {
+        speculationReasons.medium.push('⚡ 24h buy/sell flow unavailable');
+      } else {
+        if (sells24h > buys24h * 3 && sells24h > 20) {
+          speculationReasons.high.push(`✗ Heavy sell pressure: ${sells24h} sells vs ${buys24h} buys`);
+          speculationScore += 8;
+        } else if (buys24h > sells24h * 2 && buys24h > 20) {
+          speculationScore -= 2;
+          speculationReasons.neutral.push(`Buy-side demand leads: ${buys24h} buys vs ${sells24h} sells`);
+        }
+      }
+
+      speculationScore = Math.max(0, Math.min(100, Math.round(speculationScore)));
+    }
+
+    const speculationStatus = speculationScore === null
+      ? 'UNKNOWN'
+      : speculationScore >= 75
+        ? 'HIGH'
+        : speculationScore >= 45
+          ? 'ELEVATED'
+          : 'LOW';
+
     return {
-      high: list.filter(reason => highPattern.test(reason)).map(reason => `✗ ${reason}`),
-      medium: list.filter(reason => !highPattern.test(reason) && mediumPattern.test(reason)).map(reason => `⚡ ${reason}`),
-      neutral: list.filter(reason => !highPattern.test(reason) && !mediumPattern.test(reason)),
+      tokenName: `${tokenSide?.name || 'Unknown Token'}${tokenSide?.symbol ? ` (${tokenSide.symbol})` : ''}`,
+      tokenImage: imageUrl,
+      dexId: (bestPair.dexId || 'unknown').toUpperCase(),
+      pairLabel: `${pairSide?.symbol || 'PAIR'} / ${tokenSide?.symbol || 'TOKEN'}`,
+      liquidityUsd,
+      fdv,
+      marketCap,
+      volume24h,
+      priceChange24h,
+      buys24h,
+      sells24h,
+      pairAddress: bestPair.pairAddress,
+      pairUrl: bestPair.url,
+      rugScore,
+      rugStatus,
+      rugReasons,
+      speculationScore,
+      speculationStatus,
+      speculationReasons,
+      hasLiquidityEvidence: liquidityUsd !== null || Boolean(bestPair.pairAddress),
+      source: 'DexScreener fallback'
     };
   }
 
@@ -2330,452 +3198,219 @@
     };
   }
 
-  async function fetchApexScanFromApi(address) {
-    const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address })
+  // =====================
+  // HELPER UTILITIES
+  // =====================
+  function loadExample(type) {
+    const examples = {
+      solana: 'GYpwfcxF1AgPYoCbDTQeKrbAH9pwrzTrMDJNw9nVpump',
+      apex: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
+    };
+    document.getElementById('scanInput').value = examples[type] || examples.solana;
+  }
+
+  function formatUsd(value) {
+    if (value === null || value === undefined || value === '') return 'UNKNOWN';
+    const num = Number(value);
+    if (!Number.isFinite(num)) return 'UNKNOWN';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      notation: num >= 1000000 ? 'compact' : 'standard',
+      maximumFractionDigits: num >= 1000 ? 1 : 2
+    }).format(num);
+  }
+
+  function isApexAddress(address) {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  }
+
+  function shortAddress(address) {
+    return address.length > 16 ? address.slice(0, 8) + '...' + address.slice(-6) : address;
+  }
+
+  function toNumberOrNull(value) {
+    return value === null || value === undefined || value === '' ? null : Number(value);
+  }
+
+  function normalizeReasons(reasons, highPattern, mediumPattern) {
+    const list = Array.isArray(reasons) ? reasons : [];
+    return {
+      high: list.filter(reason => highPattern.test(reason)).map(reason => `✗ ${reason}`),
+      medium: list.filter(reason => !highPattern.test(reason) && mediumPattern.test(reason)).map(reason => `⚡ ${reason}`),
+      neutral: list.filter(reason => !highPattern.test(reason) && !mediumPattern.test(reason)),
+    };
+  }
+
+  function formatCompactTokenBalance(value) {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return 'UNKNOWN';
+    const num = Number(value);
+    if (num >= 1000000) return `${(num / 1000000).toFixed(2)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(2)}K`;
+    if (num >= 1) return num.toFixed(4);
+    if (num === 0) return '0';
+    return num.toPrecision(4);
+  }
+
+  function termLine(html) {
+    const body = document.getElementById('terminalBody');
+    if (!body) return;
+    const line = document.createElement('div');
+    line.innerHTML = html;
+    const oldCursor = body.querySelector('.cursor');
+    if (oldCursor) oldCursor.parentElement.remove();
+    body.appendChild(line);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function termLineDelay(html, delay) {
+    return new Promise(r => setTimeout(() => { termLine(html); r(); }, delay));
+  }
+
+  function clearTerminal() {
+    const body = document.getElementById('terminalBody');
+    if (body) body.innerHTML = '';
+  }
+
+  function setAlertButtonState(enabled, text = 'SEND ALERT') {
+    const btn = document.getElementById('sendAlertBtn');
+    if (!btn) return;
+    btn.disabled = !enabled;
+    btn.textContent = text;
+    btn.style.opacity = enabled ? '1' : '0.6';
+    btn.style.borderColor = enabled ? 'rgba(0,255,136,0.45)' : 'rgba(0,255,136,0.22)';
+    btn.style.color = enabled ? 'var(--neon-green)' : 'rgba(0,255,136,0.55)';
+  }
+
+  function setPublishButtonState(enabled, text = 'PUBLISH REPORT') {
+    const btn = document.getElementById('publishBtn');
+    if (!btn) return;
+    btn.disabled = !enabled;
+    btn.textContent = text;
+    btn.style.opacity = enabled ? '1' : '0.6';
+    btn.style.borderColor = enabled ? 'rgba(255,0,200,0.45)' : 'rgba(255,0,200,0.22)';
+    btn.style.color = enabled ? 'var(--neon-pink)' : 'rgba(255,0,200,0.58)';
+  }
+
+  function setAuthorizeReviewerButtonState(enabled, text = 'AUTHORIZE REVIEWER') {
+    const btn = document.getElementById('authorizeReviewerBtn');
+    if (!btn) return;
+    btn.disabled = !enabled;
+    btn.textContent = text;
+    btn.style.opacity = enabled ? '1' : '0.6';
+    btn.style.borderColor = enabled ? 'rgba(0,245,255,0.45)' : 'rgba(0,245,255,0.22)';
+    btn.style.color = enabled ? 'var(--neon-cyan)' : 'rgba(0,245,255,0.58)';
+  }
+
+  function showCriticalAlert(title, body) {
+    document.getElementById('alertTitle').textContent = title;
+    document.getElementById('alertBody').innerHTML = body;
+    const modal = document.getElementById('criticalAlert');
+    modal.style.display = 'flex';
+  }
+
+  function closeAlert() {
+    document.getElementById('criticalAlert').style.display = 'none';
+  }
+
+  async function showTokenImage(imageUrl, name, address) {
+    const wrap   = document.getElementById('tokenImageWrap');
+    if (!wrap) return;
+    const imgEl  = document.getElementById('tokenImage');
+    const nameEl = document.getElementById('tokenImageName');
+    const symEl  = document.getElementById('tokenImageSymbol');
+
+    const match = name.match(/^(.+?)\s*\(([^)]+)\)$/);
+    const displayName = match ? match[1] : name;
+    const displaySym  = match ? match[2] : '';
+
+    nameEl.textContent = displayName;
+    symEl.textContent  = displaySym;
+
+    if (imageUrl) {
+      imgEl.src = imageUrl;
+      imgEl.style.display = 'block';
+      wrap.style.display  = 'block';
+      return;
+    }
+
+    try {
+      const dex = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`);
+      const dexData = await dex.json();
+      const pairs = dexData.pairs || [];
+      const img = pairs[0]?.info?.imageUrl;
+      if (img) {
+        imgEl.src = img;
+        imgEl.style.display = 'block';
+        wrap.style.display  = 'block';
+        return;
+      }
+    } catch(e) {}
+
+    imgEl.style.display = 'none';
+    wrap.style.display  = 'block';
+  }
+
+  function sortDeep(value) {
+    if (Array.isArray(value)) return value.map(sortDeep);
+    if (value && typeof value === 'object') {
+      return Object.keys(value).sort().reduce((acc, key) => {
+        acc[key] = sortDeep(value[key]);
+        return acc;
+      }, {});
+    }
+    return value;
+  }
+
+  function stableJson(value) {
+    return JSON.stringify(sortDeep(value));
+  }
+
+  async function sha256Bytes32(value) {
+    const encoded = new TextEncoder().encode(stableJson(value));
+    const digest = await crypto.subtle.digest('SHA-256', encoded);
+    const bytes = Array.from(new Uint8Array(digest));
+    return `0x${bytes.map(b => b.toString(16).padStart(2, '0')).join('')}`;
+  }
+
+  // Glitch effect on stat numbers
+  document.querySelectorAll('.stat-number').forEach(el => {
+    const original = el.textContent;
+    el.addEventListener('mouseenter', () => {
+      let i = 0;
+      const chars = '0123456789ABCDEF$%#@!';
+      const interval = setInterval(() => {
+        el.textContent = original.split('').map((c, idx) =>
+          idx < i ? original[idx] : chars[Math.floor(Math.random() * chars.length)]
+        ).join('');
+        i++;
+        if (i > original.length) { el.textContent = original; clearInterval(interval); }
+      }, 40);
     });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.ok || !data.report) {
-      throw new Error(data.error || `HTTP ${res.status} — RugBuster API unavailable`);
-    }
-      return normalizeApexApiReport(data.report);
-    }
+  });
 
-  async function postTelegramAlert(address) {
-      const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address, notify: true, use_cached: true })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error || `HTTP ${res.status} — Telegram alert failed`);
-      }
-      return data;
-    }
-
-    async function postRegistryPublish(address) {
-      const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address, publish: true, use_cached: true })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error || `HTTP ${res.status} — Registry publish failed`);
-      }
-      return data;
-    }
-
-  async function fetchApexScanFromDex(address) {
-    const res = await fetch(`${DEXSCREENER_API}/${encodeURIComponent(address)}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status} — token not found or unsupported`);
-
-    const data = await res.json();
-    const avalanchePairs = (data.pairs || []).filter(pair => (pair.chainId || '').toLowerCase() === 'avalanche');
-    if (!avalanchePairs.length) {
-      throw new Error('Token not found on Avalanche liquidity venues');
-    }
-
-    const bestPair = avalanchePairs.sort((a, b) => {
-      const liqA = Number(a.liquidity?.usd || 0);
-      const liqB = Number(b.liquidity?.usd || 0);
-      return liqB - liqA;
-    })[0];
-
-    const normalized = address.toLowerCase();
-    const tokenSide = [bestPair.baseToken, bestPair.quoteToken].find(token => (token?.address || '').toLowerCase() === normalized) || bestPair.baseToken;
-    const pairSide = tokenSide === bestPair.baseToken ? bestPair.quoteToken : bestPair.baseToken;
-
-      const liquidityUsd = toNumberOrNull(bestPair.liquidity?.usd);
-      const fdv = toNumberOrNull(bestPair.fdv || bestPair.marketCap);
-      const marketCap = toNumberOrNull(bestPair.marketCap);
-      const volume24h = toNumberOrNull(bestPair.volume?.h24);
-      const priceChange24h = toNumberOrNull(bestPair.priceChange?.h24);
-      const txns24h = bestPair.txns?.h24 || {};
-      const buys24h = toNumberOrNull(txns24h.buys);
-      const sells24h = toNumberOrNull(txns24h.sells);
-      const imageUrl = bestPair.info?.imageUrl || null;
-      const rugScore = null;
-      const rugStatus = 'UNKNOWN';
-      const rugReasons = {
-        high: [],
-        medium: ['⚡ Rug score unavailable in client-only fallback'],
-        neutral: []
-      };
-
-      const speculationReasons = { high: [], medium: [], neutral: [] };
-      let speculationScore = 20;
-
-      if (liquidityUsd === null) {
-        speculationScore = null;
-        speculationReasons.medium.push('⚡ No priced liquidity evidence available');
-      } else {
-        if (liquidityUsd < 5000) {
-          speculationReasons.high.push(`✗ Very thin live liquidity at ${formatUsd(liquidityUsd)}`);
-          speculationScore += 42;
-        } else if (liquidityUsd < 25000) {
-          speculationReasons.high.push(`✗ Thin live liquidity at ${formatUsd(liquidityUsd)}`);
-          speculationScore += 24;
-        } else if (liquidityUsd < 100000) {
-          speculationReasons.medium.push(`⚡ Shallow live liquidity at ${formatUsd(liquidityUsd)}`);
-          speculationScore += 8;
-        } else if (liquidityUsd >= 500000) {
-          speculationScore -= 10;
-          speculationReasons.neutral.push(`Deep live liquidity at ${formatUsd(liquidityUsd)}`);
-        } else {
-          speculationScore -= 2;
-          speculationReasons.neutral.push(`Meaningful live liquidity at ${formatUsd(liquidityUsd)}`);
-        }
-
-        if (fdv && fdv > 0) {
-          const liquidityRatio = liquidityUsd / fdv;
-          if (liquidityRatio < 0.01) {
-            speculationReasons.high.push('✗ Liquidity to FDV ratio is under 1% — exit liquidity risk is extreme');
-            speculationScore += 45;
-          } else if (liquidityRatio < 0.03) {
-            speculationReasons.high.push('✗ Liquidity to FDV ratio is under 3% — market depth is dangerously thin');
-            speculationScore += 35;
-          } else if (liquidityRatio < 0.05) {
-            speculationReasons.high.push('✗ Liquidity to FDV ratio is under 5% — exit liquidity looks fragile');
-            speculationScore += 28;
-          } else if (liquidityRatio < 0.15) {
-            speculationReasons.medium.push('⚡ Liquidity to FDV ratio is under 15% — market depth is shallow');
-            speculationScore += 14;
-          } else if (liquidityRatio >= 0.3) {
-            speculationScore -= 8;
-            speculationReasons.neutral.push('Liquidity to FDV ratio is very healthy');
-          } else if (liquidityRatio >= 0.15) {
-            speculationScore -= 4;
-            speculationReasons.neutral.push('Liquidity to FDV ratio is healthy');
-          }
-        }
-
-        if (volume24h === null) {
-          speculationReasons.medium.push('⚡ 24h volume unavailable');
-        } else if (volume24h < 10000) {
-          speculationReasons.medium.push(`⚡ Low 24h volume at ${formatUsd(volume24h)}`);
-          speculationScore += 10;
-        } else if (volume24h >= 100000) {
-          speculationScore -= 4;
-          speculationReasons.neutral.push(`Strong 24h volume at ${formatUsd(volume24h)}`);
-        }
-
-        if (priceChange24h === null) {
-          speculationReasons.medium.push('⚡ 24h price change unavailable');
-        } else {
-          const absMove = Math.abs(priceChange24h);
-          if (absMove >= 60) {
-            speculationReasons.high.push(`✗ Very high 24h volatility at ${priceChange24h.toFixed(1)}%`);
-            speculationScore += 18;
-          } else if (absMove >= 25) {
-            speculationReasons.medium.push(`⚡ Elevated 24h volatility at ${priceChange24h.toFixed(1)}%`);
-            speculationScore += 8;
-          } else {
-            speculationReasons.neutral.push(`24h volatility is moderate at ${priceChange24h.toFixed(1)}%`);
-          }
-        }
-
-        if (buys24h === null || sells24h === null) {
-          speculationReasons.medium.push('⚡ 24h buy/sell flow unavailable');
-        } else {
-          if (sells24h > buys24h * 3 && sells24h > 20) {
-            speculationReasons.high.push(`✗ Heavy sell pressure: ${sells24h} sells vs ${buys24h} buys`);
-            speculationScore += 8;
-          } else if (buys24h > sells24h * 2 && buys24h > 20) {
-            speculationScore -= 2;
-            speculationReasons.neutral.push(`Buy-side demand leads: ${buys24h} buys vs ${sells24h} sells`);
-          }
-        }
-
-        speculationScore = Math.max(0, Math.min(100, Math.round(speculationScore)));
-      }
-
-      const speculationStatus = speculationScore === null
-        ? 'UNKNOWN'
-        : speculationScore >= 75
-          ? 'HIGH'
-          : speculationScore >= 45
-            ? 'ELEVATED'
-            : 'LOW';
-
-      return {
-        tokenName: `${tokenSide?.name || 'Unknown Token'}${tokenSide?.symbol ? ` (${tokenSide.symbol})` : ''}`,
-        tokenImage: imageUrl,
-        dexId: (bestPair.dexId || 'unknown').toUpperCase(),
-        pairLabel: `${pairSide?.symbol || 'PAIR'} / ${tokenSide?.symbol || 'TOKEN'}`,
-        liquidityUsd,
-        fdv,
-        marketCap,
-        volume24h,
-        priceChange24h,
-        buys24h,
-        sells24h,
-        pairAddress: bestPair.pairAddress,
-        pairUrl: bestPair.url,
-        rugScore,
-        rugStatus,
-        rugReasons,
-        speculationScore,
-        speculationStatus,
-        speculationReasons,
-        hasLiquidityEvidence: liquidityUsd !== null || Boolean(bestPair.pairAddress),
-        source: 'DexScreener fallback'
-      };
-    }
-
-  async function fetchApexScan(address) {
-    try {
-      return await fetchApexScanFromApi(address);
-    } catch (apiErr) {
-      console.warn('RugBuster API unavailable, falling back to DexScreener:', apiErr);
-      return await fetchApexScanFromDex(address);
-    }
-  }
-
-  async function runScan() {
-    const address = document.getElementById('scanInput').value.trim();
-    if (!address) {
-      document.getElementById('scanInput').style.borderColor = '#ff3d3d';
-      setTimeout(() => document.getElementById('scanInput').style.borderColor = '', 1000);
-      return;
-    }
-
-    clearTerminal();
-    document.getElementById('scoreBoard').style.display = 'none';
-    document.getElementById('tokenImageWrap').style.display = 'none';
-    setAlertButtonState(false, 'SEND ALERT');
-    setPublishButtonState(false, 'PUBLISH REPORT');
-    lastScannedAddress = null;
-    lastScanData = null;
-
-    const short = shortAddress(address);
-    const isAPEX = isApexAddress(address);
-
-    if (!isAPEX) {
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-danger">Unsupported address format</span>`);
-      termLine(`<span class="t-out">// Use an Apex / Avalanche 0x token address.</span>`);
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-      return;
-    }
-
-    const chain = 'APEX/AVALANCHE';
-
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">scan ${short} --chain ${chain} --deep --ai</span>`);
-    await termLineDelay(`<span class="t-out">Initializing threat engine...</span>`, 300);
-    await termLineDelay(`<span class="t-out">Connecting to Avalanche live market feeds...</span>`, 500);
-    await termLineDelay(`<span class="t-out">Fetching Apex token pairs and liquidity...</span>`, 700);
-
-    let apexData;
-    try {
-      apexData = await fetchApexScan(address);
-    } catch (err) {
-      await termLineDelay(`<span class="t-danger">✗ SCAN FAILED: ${err.message}</span>`, 400);
-      await termLineDelay(`<span class="t-out">// Ensure this is an Avalanche token address with live liquidity.</span>`, 200);
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-      return;
-    }
-
-      const rugFlags = [
-        ...apexData.rugReasons.high,
-        ...apexData.rugReasons.medium,
-        ...apexData.rugReasons.neutral.map(reason => `· ${reason}`)
-      ];
-      const speculationFlags = [
-        ...apexData.speculationReasons.high,
-        ...apexData.speculationReasons.medium,
-        ...apexData.speculationReasons.neutral.map(reason => `· ${reason}`)
-      ];
-
-      await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">APEX / AVALANCHE</span>`, 200);
-      await termLineDelay(`<span class="t-cyan">✓ Token:</span>    <span class="t-cmd">${apexData.tokenName}</span>`, 220);
-      await termLineDelay(`<span class="t-cyan">✓ Address:</span>  <span class="t-out">${short}</span>`, 180);
-      await termLineDelay(`<span class="t-cyan">✓ Primary DEX:</span> <span class="t-cmd">${apexData.dexId}</span>`, 180);
-      await termLineDelay(`<span class="t-cyan">✓ Pair:</span>     <span class="t-out">${apexData.pairLabel}</span>`, 180);
-      await termLineDelay(`<span class="t-cyan">✓ Liquidity:</span> <span class="t-cmd">${formatUsd(apexData.liquidityUsd)}</span>`, 180);
-      await termLineDelay(`<span class="t-cyan">✓ FDV:</span>      <span class="t-cmd">${formatUsd(apexData.fdv)}</span>`, 180);
-      await termLineDelay(`<span class="t-cyan">✓ 24h Volume:</span> <span class="t-cmd">${formatUsd(apexData.volume24h)}</span>`, 180);
-      await termLineDelay(`<span class="t-cyan">✓ 24h Flow:</span> <span class="t-out">${apexData.buys24h === null || apexData.sells24h === null ? 'UNKNOWN' : `${apexData.buys24h} buys / ${apexData.sells24h} sells`}</span>`, 180);
-      await termLineDelay(`<span class="t-cyan">✓ 24h Price:</span> <span class="${apexData.priceChange24h !== null && apexData.priceChange24h < 0 ? 't-warn' : 't-success'}">${apexData.priceChange24h === null ? 'UNKNOWN' : `${apexData.priceChange24h.toFixed(1)}%`}</span>`, 180);
-      await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-      await termLineDelay(`<span class="t-out">── RUG SCORE // ON-CHAIN FACTS ───────────</span>`, 260);
-      await termLineDelay(`<span class="${apexData.rugStatus === 'HIGH' ? 't-danger' : apexData.rugStatus === 'ELEVATED' ? 't-warn' : apexData.rugStatus === 'LOW' ? 't-success' : 't-out'}">  ${apexData.rugStatus} : ${apexData.rugScore === null ? 'UNKNOWN' : apexData.rugScore}</span>`, 180);
-      if (!rugFlags.length) {
-        await termLineDelay(`<span class="t-success">  ✓ No hard-fact rug flags detected</span>`, 220);
-      }
-      for (let i = 0; i < rugFlags.length; i++) {
-        const flag = rugFlags[i];
-        const cls = flag.startsWith('✗') ? 't-danger' : flag.startsWith('⚡') ? 't-warn' : 't-out';
-        await termLineDelay(`<span class="${cls}">  ${flag}</span>`, 90 + i * 60);
-      }
-
-      await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-      await termLineDelay(`<span class="t-out">── SPECULATION SCORE // MARKET DATA ──────</span>`, 200);
-      await termLineDelay(`<span class="${apexData.speculationStatus === 'HIGH' ? 't-danger' : apexData.speculationStatus === 'ELEVATED' ? 't-warn' : apexData.speculationStatus === 'LOW' ? 't-success' : 't-out'}">  ${apexData.speculationStatus} : ${apexData.speculationScore === null ? 'UNKNOWN' : apexData.speculationScore}</span>`, 180);
-      if (!speculationFlags.length) {
-        await termLineDelay(`<span class="t-success">  ✓ No market-structure speculation flags detected</span>`, 220);
-      }
-      for (let i = 0; i < speculationFlags.length; i++) {
-        const flag = speculationFlags[i];
-        const cls = flag.startsWith('✗') ? 't-danger' : flag.startsWith('⚡') ? 't-warn' : 't-out';
-        await termLineDelay(`<span class="${cls}">  ${flag}</span>`, 90 + i * 60);
-      }
-
-      await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-      await termLineDelay(`<span class="t-out">── FINAL READOUT ──────────────────────────</span>`, 200);
-
-      if (apexData.rugStatus === 'HIGH') {
-        await termLineDelay(`<span class="t-danger">  ⚠ RUG STATUS   : HIGH</span>`, 230);
-        await termLineDelay(`<span class="t-danger">  ⚠ RESULT       : HARD ON-CHAIN FACTS LOOK BAD</span>`, 200);
-        await termLineDelay(`<span class="t-danger">  ✗ DO NOT INTERACT WITHOUT MANUAL REVIEW</span>`, 180);
-      } else if (apexData.speculationStatus === 'HIGH') {
-        await termLineDelay(`<span class="t-danger">  ⚠ SPECULATION  : HIGH</span>`, 230);
-        await termLineDelay(`<span class="t-danger">  ⚠ RESULT       : MARKET DEPTH LOOKS DANGEROUS</span>`, 200);
-        await termLineDelay(`<span class="t-danger">  ✗ EXIT LIQUIDITY MAY BE TOO THIN FOR SAFE SIZE</span>`, 180);
-      } else if (apexData.speculationStatus === 'ELEVATED') {
-        await termLineDelay(`<span class="t-warn">  ⚠ SPECULATION  : ELEVATED</span>`, 230);
-        await termLineDelay(`<span class="t-warn">  ⚠ RESULT       : LOW RUG RISK, BUT MARKET DEPTH IS SHALLOW</span>`, 200);
-        await termLineDelay(`<span class="t-warn">  ⚡ TREAT THIS AS A SPECULATIVE POSITION, NOT A STABLE ONE</span>`, 180);
-      } else if (apexData.speculationStatus === 'UNKNOWN') {
-        await termLineDelay(`<span class="t-out">  · SPECULATION  : UNKNOWN</span>`, 230);
-        await termLineDelay(`<span class="t-out">  · RESULT       : NO LIQUIDITY EVIDENCE, DO NOT GUESS</span>`, 200);
-      } else {
-        await termLineDelay(`<span class="t-success">  ✓ RUG STATUS   : ${apexData.rugStatus}</span>`, 230);
-        await termLineDelay(`<span class="t-success">  ✓ SPECULATION  : ${apexData.speculationStatus}</span>`, 200);
-      }
-
-      await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-      await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by ${apexData.source || 'RugBuster Avalanche data'}</span>`, 200);
-    if (apexData.pairUrl) {
-      await termLineDelay(`<span class="t-out">// Pair URL: ${apexData.pairUrl}</span>`, 120);
-    }
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-
-    setScoreMeter('rugScore', apexData.rugScore, apexData.rugStatus, '· UNKNOWN — ON-CHAIN FACTS ARE INCOMPLETE');
-    setScoreMeter('specScore', apexData.speculationScore, apexData.speculationStatus, '· UNKNOWN — NO LIVE LIQUIDITY EVIDENCE');
-    showTokenImage(apexData.tokenImage, apexData.tokenName, address);
-    lastScannedAddress = address;
-    lastScanData = apexData;
-    setAlertButtonState(true, 'SEND ALERT');
-    setPublishButtonState(true, 'PUBLISH REPORT');
-
-    if (apexData.rugStatus === 'HIGH' || apexData.speculationStatus === 'HIGH') {
-      const dangerList = [...apexData.rugReasons.high, ...apexData.speculationReasons.high].map(flag => `• ${flag.replace(/^[✗⚡·]\s*/, '')}`).join('<br>');
-      setTimeout(() => {
-        showCriticalAlert(
-          apexData.rugStatus === 'HIGH' ? 'HIGH RUG RISK DETECTED' : 'HIGH SPECULATION DETECTED',
-          `Token: <span style="color:#ff3d3d">${apexData.tokenName}</span><br>
-           Address: <span style="color:var(--text-muted)">${short}</span><br>
-           Rug Score: <span style="color:#ff3d3d;font-size:18px">${apexData.rugScore === null ? 'UNKNOWN' : `${apexData.rugScore}%`}</span><br>
-           Speculation Score: <span style="color:#ff3d3d;font-size:18px">${apexData.speculationScore === null ? 'UNKNOWN' : `${apexData.speculationScore}%`}</span><br><br>
-           ${dangerList ? `<span style="color:#ff3d3d">${dangerList}</span><br><br>` : ''}
-           <span style="color:#ff3d3d">⚠ REVIEW THE HARD FACTS AND MARKET EVIDENCE BEFORE TOUCHING THIS TOKEN</span><br>
-           Unknown is allowed. Guessing is not.`
-        );
-      }, 800);
-    }
-    return;
-  }
-
-  async function sendTelegramAlert() {
-    if (!lastScannedAddress || !lastScanData) {
-      termLine(`<span class="t-warn">⚡ Scan a token first before sending an alert.</span>`);
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-      return;
-    }
-
-    setAlertButtonState(false, 'SENDING...');
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">send-alert ${shortAddress(lastScannedAddress)} --telegram</span>`);
-    await termLineDelay(`<span class="t-out">Packaging final readout for Telegram...</span>`, 220);
-
-    try {
-      const response = await postTelegramAlert(lastScannedAddress);
-      if (!response.telegram || response.telegram.ok !== true) {
-        throw new Error('Telegram API did not confirm delivery');
-      }
-      await termLineDelay(`<span class="t-success">✓ Telegram alert delivered successfully.</span>`, 220);
-      await termLineDelay(`<span class="t-out">// Final readout sent to your configured Telegram channel.</span>`, 120);
-      setAlertButtonState(true, 'ALERT SENT');
-      setTimeout(() => setAlertButtonState(true, 'SEND ALERT'), 2400);
-    } catch (err) {
-      await termLineDelay(`<span class="t-danger">✗ TELEGRAM ALERT FAILED: ${err.message}</span>`, 220);
-      if (String(err.message || '').includes('429')) {
-        await termLineDelay(`<span class="t-out">// Market data source is rate-limiting us. Retry in a moment or re-scan later.</span>`, 120);
-      } else {
-        await termLineDelay(`<span class="t-out">// Check TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, and bot access in Railway.</span>`, 120);
-      }
-      setAlertButtonState(true, 'SEND ALERT');
-    }
-
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-  }
-
-  async function publishCurrentReport() {
-    if (!lastScannedAddress || !lastScanData) {
-      termLine(`<span class="t-warn">⚡ Scan a token first before publishing to the registry.</span>`);
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-      return;
-    }
-
-    setPublishButtonState(false, 'PUBLISHING...');
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">publish ${shortAddress(lastScannedAddress)} --registry</span>`);
-    await termLineDelay(`<span class="t-out">Preparing mainnet registry write...</span>`, 220);
-
-    try {
-      if (walletConnected && connectedProvider === 'evm' && window.ethereum) {
-        const { signer, contract } = await getRegistryContractWithSigner();
-        const signerAddress = await signer.getAddress();
-        const isReviewer = await isAuthorizedReviewerAddress(signerAddress);
-
-        if (!isReviewer) {
-          throw new Error('Connected wallet is not an authorized reviewer yet. Owner must approve it before direct publish.');
-        }
-
-        if (lastScanData.rugScore === null || lastScanData.rugScore === undefined) {
-          throw new Error('Cannot publish without a Rug Score');
-        }
-
-        const metadataHash = await sha256Bytes32({ report: lastScanData });
-        await termLineDelay(`<span class="t-out">// Signing with connected wallet ${shortAddress(signerAddress)}</span>`, 120);
-        const tx = await contract.updateScore(
-          lastScannedAddress,
-          Number(lastScanData.rugScore),
-          metadataHash
-        );
-        const receipt = await tx.wait();
-        await termLineDelay(`<span class="t-success">✓ Registry publish confirmed from connected wallet.</span>`, 220);
-        await termLineDelay(`<span class="t-out">// TX: ${tx.hash}</span>`, 120);
-        await termLineDelay(`<span class="t-out">// Gas used: ${receipt.gasUsed.toString()}</span>`, 120);
-        setPublishButtonState(true, 'PUBLISHED');
-        setTimeout(() => setPublishButtonState(true, 'PUBLISH REPORT'), 2600);
-      } else {
-        const response = await postRegistryPublish(lastScannedAddress);
-        if (!response.published || !response.published.tx_hash) {
-          throw new Error('Registry API did not confirm on-chain publication');
-        }
-        await termLineDelay(`<span class="t-success">✓ Registry publish confirmed via backend signer.</span>`, 220);
-        await termLineDelay(`<span class="t-out">// TX: ${response.published.tx_hash}</span>`, 120);
-        await termLineDelay(`<span class="t-out">// Gas used: ${response.published.gas_used}</span>`, 120);
-        await termLineDelay(`<span class="t-out">// Connect an authorized Avalanche reviewer wallet to burn gas from your own account.</span>`, 120);
-        setPublishButtonState(true, 'PUBLISHED');
-        setTimeout(() => setPublishButtonState(true, 'PUBLISH REPORT'), 2600);
-      }
-    } catch (err) {
-      await termLineDelay(`<span class="t-danger">✗ REGISTRY PUBLISH FAILED: ${err.message}</span>`, 220);
-      await termLineDelay(`<span class="t-out">// Check reviewer authorization, REGISTRY_ADDRESS, and Avalanche gas balance.</span>`, 120);
-      setPublishButtonState(true, 'PUBLISH REPORT');
-    }
-
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-  }
+  // Enter key on input
+  document.getElementById('scanInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') runScan();
+  });
 
   window.addEventListener('load', async () => {
     installWalletListeners();
+    // Initially check connected wallets
     await syncConnectedWallet({ silent: true });
-    renderPortfolioHeader();
+    // Default system initialization (Solana setup)
+    switchNetwork('solana');
   });
+
+  // Close modals on backdrop click
+  document.getElementById('walletModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('walletModal')) closeWalletModal();
+  });
+  if (document.getElementById('paymentModal')) {
+    document.getElementById('paymentModal').addEventListener('click', e => {
+      if (e.target === document.getElementById('paymentModal')) closePaymentModal();
+    });
+  }
 </script>
 
 </body>
