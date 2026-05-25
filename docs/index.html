@@ -1324,6 +1324,18 @@
         </div>
       </div>
 
+        <!-- RISK METER -->
+        <div id="riskMeter" style="display:none;margin-top:32px;border:1px solid rgba(0,245,255,0.12);padding:16px 16px 14px;background:rgba(0,245,255,0.02);">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px;">THREAT PROBABILITY</div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;">
+              <div id="riskBar" style="position:absolute;top:0;left:0;bottom:0;width:0%;transition:width 1s cubic-bezier(0.1, 0.8, 0.2, 1);background:var(--neon-green);height:100%;"></div>
+            </div>
+            <div id="riskScore" style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;line-height:1;min-width:60px;text-align:right;">0</div>
+          </div>
+          <div id="riskLabel" style="font-family:'Share Tech Mono',monospace;font-size:11px;margin-top:8px;letter-spacing:1px;color:var(--neon-green);">✓ LOW RISK — LOOKS CLEAN</div>
+        </div>
+
         <!-- SCOREBOARD -->
         <div id="scoreBoard" style="display:none;margin-top:32px;">
           <div style="display:grid;grid-template-columns:1fr;gap:18px;">
