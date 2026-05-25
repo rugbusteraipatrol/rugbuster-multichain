@@ -2958,29 +2958,48 @@
 
   async function postTelegramAlert(address) {
     const isSolanaAddress = address.length >= 32 && !address.startsWith('0x');
-    const bodyPayload = {
-      address,
-      notify: true,
-      use_cached: true
-    };
     if (isSolanaAddress && lastScanData) {
-      bodyPayload.network = 'solana';
-      bodyPayload.report = {
-        address: address,
-        token_name: lastScanData.tokenName || 'Unknown',
-        symbol: lastScanData.symbol || 'SOL',
-        rug_score: lastScanData.rugScore || 0,
-        rug_status: lastScanData.rugScore >= 75 ? 'HIGH' : lastScanData.rugScore >= 40 ? 'ELEVATED' : 'LOW',
-        rug_reasons: lastScanData.rugReasons || [],
-        network: 'Solana',
-        source: 'rugcheck',
-        verdict: lastScanData.verdict || 'Scanned via RugCheck'
-      };
+      const botToken = 'YOUR_TELEGRAM_BOT_TOKEN_HERE';
+      const chatId = '@RugBusterAlerts';
+
+      let message = `🛡️ <b>RugBuster Solana Alert</b>\n\n`;
+      message += `💎 <b>Token:</b> ${lastScanData.tokenName || 'Unknown'} (${lastScanData.symbol || 'SOL'})\n`;
+      message += `🔑 <b>Mint:</b> <code>${address}</code>\n`;
+      message += `📉 <b>Rug Risk Score:</b> <b>${lastScanData.rugScore}/100</b>\n`;
+      message += `✅ <b>Verdict:</b> ${lastScanData.verdict || 'Scanned via RugCheck'}\n\n`;
+
+      const reasons = lastScanData.rugReasons || [];
+      if (reasons.length > 0) {
+        message += `<b>Risk Factors:</b>\n`;
+        reasons.slice(0, 6).forEach(r => {
+          message += `• ${r}\n`;
+        });
+        message += `\n`;
+      }
+
+      message += `🔗 <a href="https://rugcheck.xyz/tokens/${address}">RugCheck Report</a>`;
+
+      const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: 'HTML',
+          disable_web_page_preview: true
+        })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        throw new Error((data && data.description) || `HTTP ${res.status} — Telegram direct send failed`);
+      }
+      return { telegram: { ok: true } };
     }
+
     const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bodyPayload)
+      body: JSON.stringify({ address, notify: true, use_cached: true })
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.ok) {
