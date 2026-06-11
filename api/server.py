@@ -640,20 +640,36 @@ def notify_report(report: dict[str, Any], publish_result: dict[str, Any] | None)
 def notify_solana_report(report: dict[str, Any]) -> dict[str, Any]:
     bot_token = require_env("TELEGRAM_BOT_TOKEN")
     chat_id = "@RugBusterAlerts"
+    rugcheck_score = report.get("rugcheck_score")
+    mint_authority = report.get("mint_authority")
+    freeze_authority = report.get("freeze_authority")
+    cia_flags = report.get("cia_flags") or []
 
     lines = [
         "🛡️ <b>RugBuster Solana Alert</b>",
         f"💎 <b>Token:</b> {escape_html(report.get('token_name', 'Unknown'))} ({escape_html(report.get('symbol', 'SOL'))})",
         f"🔑 <b>Mint:</b> <code>{escape_html(report.get('address', 'Unknown'))}</code>",
-        f"📉 <b>Rug Risk Score:</b> <b>{report.get('rug_score', 0)}/100</b> ({escape_html(report.get('rug_status', 'UNKNOWN'))})",
+        f"📉 <b>Risk:</b> <b>{report.get('rug_score', 0)}%</b> ({escape_html(report.get('rug_status', 'UNKNOWN'))})",
         f"✅ <b>Verdict:</b> {escape_html(report.get('verdict', 'Scanned via RugCheck'))}",
     ]
+    if rugcheck_score is not None:
+        lines.append(f"🧪 <b>RugCheck raw:</b> {escape_html(rugcheck_score)}")
+    if mint_authority is not None or freeze_authority is not None:
+        lines.append(
+            "🔐 <b>Authority:</b> "
+            f"Mint {escape_html(mint_authority if mint_authority is not None else 'unknown')} · "
+            f"Freeze {escape_html(freeze_authority if freeze_authority is not None else 'unknown')}"
+        )
 
     reasons = report.get("rug_reasons") or []
     if reasons:
         lines.append("")
         lines.append("<b>Risk Factors:</b>")
         lines.extend([f"• {escape_html(reason)}" for reason in reasons[:6]])
+    if cia_flags:
+        lines.append("")
+        lines.append("<b>CIA Flags:</b>")
+        lines.extend([f"• {escape_html(flag)}" for flag in cia_flags[:6]])
 
     lines.append("")
     lines.append(f"🔗 <a href=\"https://rugcheck.xyz/tokens/{report.get('address')}\">RugCheck Report</a>")
