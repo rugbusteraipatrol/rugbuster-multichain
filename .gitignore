@@ -6,6 +6,7 @@
 # Local data outputs
 data/*.csv
 data/*.jsonl
+*.db
 !data/.gitkeep
 
 # Python
