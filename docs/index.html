@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RugBuster AI — Multichain Security Scanner</title>
-<link rel="icon" type="image/png" href="/favicon.png">
+<title>RugBuster AI — Never Get Rugged Again</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -413,6 +411,108 @@
     font-weight: 300;
   }
 
+  /* INTELLIGENCE UPDATE */
+  .intel-panel {
+    margin-top: 64px;
+    border: 1px solid rgba(0, 245, 255, 0.16);
+    background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(255,0,200,0.025));
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .intel-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan), var(--neon-pink));
+    opacity: 0.75;
+  }
+
+  .intel-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  .intel-kicker {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--neon-green);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .intel-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.15;
+    margin-bottom: 14px;
+    color: var(--text-primary);
+  }
+
+  .intel-title span { color: var(--neon-cyan); text-shadow: 0 0 18px rgba(0,245,255,0.45); }
+
+  .intel-copy {
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.8;
+    max-width: 620px;
+  }
+
+  .intel-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .intel-metric {
+    border: 1px solid rgba(0,245,255,0.12);
+    background: rgba(5,8,17,0.55);
+    padding: 18px;
+  }
+
+  .intel-metric strong {
+    display: block;
+    font-family: 'Orbitron', monospace;
+    font-size: 24px;
+    color: var(--neon-cyan);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .intel-metric span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .intel-list {
+    list-style: none;
+    margin-top: 22px;
+  }
+
+  .intel-list li {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(0,245,255,0.05);
+  }
+
+  .intel-list li::before {
+    content: '>';
+    color: var(--neon-green);
+    margin-right: 10px;
+  }
+
   /* TERMINAL */
   .terminal-section {
     background: var(--dark-panel);
@@ -428,65 +528,6 @@
     grid-template-columns: 1fr 1fr;
     gap: 80px;
     align-items: center;
-  }
-
-  .monitor-panel {
-    max-width: 1280px;
-    margin: 28px auto 0;
-    border: 1px solid rgba(0,245,255,0.14);
-    background: rgba(10,15,30,0.82);
-    padding: 22px 22px 18px;
-    box-shadow: inset 0 0 24px rgba(0,245,255,0.03);
-  }
-
-  .monitor-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .monitor-card {
-    border: 1px solid rgba(0,245,255,0.1);
-    padding: 14px 16px;
-    background: rgba(0,245,255,0.03);
-  }
-
-  .portfolio-panel {
-    max-width: 1280px;
-    margin: 28px auto 0;
-    border: 1px solid rgba(0,245,255,0.14);
-    background: rgba(10,15,30,0.82);
-    padding: 22px;
-    box-shadow: inset 0 0 24px rgba(0,245,255,0.03);
-  }
-
-  .portfolio-panel.alert {
-    border-color: rgba(255,61,61,0.5);
-    box-shadow: inset 0 0 24px rgba(255,61,61,0.05), 0 0 28px rgba(255,61,61,0.08);
-  }
-
-  .portfolio-row {
-    display: grid;
-    grid-template-columns: minmax(220px, 1.2fr) minmax(120px, 0.7fr) minmax(120px, 0.7fr) minmax(150px, 0.8fr) minmax(150px, 0.8fr);
-    gap: 12px;
-    align-items: center;
-    padding: 14px 16px;
-    border: 1px solid rgba(0,245,255,0.08);
-    background: rgba(0,245,255,0.03);
-  }
-
-  .portfolio-row + .portfolio-row {
-    margin-top: 10px;
-  }
-
-  .portfolio-row.risk {
-    border-color: rgba(255,61,61,0.35);
-    background: rgba(255,61,61,0.06);
-  }
-
-  .portfolio-row.warn {
-    border-color: rgba(255,153,0,0.28);
-    background: rgba(255,153,0,0.05);
   }
 
   .terminal {
@@ -826,21 +867,410 @@
     background-size: 128px;
   }
 
+  /* PORTFOLIO */
+  .portfolio-row {
+    display: grid;
+    grid-template-columns: 48px 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0,245,255,0.06);
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .portfolio-row:hover { background: rgba(0,245,255,0.02); }
+  .portfolio-row.danger  { background: rgba(255,61,61,0.05);  border-left: 3px solid #ff3d3d; }
+  .portfolio-row.warning { background: rgba(255,107,0,0.05);  border-left: 3px solid var(--neon-orange); }
+  .portfolio-row.safe    { background: rgba(0,255,136,0.02);  border-left: 3px solid rgba(0,255,136,0.3); }
+  .portfolio-row.scanning { opacity: 0.5; }
+
+  .port-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(0,245,255,0.2);
+    background: rgba(0,245,255,0.05);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    overflow: hidden;
+  }
+  .port-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+  .port-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+  .port-flags {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+  .port-balance {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .port-risk {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: right;
+    min-width: 90px;
+  }
+  .port-risk.r-danger  { color: #ff3d3d; text-shadow: 0 0 10px rgba(255,61,61,0.5); }
+  .port-risk.r-warning { color: var(--neon-orange); }
+  .port-risk.r-safe    { color: var(--neon-green); }
+  .port-risk.r-scan    { color: var(--text-muted); }
+
+  /* CIA SCAN PATH */
+  .cia-section {
+    max-width: 1280px;
+    margin: 36px auto 0;
+    border: 1px solid rgba(0,245,255,0.12);
+    background:
+      linear-gradient(180deg, rgba(13,21,39,0.92), rgba(8,12,24,0.86)),
+      repeating-linear-gradient(90deg, transparent 0 79px, rgba(0,245,255,0.035) 80px);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cia-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .cia-status {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .cia-status.active { color: var(--neon-orange); }
+  .cia-status.complete { color: var(--neon-green); }
+
+  .cia-workflow {
+    display: grid;
+    grid-template-columns: 0.85fr 1.6fr 0.95fr;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .cia-target,
+  .cia-final {
+    border: 1px solid rgba(0,245,255,0.18);
+    background: rgba(0,245,255,0.035);
+    padding: 22px;
+    min-height: 138px;
+  }
+
+  .cia-target-label,
+  .cia-module-label,
+  .cia-final-label {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-muted);
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 9px;
+  }
+
+  .cia-target-name,
+  .cia-final-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    color: var(--text-primary);
+    line-height: 1.3;
+    word-break: break-word;
+  }
+
+  .cia-target-meta,
+  .cia-final-meta {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-muted);
+    font-size: 11px;
+    margin-top: 8px;
+    word-break: break-word;
+  }
+
+  .cia-modules {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    position: relative;
+  }
+
+  .cia-module {
+    border: 1px solid rgba(0,245,255,0.16);
+    background: rgba(0,245,255,0.025);
+    padding: 16px;
+    min-height: 96px;
+    position: relative;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+  }
+
+  .cia-module::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transform: translateY(-50%);
+    box-shadow: 0 0 0 rgba(0,245,255,0);
+  }
+
+  .cia-module.scanning {
+    border-color: var(--neon-orange);
+    background: rgba(255,107,0,0.055);
+    box-shadow: 0 0 24px rgba(255,107,0,0.10);
+  }
+
+  .cia-module.scanning::before {
+    background: var(--neon-orange);
+    box-shadow: 0 0 18px rgba(255,107,0,0.75);
+  }
+
+  .cia-module.done {
+    border-color: rgba(0,255,136,0.42);
+    background: rgba(0,255,136,0.035);
+  }
+
+  .cia-module.done::before {
+    background: var(--neon-green);
+    box-shadow: 0 0 18px rgba(0,255,136,0.75);
+  }
+
+  .cia-module.warn {
+    border-color: rgba(255,107,0,0.55);
+  }
+
+  .cia-module.danger {
+    border-color: rgba(255,61,61,0.65);
+    background: rgba(255,61,61,0.035);
+  }
+
+  .cia-module-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .cia-module-value {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .cia-final {
+    border-color: rgba(0,255,136,0.2);
+  }
+
+  .cia-final.low .cia-final-title { color: var(--neon-green); }
+  .cia-final.medium .cia-final-title { color: var(--neon-orange); }
+  .cia-final.high .cia-final-title { color: #ff3d3d; }
+
+  .scan-feed {
+    max-width: 1280px;
+    margin: 36px auto 0;
+    border: 1px solid rgba(0,245,255,0.12);
+    background: rgba(13,21,39,0.72);
+    padding: 28px;
+  }
+
+  .scan-feed-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: end;
+    margin-bottom: 20px;
+  }
+
+  .scan-feed-kicker {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--neon-pink);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .scan-feed-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    color: var(--text-primary);
+  }
+
+  .scan-feed-state {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--neon-green);
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .scan-feed-row {
+    display: grid;
+    grid-template-columns: 82px minmax(180px, 1.1fr) 92px minmax(240px, 1.6fr);
+    gap: 20px;
+    align-items: center;
+    min-height: 56px;
+    border: 1px solid rgba(0,245,255,0.08);
+    background: rgba(255,255,255,0.02);
+    padding: 12px 16px;
+    margin-bottom: 10px;
+  }
+
+  .scan-feed-time,
+  .scan-feed-chain,
+  .scan-feed-summary {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .scan-feed-token {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .scan-feed-chain {
+    color: var(--neon-cyan);
+    letter-spacing: 2px;
+    margin-top: 2px;
+  }
+
+  .scan-feed-verdict {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  .scan-feed-verdict.good { color: var(--neon-green); }
+  .scan-feed-verdict.warn { color: var(--neon-orange); }
+  .scan-feed-verdict.danger { color: #ff3d3d; }
+
+  .final-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    background: rgba(5,8,17,0.86);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .final-card {
+    width: min(620px, 94vw);
+    border: 1px solid rgba(0,245,255,0.22);
+    background: linear-gradient(180deg, rgba(10,15,30,0.98), rgba(5,8,17,0.98));
+    box-shadow: 0 0 70px rgba(0,245,255,0.12);
+    padding: 34px;
+  }
+
+  .final-card.good { border-color: rgba(0,255,136,0.55); box-shadow: 0 0 70px rgba(0,255,136,0.15); }
+  .final-card.warn { border-color: rgba(255,107,0,0.65); box-shadow: 0 0 70px rgba(255,107,0,0.15); }
+  .final-card.danger { border-color: rgba(255,61,61,0.65); box-shadow: 0 0 70px rgba(255,61,61,0.15); }
+
+  .final-kicker {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .final-heading {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .final-body {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.9;
+    margin: 18px 0 26px;
+  }
+
+  .final-close {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    padding: 13px 28px;
+    background: var(--neon-cyan);
+    color: var(--dark-bg);
+    border: none;
+    cursor: crosshair;
+    font-weight: 700;
+  }
+
+  @media (max-width: 900px) {
+    .portfolio-row { grid-template-columns: 40px 1fr auto; }
+    .port-balance { display: none; }
+    .cia-workflow { grid-template-columns: 1fr; }
+    .cia-modules { grid-template-columns: 1fr; }
+    .scan-feed-row { grid-template-columns: 1fr; gap: 6px; }
+    .scan-feed-head { align-items: start; flex-direction: column; }
+  }
+
   @media (max-width: 900px) {
     nav { padding: 16px 24px; }
     nav ul { display: none; }
     .features-grid { grid-template-columns: 1fr; }
+    .intel-grid { grid-template-columns: 1fr; }
+    .intel-metrics { grid-template-columns: 1fr 1fr; }
     .pricing-grid { grid-template-columns: 1fr; }
     .how-grid { grid-template-columns: 1fr 1fr; }
     .terminal-wrap { grid-template-columns: 1fr; gap: 40px; }
-    .monitor-grid { grid-template-columns: 1fr; }
-    .portfolio-row { grid-template-columns: 1fr; }
     .stats-bar { grid-template-columns: repeat(2, 1fr); }
     section { padding: 60px 24px; }
     .terminal-section { padding: 60px 24px; }
     footer { flex-direction: column; gap: 20px; text-align: center; }
     .how-grid::before { display: none; }
   }
+</style>
+
+<style id="rb-chain-switch-style">
+html{scrollbar-gutter:stable}
+.rb-chain-switch{display:flex;gap:10px;align-items:center;margin-left:20px;margin-right:auto}
+.rb-cs{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+ box-sizing:border-box;min-width:140px;padding:9px 16px;
+ font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1.5px;font-weight:bold;
+ text-decoration:none;clip-path:polygon(9% 0,100% 0,91% 100%,0 100%);transition:all .18s;opacity:.5}
+.rb-cs:hover{opacity:1}
+.rb-cs.active{opacity:1}
+.rb-cs-sol{background:#9945FF;color:#fff}
+.rb-cs-sol.active{box-shadow:0 0 18px rgba(153,69,255,.6)}
+.rb-cs-avax{background:#E84142;color:#fff}
+.rb-cs-avax.active{box-shadow:0 0 18px rgba(232,65,66,.6)}
+.rb-cs-bnb{background:#F3BA2F;color:#1a1500}
+.rb-cs-bnb.active{box-shadow:0 0 18px rgba(243,186,47,.6)}
+@media(max-width:1100px){.rb-chain-switch{margin:0 8px;gap:6px}.rb-chain-switch .rb-cs span{display:none}
+ .rb-cs{padding:9px 14px;min-width:auto}}
 </style>
 </head>
 <body>
@@ -850,44 +1280,13 @@
 <!-- NAV -->
 <nav class="z1">
   <a href="#" class="logo">RUG<span>BUSTER</span></a>
+  <div class="rb-chain-switch"><a class="rb-cs rb-cs-sol active" href="/" aria-label="Solana"><svg viewBox="0 0 397.7 311.7" width="19" height="15" fill="#fff" aria-hidden="true"><path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1z"/><path d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1z"/><path d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1z"/></svg><span>SOLANA</span></a><a class="rb-cs rb-cs-avax" href="/avalanche/" aria-label="Avalanche"><svg viewBox="0 0 1503 1504" width="18" height="18" aria-hidden="true"><path fill="#fff" d="M538 1050H392c-31 0-46 0-55-6a37 37 0 01-17-29c-1-11 7-24 22-50l360-635c15-27 23-40 33-45a37 37 0 0133 0c10 5 18 18 33 45l74 129 1 1c16 28 24 42 27 57a85 85 0 010 35c-3 15-11 29-27 57L685 1019l-1 1c-16 28-24 42-35 53-12 12-27 20-43 25-15 4-32 4-68 4z"/><path fill="#fff" d="M906 1050h209c31 0 47 0 56-6a37 37 0 0017-30c1-10-7-23-21-48-1-1-1-2-2-3l-105-179-1-2c-15-25-22-38-32-43a37 37 0 00-32 0c-10 5-18 18-33 44L864 962l-1 1c-15 26-22 39-22 50a37 37 0 0017 29c10 6 25 6 56 6z"/></svg><span>AVALANCHE</span></a><a class="rb-cs rb-cs-bnb" href="/bnb/" aria-label="BNB Chain"><svg viewBox="0 0 126 126" width="17" height="17" fill="#1a1500" aria-hidden="true"><polygon points="63,8 98,43 83,58 63,38 43,58 28,43"/><polygon points="63,118 28,83 43,68 63,88 83,68 98,83"/><polygon points="28,48 43,63 28,78 13,63"/><polygon points="98,48 113,63 98,78 83,63"/><polygon points="63,48 78,63 63,78 48,63"/></svg><span>BNB</span></a></div>
   <ul>
     <li><a href="#features">Protocol</a></li>
+    <li><a href="#intelligence">Intel</a></li>
     <li><a href="#scanner">Scanner</a></li>
     <li><a href="#how">How</a></li>
     <li><a href="#pricing">Access</a></li>
-    <li>
-      <div class="network-toggle-container" style="
-        display: flex;
-        align-items: center;
-        border: 1px solid rgba(0, 245, 255, 0.2);
-        padding: 2px;
-        background: rgba(5, 8, 17, 0.6);
-      ">
-        <button id="toggleSolanaBtn" onclick="switchNetwork('solana')" style="
-          font-family: 'Share Tech Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 1px;
-          padding: 6px 14px;
-          background: var(--neon-cyan);
-          color: var(--dark-bg);
-          border: none;
-          cursor: crosshair;
-          transition: all 0.2s;
-          font-weight: bold;
-        ">SOLANA</button>
-        <button id="toggleAvalancheBtn" onclick="switchNetwork('avalanche')" style="
-          font-family: 'Share Tech Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 1px;
-          padding: 6px 14px;
-          background: transparent;
-          color: var(--text-muted);
-          border: none;
-          cursor: crosshair;
-          transition: all 0.2s;
-        ">AVALANCHE</button>
-      </div>
-    </li>
     <li><a href="#scanner" class="nav-cta">Scan Now</a></li>
     <li>
       <button id="walletBtn" onclick="connectWallet()" style="
@@ -896,16 +1295,16 @@
         letter-spacing:2px;
         padding:8px 20px;
         background:transparent;
-        border:1px solid var(--neon-cyan);
-        color:var(--neon-cyan);
+        border:1px solid var(--neon-green);
+        color:var(--neon-green);
         cursor:crosshair;
         text-transform:uppercase;
         transition:all 0.2s;
-        text-shadow:0 0 8px rgba(0,245,255,0.4);
+        text-shadow:0 0 8px rgba(0,255,136,0.4);
         display:flex;align-items:center;gap:8px;
-      " onmouseover="this.style.background='rgba(0,245,255,0.1)'" onmouseout="if(!isWalletConnected())this.style.background='transparent'">
-        <span id="walletIconEmoji" style="font-size:16px;">👻</span>
-        <span id="walletBtnText">Connect Solana Wallet</span>
+      " onmouseover="this.style.background='rgba(0,255,136,0.1)'" onmouseout="if(!walletConnected)this.style.background='transparent'">
+        <span style="font-size:16px;">👻</span>
+        <span id="walletBtnText">Connect Wallet</span>
       </button>
     </li>
   </ul>
@@ -930,71 +1329,39 @@
     position:relative;
   ">
     <button onclick="closeWalletModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:var(--text-muted);font-size:20px;cursor:crosshair;">✕</button>
-    <div id="walletModalTitle" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon-cyan);margin-bottom:24px;">// SELECT SOLANA WALLET</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon-cyan);margin-bottom:24px;">// SELECT WALLET</div>
     <div id="walletModalBody">
-      <!-- EVM options (MetaMask & Core) -->
-      <div id="evmWalletOptions" style="display:none;">
-        <!-- metamask option -->
-        <div onclick="connectMetaMask()" style="
-          border:1px solid rgba(0,245,255,0.15);
-          padding:20px 24px;
-          margin-bottom:12px;
-          cursor:crosshair;
-          display:flex;align-items:center;gap:16px;
-          transition:all 0.2s;
-          background:rgba(0,245,255,0.02);
-        " onmouseover="this.style.borderColor='rgba(0,245,255,0.5)';this.style.background='rgba(0,245,255,0.05)'"
-           onmouseout="this.style.borderColor='rgba(0,245,255,0.15)';this.style.background='rgba(0,245,255,0.02)'">
-          <span style="font-size:32px;">🦊</span>
-          <div style="text-align:left;">
-            <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">MetaMask</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Avalanche C-Chain / EVM wallet</div>
-          </div>
-          <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-green);letter-spacing:2px;">RECOMMENDED</div>
+      <!-- phantom option -->
+      <div onclick="connectPhantom()" style="
+        border:1px solid rgba(0,245,255,0.15);
+        padding:20px 24px;
+        margin-bottom:12px;
+        cursor:crosshair;
+        display:flex;align-items:center;gap:16px;
+        transition:all 0.2s;
+        background:rgba(0,245,255,0.02);
+      " onmouseover="this.style.borderColor='rgba(0,245,255,0.5)';this.style.background='rgba(0,245,255,0.05)'"
+         onmouseout="this.style.borderColor='rgba(0,245,255,0.15)';this.style.background='rgba(0,245,255,0.02)'">
+        <span style="font-size:32px;">👻</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Phantom</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Solana native wallet</div>
         </div>
-        <div style="
-          border:1px solid rgba(255,255,255,0.08);
-          padding:20px 24px;
-          display:flex;align-items:center;gap:16px;
-          background:rgba(255,255,255,0.01);
-        ">
-          <span style="font-size:32px;">🔗</span>
-          <div style="text-align:left;">
-            <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Any EVM Wallet</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Core, Rabby, Brave, or other injected wallets</div>
-          </div>
-          <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SUPPORTED</div>
-        </div>
-        <div style="margin-top:18px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-muted);text-align:left;">
-          Portfolio scan uses your connected Avalanche wallet.<br>
-          Connected reviewer wallets can publish directly from their own AVAX balance.<br>
-          If no reviewer wallet is connected, <span style="color:var(--neon-cyan);">PUBLISH REPORT</span> falls back to the RugBuster backend wallet.
-        </div>
+        <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-green);letter-spacing:2px;">RECOMMENDED</div>
       </div>
-      
-      <!-- Solana options (Phantom) -->
-      <div id="solanaWalletOptions">
-        <div onclick="connectPhantom()" style="
-          border:1px solid rgba(0,245,255,0.15);
-          padding:20px 24px;
-          margin-bottom:12px;
-          cursor:crosshair;
-          display:flex;align-items:center;gap:16px;
-          transition:all 0.2s;
-          background:rgba(0,245,255,0.02);
-        " onmouseover="this.style.borderColor='rgba(0,245,255,0.5)';this.style.background='rgba(0,245,255,0.05)'"
-           onmouseout="this.style.borderColor='rgba(0,245,255,0.15)';this.style.background='rgba(0,245,255,0.02)'">
-          <span style="font-size:32px;">👻</span>
-          <div style="text-align:left;">
-            <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Phantom</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Solana native wallet</div>
-          </div>
-          <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-green);letter-spacing:2px;">RECOMMENDED</div>
+      <!-- future multichain option -->
+      <div style="
+        border:1px solid rgba(255,255,255,0.04);
+        padding:20px 24px;
+        display:flex;align-items:center;gap:16px;
+        opacity:0.4;
+      ">
+        <span style="font-size:32px;">🦊</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Multichain Wallets</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">BNB / AVAX handled on dedicated sites</div>
         </div>
-        <div style="margin-top:18px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-muted);text-align:left;">
-          Portfolio scan uses your connected Solana wallet.<br>
-          Connected wallets can scan local SPL token assets in real-time.
-        </div>
+        <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SOON</div>
       </div>
     </div>
   </div>
@@ -1126,7 +1493,7 @@
     [BUST] INITIATED
   </div>
 
-  <div class="hero-eyebrow">// AI-POWERED CRYPTO SECURITY PROTOCOL v2.4</div>
+  <div class="hero-eyebrow">// AI-POWERED SOLANA SECURITY PROTOCOL v2.5</div>
 
   <h1 class="hero-title">
     <span class="line1">NEVER GET</span>
@@ -1134,7 +1501,7 @@
   </h1>
 
   <p class="hero-sub">
-    Real-time AI surveillance for DeFi contracts, wallets & launches.
+    Real-time AI surveillance for Solana tokens, wallets & launches.
     We hunt <strong>rugs, honeypots & exit scams</strong> before they hunt you.
   </p>
 
@@ -1147,24 +1514,20 @@
 <!-- STATS -->
 <div class="stats-bar z1">
   <div class="stat-item">
-    <span class="stat-number">358,712</span>
-    <span class="stat-label">Contracts Scanned</span>
+    <span class="stat-number">358K+</span>
+    <span class="stat-label">Historical Solana Scans</span>
   </div>
   <div class="stat-item">
-    <span class="stat-number">4,831</span>
-    <span class="stat-label">Rugs Detected</span>
+    <span class="stat-number">24/7</span>
+    <span class="stat-label">Collector Pipeline</span>
   </div>
   <div class="stat-item">
-    <span class="stat-number">$12.4M</span>
-    <span class="stat-label">User Funds Saved</span>
+    <span class="stat-number">V6</span>
+    <span class="stat-label">Behavior Engine</span>
   </div>
-  <div class="stat-item" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-    <span class="stat-number" style="font-size: 13px; font-family: 'Share Tech Mono', monospace; color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0, 245, 255, 0.4); line-height: 1.3; text-transform: none; font-weight: normal; letter-spacing: 0.5px; max-width: 220px; display: inline-block; margin-bottom: 4px;">
-      CIA Engine catches what RugCheck misses
-    </span>
-    <span class="stat-label" style="font-size: 9px; letter-spacing: 1.5px; color: var(--neon-pink); font-family: 'Orbitron', sans-serif; font-weight: 500; text-transform: uppercase;">
-      benchmark Q3 2026
-    </span>
+  <div class="stat-item">
+    <span class="stat-number">API</span>
+    <span class="stat-label">Ready Layer</span>
   </div>
 </div>
 
@@ -1172,7 +1535,7 @@
 <section id="features" class="z1">
   <div class="section-label">// core protocol</div>
   <h2 class="section-title">Your AI Security<br><span>Strike Force</span></h2>
-  <p class="section-desc">Six layers of autonomous protection scanning 24/7 across every chain, every launch, every wallet.</p>
+  <p class="section-desc">Six layers of autonomous Solana protection scanning launches, creator history, wallet behavior, liquidity signals, and RugCheck risk evidence.</p>
 
   <div class="features-grid">
     <div class="feature-card">
@@ -1183,7 +1546,7 @@
     <div class="feature-card pink">
       <div class="feature-icon">⚡</div>
       <div class="feature-title">Launch Sniper Intel</div>
-      <p class="feature-desc">Monitor every new token launch on ETH, BSC, SOL, BASE. Get risk scores in under 3 seconds before snipers move.</p>
+      <p class="feature-desc">Monitor Solana launches and pump-style token behavior. Capture early metadata, creator signals, and first-wave transaction patterns.</p>
     </div>
     <div class="feature-card green">
       <div class="feature-icon">🛡️</div>
@@ -1198,7 +1561,7 @@
     <div class="feature-card">
       <div class="feature-icon">🤖</div>
       <div class="feature-title">AI Threat Intel</div>
-      <p class="feature-desc">Our model trained on 50,000+ confirmed rugs. Pattern recognition that evolves daily faster than scammers can adapt.</p>
+      <p class="feature-desc">Historical V1-V6 and academic scan evidence feeds a private Solana risk corpus for future model training and API scoring.</p>
     </div>
     <div class="feature-card pink">
       <div class="feature-icon">🔔</div>
@@ -1208,13 +1571,60 @@
   </div>
 </section>
 
+<!-- LIVE INTELLIGENCE UPDATE -->
+<section id="intelligence" class="z1">
+  <div class="section-label">// hackathon progress update</div>
+  <h2 class="section-title">From Demo Scanner To<br><span>Live Intelligence Layer</span></h2>
+  <p class="section-desc">RugBuster now has a running data collection pipeline behind the public Solana scanner, turning individual token checks into a growing threat-intelligence dataset.</p>
+
+  <div class="intel-panel">
+    <div class="intel-grid">
+      <div>
+        <div class="intel-kicker">live milestone</div>
+        <h3 class="intel-title">Solana V6 collector is building a <span>private rug-pattern corpus</span></h3>
+        <p class="intel-copy">
+          The public scanner still uses live RugCheck evidence in the browser, while the backend collector continuously stores enriched Solana scan records for creator history, launch behavior, holder clusters, transaction entropy, and future API scoring.
+        </p>
+        <ul class="intel-list">
+          <li>Solana token risk records persisted to PostgreSQL</li>
+          <li>Full JSON evidence preserved for later model training</li>
+          <li>Duplicate mints skipped by database constraint</li>
+          <li>API-ready architecture prepared for partner access</li>
+        </ul>
+      </div>
+      <div class="intel-metrics">
+        <div class="intel-metric">
+          <strong>358K+</strong>
+          <span>historical Solana scan corpus</span>
+        </div>
+        <div class="intel-metric">
+          <strong>12,707</strong>
+          <span>live V6 PostgreSQL records</span>
+        </div>
+        <div class="intel-metric">
+          <strong>JSONB</strong>
+          <span>Full evidence storage</span>
+        </div>
+        <div class="intel-metric">
+          <strong>V6</strong>
+          <span>CIA behavior modules</span>
+        </div>
+        <div class="intel-metric">
+          <strong>API</strong>
+          <span>Partner layer planned</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- WALLET SCANNER SECTION -->
 <div class="terminal-section" id="scanner">
   <div class="terminal-wrap z1">
     <div>
       <div class="section-label">// live threat scanner</div>
-      <h2 class="section-title">Scan Any<br><span id="heroChain">Solana</span> Token</h2>
-      <p class="section-desc" id="heroDesc" style="margin-bottom:32px;">Paste any Solana token address. Our engine analyzes live chain and market signals in real-time.</p>
+      <h2 class="section-title">Scan Any<br><span>Token Now</span></h2>
+      <p class="section-desc" style="margin-bottom:32px;">Paste any Solana token mint. RugBuster runs live RugCheck evidence, DexScreener market signals, and CIA module analysis in real time.</p>
 
       <!-- INPUT -->
       <div style="margin-bottom:16px;">
@@ -1235,7 +1645,7 @@
           <input
             id="scanInput"
             type="text"
-            placeholder="Paste Solana token address (mints)..."
+            placeholder="Paste Solana token mint..."
             style="
               flex:1;
               background:transparent;
@@ -1251,56 +1661,15 @@
         </div>
       </div>
 
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <button onclick="runScan()" class="btn-primary" style="font-size:11px;padding:13px 32px;border:none;cursor:crosshair;">
-            ⚡ SCAN TOKEN
-          </button>
-          <button id="authorizeReviewerBtn" onclick="authorizeReviewerWallet()" style="
-            font-family:'Share Tech Mono',monospace;
-            font-size:11px;
-            letter-spacing:2px;
-            padding:12px 20px;
-            background:transparent;
-            border:1px solid rgba(0,245,255,0.22);
-            color:rgba(0,245,255,0.58);
-            cursor:crosshair;
-            transition:all 0.2s;
-            display: none;
-          " onmouseover="if(!this.disabled){this.style.color='var(--neon-cyan)'}" onmouseout="if(!this.disabled){this.style.color='rgba(0,245,255,0.58)'}">
-            AUTHORIZE REVIEWER
-          </button>
-          <button id="publishBtn" onclick="publishCurrentReport()" style="
-            font-family:'Share Tech Mono',monospace;
-            font-size:11px;
-            letter-spacing:2px;
-            padding:12px 20px;
-            background:transparent;
-            border:1px solid rgba(255,0,200,0.22);
-            color:rgba(255,0,200,0.58);
-            cursor:crosshair;
-            transition:all 0.2s;
-            display: none;
-          " onmouseover="if(!this.disabled){this.style.color='var(--neon-pink)'}" onmouseout="if(!this.disabled){this.style.color='rgba(255,0,200,0.58)'}" disabled>
-            PUBLISH REPORT
-          </button>
-          <button id="sendAlertBtn" onclick="sendTelegramAlert()" style="
-            font-family:'Share Tech Mono',monospace;
-            font-size:11px;
-            letter-spacing:2px;
-            padding:12px 20px;
-            background:transparent;
-            border:1px solid rgba(0,255,136,0.22);
-            color:rgba(0,255,136,0.55);
-            cursor:crosshair;
-            transition:all 0.2s;
-          " onmouseover="if(!this.disabled){this.style.color='var(--neon-green)'}" onmouseout="if(!this.disabled){this.style.color='rgba(0,255,136,0.55)'}" disabled>
-            SEND ALERT
-          </button>
-          <button id="exampleBtn" onclick="loadExample('solana')" style="
-            font-family:'Share Tech Mono',monospace;
-            font-size:11px;
-            letter-spacing:2px;
-            padding:12px 20px;
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button onclick="runScan()" class="btn-primary" style="font-size:11px;padding:13px 32px;border:none;cursor:crosshair;">
+          ⚡ SCAN TOKEN
+        </button>
+        <button onclick="loadExample('solana')" style="
+          font-family:'Share Tech Mono',monospace;
+          font-size:11px;
+          letter-spacing:2px;
+          padding:12px 20px;
           background:transparent;
           border:1px solid rgba(0,245,255,0.2);
           color:var(--text-muted);
@@ -1329,44 +1698,17 @@
         </div>
       </div>
 
-        <!-- RISK METER -->
-        <div id="riskMeter" style="display:none;margin-top:32px;border:1px solid rgba(0,245,255,0.12);padding:16px 16px 14px;background:rgba(0,245,255,0.02);">
-          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px;">THREAT PROBABILITY</div>
-          <div style="display:flex;align-items:center;gap:16px;">
-            <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;">
-              <div id="riskBar" style="position:absolute;top:0;left:0;bottom:0;width:0%;transition:width 1s cubic-bezier(0.1, 0.8, 0.2, 1);background:var(--neon-green);height:100%;"></div>
-            </div>
-            <div id="riskScore" style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;line-height:1;min-width:60px;text-align:right;">0</div>
+      <!-- RISK METER -->
+      <div id="riskMeter" style="display:none;margin-top:32px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px;">RISK SCORE</div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;">
+            <div id="riskBar" style="height:100%;width:0%;transition:width 1s ease;background:var(--neon-cyan);"></div>
           </div>
-          <div id="riskLabel" style="font-family:'Share Tech Mono',monospace;font-size:11px;margin-top:8px;letter-spacing:1px;color:var(--neon-green);">✓ LOW RISK — LOOKS CLEAN</div>
+          <div id="riskScore" style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;color:var(--neon-cyan);min-width:50px;text-align:right;">0</div>
         </div>
-
-        <!-- SCOREBOARD -->
-        <div id="scoreBoard" style="display:none;margin-top:32px;">
-          <div style="display:grid;grid-template-columns:1fr;gap:18px;">
-            <div style="border:1px solid rgba(0,245,255,0.12);padding:16px 16px 14px;background:rgba(0,245,255,0.02);">
-              <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px;">RUG SCORE // ON-CHAIN FACTS</div>
-              <div style="display:flex;align-items:center;gap:16px;">
-                <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;">
-                  <div id="rugScoreBar" style="height:100%;width:0%;transition:width 1s ease;background:var(--neon-cyan);"></div>
-                </div>
-                <div id="rugScoreValue" style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;color:var(--neon-cyan);min-width:84px;text-align:right;">UNKNOWN</div>
-              </div>
-              <div id="rugScoreLabel" style="font-family:'Share Tech Mono',monospace;font-size:12px;margin-top:8px;letter-spacing:2px;"></div>
-            </div>
-            <div style="border:1px solid rgba(255,0,200,0.12);padding:16px 16px 14px;background:rgba(255,0,200,0.02);">
-              <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px;">SPECULATION SCORE // MARKET DATA</div>
-              <div style="display:flex;align-items:center;gap:16px;">
-                <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;">
-                  <div id="specScoreBar" style="height:100%;width:0%;transition:width 1s ease;background:var(--neon-pink);"></div>
-                </div>
-                <div id="specScoreValue" style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;color:var(--neon-pink);min-width:84px;text-align:right;">UNKNOWN</div>
-              </div>
-              <div id="specScoreLabel" style="font-family:'Share Tech Mono',monospace;font-size:12px;margin-top:8px;letter-spacing:2px;"></div>
-            </div>
-          </div>
-        </div>
-
+        <div id="riskLabel" style="font-family:'Share Tech Mono',monospace;font-size:12px;margin-top:8px;letter-spacing:2px;"></div>
+      </div>
     </div>
 
     <!-- TERMINAL OUTPUT -->
@@ -1379,83 +1721,98 @@
       </div>
       <div class="terminal-body" id="terminalBody" style="min-height:320px;max-height:420px;overflow-y:auto;">
         <div><span class="t-prompt">RB&gt;</span> <span class="t-out">System ready. Awaiting target address...</span></div>
-        <div><span class="t-out">// Paste an Apex or Avalanche 0x address and hit SCAN</span></div>
-        <div><span class="t-out">// Powered by RugBuster API + Avalanche live market data</span></div>
-        <div><span class="t-pink">// ENGINE: RUGBUSTER APEX v1.0 — ONLINE</span></div>
+        <div><span class="t-out">// Paste a Solana mint and hit SCAN</span></div>
+        <div><span class="t-out">// Powered by RugCheck, DexScreener, and Solana on-chain evidence</span></div>
+        <div><span class="t-pink">// ENGINE: SYNDICATE CIA MODULES — ONLINE</span></div>
         <div>&nbsp;</div>
         <div><span class="t-prompt">RB&gt;</span> <span class="cursor"></span></div>
       </div>
     </div>
   </div>
 
-  <div class="monitor-panel z1" id="monitorPanel" style="display: none;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+  <div class="cia-section z1" id="ciaScanPath">
+    <div class="cia-topline">
       <div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;">// monitored sources</div>
-        <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-top:6px;">Monitored DEX Factories</div>
+        <div class="section-label">// solana cia module trace</div>
+        <h3 class="scan-feed-title">Syndicate CIA Scan Path</h3>
       </div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-green);letter-spacing:2px;">CONFIGURED FOR EVENT MONITORING</div>
+      <div id="ciaStatus" class="cia-status">READY</div>
     </div>
-
-    <div class="monitor-grid">
-      <div class="monitor-card">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
-          <div>
-            <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">Trader Joe Factory</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:4px;word-break:break-all;">0xFf06D441D352F33041926D451a5118742880017D</div>
-          </div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-cyan);letter-spacing:2px;">FUJI</div>
+    <div class="cia-workflow">
+      <div class="cia-target">
+        <div class="cia-target-label">target token</div>
+        <div id="ciaTargetName" class="cia-target-name">Awaiting Solana mint</div>
+        <div id="ciaTargetMeta" class="cia-target-meta">Paste a mint and run scan</div>
+      </div>
+      <div class="cia-modules">
+        <div class="cia-module" data-module="rugcheck">
+          <div class="cia-module-label">module 01</div>
+          <div class="cia-module-title">RugCheck Evidence</div>
+          <div class="cia-module-value" id="cia-rugcheck">waiting</div>
+        </div>
+        <div class="cia-module" data-module="authority">
+          <div class="cia-module-label">module 02</div>
+          <div class="cia-module-title">Authority State</div>
+          <div class="cia-module-value" id="cia-authority">waiting</div>
+        </div>
+        <div class="cia-module" data-module="holders">
+          <div class="cia-module-label">module 03</div>
+          <div class="cia-module-title">Holder Cluster</div>
+          <div class="cia-module-value" id="cia-holders">waiting</div>
+        </div>
+        <div class="cia-module" data-module="liquidity">
+          <div class="cia-module-label">module 04</div>
+          <div class="cia-module-title">Liquidity Signals</div>
+          <div class="cia-module-value" id="cia-liquidity">waiting</div>
+        </div>
+        <div class="cia-module" data-module="metadata">
+          <div class="cia-module-label">module 05</div>
+          <div class="cia-module-title">Metadata Integrity</div>
+          <div class="cia-module-value" id="cia-metadata">waiting</div>
+        </div>
+        <div class="cia-module" data-module="syndicate">
+          <div class="cia-module-label">module 06</div>
+          <div class="cia-module-title">Syndicate AI</div>
+          <div class="cia-module-value" id="cia-syndicate">deterministic model online</div>
         </div>
       </div>
-
-      <div class="monitor-card">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
-          <div>
-            <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">Pangolin Factory</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:4px;word-break:break-all;">0xefa94DE7a4659D7836704329a8ca30E89e599d14</div>
-          </div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-cyan);letter-spacing:2px;">FUJI</div>
-        </div>
+      <div class="cia-final low" id="ciaFinal">
+        <div class="cia-final-label">final scan</div>
+        <div id="ciaFinalTitle" class="cia-final-title">STANDBY</div>
+        <div id="ciaFinalMeta" class="cia-final-meta">Rug 0 · flags pending</div>
       </div>
-    </div>
-
-    <div style="margin-top:14px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.9;">
-      Adapter logic listens for <span style="color:var(--neon-cyan);">PairCreated</span> events from these factory contracts.
-      When a new pair appears, RugBuster captures the token address, runs live risk analysis, and prepares the result for on-chain certification.
     </div>
   </div>
 
-  <div class="portfolio-panel z1" id="portfolioPanel">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+  <div class="scan-feed z1" id="recentSolanaScans">
+    <div class="scan-feed-head">
       <div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;">// my portfolio scan</div>
-        <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-top:6px;">Wallet Threat Surface</div>
+        <div class="scan-feed-kicker">// live scan feed</div>
+        <div class="scan-feed-title">Recent Solana Scans</div>
       </div>
-      <div id="portfolioState" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">CONNECT A SOLANA WALLET TO START</div>
+      <div class="scan-feed-state" id="scanFeedState">10 latest</div>
     </div>
-
-    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
-      <button id="portfolioConnectBtn" onclick="connectWallet()" class="btn-secondary" style="font-size:11px;padding:12px 24px;">CONNECT SOLANA WALLET</button>
-      <button id="portfolioRefreshBtn" onclick="scanPortfolio()" style="
-        font-family:'Share Tech Mono',monospace;
-        font-size:11px;
-        letter-spacing:2px;
-        padding:12px 20px;
-        background:transparent;
-        border:1px solid rgba(0,245,255,0.2);
-        color:var(--text-muted);
-        cursor:crosshair;
-        transition:all 0.2s;
-      " disabled>REFRESH PORTFOLIO</button>
-      <div id="portfolioWallet" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:1px;"></div>
+    <div id="scanFeedRows">
+      <div class="scan-feed-row">
+        <div class="scan-feed-time">READY</div>
+        <div>
+          <div class="scan-feed-token">Awaiting scanner output</div>
+          <div class="scan-feed-chain">SOLANA</div>
+        </div>
+        <div class="scan-feed-verdict good">ONLINE</div>
+        <div class="scan-feed-summary">Run a token scan to populate this feed.</div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <div id="portfolioSummary" style="display:none;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:1px;"></div>
-
-    <div id="portfolioList" style="display:none;"></div>
-    <div id="portfolioEmpty" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.9;border:1px solid rgba(0,245,255,0.08);background:rgba(0,245,255,0.03);padding:18px 20px;">
-      Connect a Solana wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
-    </div>
+<!-- FINAL SCAN MODAL -->
+<div id="finalScanModal" class="final-modal">
+  <div id="finalScanCard" class="final-card good">
+    <div class="final-kicker">// final scan</div>
+    <div id="finalScanTitle" class="final-heading">LOW RISK</div>
+    <div id="finalScanBody" class="final-body"></div>
+    <button onclick="closeFinalScan()" class="final-close">CLOSE REPORT</button>
   </div>
 </div>
 
@@ -1493,6 +1850,69 @@
       cursor:crosshair;
       font-weight:700;
     ">ACKNOWLEDGED — CLOSE</button>
+  </div>
+</div>
+
+<!-- PORTFOLIO SCAN -->
+<div id="portfolioSection" style="display:none;" class="terminal-section z1">
+  <div style="max-width:1280px;margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;margin-bottom:48px;">
+      <div>
+        <div class="section-label">// wallet intelligence</div>
+        <h2 class="section-title" style="margin-bottom:12px;">Portfolio<br><span>Risk Scan</span></h2>
+        <p class="section-desc">Every token in your wallet scanned against our threat engine. Red means danger.</p>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <div id="portfolioStatus" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;"></div>
+        <button onclick="scanPortfolio()" id="portfolioBtn" class="btn-primary" style="font-size:11px;padding:13px 32px;border:none;cursor:crosshair;">
+          ⚡ SCAN PORTFOLIO
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary bar -->
+    <div id="portfolioSummary" style="display:none;
+      display:none;
+      background:var(--dark-card);
+      border:1px solid rgba(0,245,255,0.08);
+      padding:20px 28px;
+      margin-bottom:24px;
+      display:none;
+    ">
+      <div style="display:flex;gap:40px;flex-wrap:wrap;">
+        <div>
+          <div style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;color:var(--text-primary);" id="portTotal">0</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">TOKENS</div>
+        </div>
+        <div>
+          <div style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;color:#ff3d3d;" id="portDanger">0</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">HIGH RISK</div>
+        </div>
+        <div>
+          <div style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;color:var(--neon-orange);" id="portWarn">0</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">MEDIUM RISK</div>
+        </div>
+        <div>
+          <div style="font-family:'Orbitron',monospace;font-size:24px;font-weight:700;color:var(--neon-green);" id="portSafe">0</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">CLEAN</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Token list -->
+    <div id="portfolioList" style="
+      border:1px solid rgba(0,245,255,0.08);
+      background:var(--dark-card);
+      min-height:120px;
+    ">
+      <div id="portfolioEmpty" style="
+        text-align:center;padding:60px 24px;
+        font-family:'Share Tech Mono',monospace;font-size:13px;
+        color:var(--text-muted);letter-spacing:2px;
+      ">
+        // CLICK "SCAN PORTFOLIO" TO ANALYSE YOUR WALLET
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1592,10 +2012,10 @@
 <!-- CTA -->
 <div class="cta-section z1">
   <h2 class="cta-title">STOP GETTING<br><span>RUGGED.</span></h2>
-  <p class="cta-sub">Join 14,000+ traders who activated their shield today.</p>
+  <p class="cta-sub">Use the live scanner and growing Solana intelligence corpus to check risk before you trust a token.</p>
   <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
     <a href="#pricing" class="btn-primary">Activate RugBuster</a>
-    <a href="#" class="btn-secondary">View Live Demo</a>
+    <a href="#scanner" class="btn-secondary">View Live Demo</a>
   </div>
 </div>
 
@@ -1612,42 +2032,15 @@
 
 <script>
   // =====================
-  // STATE MANAGEMENT
+  // WALLET & PAYMENT LOGIC
   // =====================
-  let activeNetwork = 'solana'; // 'solana' or 'avalanche'
+  const RECEIVER = 'GwRUadL58katT5SJAeyNZSPFSgJfMP6Tng2dSQDEkhQA';
+  const SOL_PRICE = 145; // approx USD per SOL for demo
   let walletConnected = false;
   let walletAddress = null;
-  let connectedProvider = null;
-  let lastScannedAddress = null;
-  let lastScanData = null;
-  let apexPortfolioAddress = null;
-  let walletListenersInstalled = false;
-  
-  const RECEIVER = 'GwRUadL58katT5SJAeyNZSPFSgJfMP6Tng2dSQDEkhQA';
-  const REGISTRY_ADDRESS = '0x5F30276B3A5079E088Ec3072884286de5a868355';
-  const REGISTRY_ABI = [
-    'function owner() view returns (address)',
-    'function authorizedReviewers(address) view returns (bool)',
-    'function setReviewer(address reviewer, bool authorized) external',
-    'function updateScore(address token, uint8 score, bytes32 metadataHash) external'
-  ];
-  const SOL_PRICE = 145; // approx USD per SOL for demo
   let selectedCurrency = 'SOL';
   let currentPlan = null;
   let currentPrice = 0;
-
-  const RUGCHECK_API = 'https://api.rugcheck.xyz/v1';
-  const DEXSCREENER_API = 'https://api.dexscreener.com/latest/dex/tokens';
-  const RUGBUSTER_API = (window.RUGBUSTER_API || 'https://web-production-376bf.up.railway.app').replace(/\/$/, '');
-
-  // =====================
-  // GENERAL WALLET HELPER
-  // =====================
-  function isWalletConnected() {
-    const correctProvider = (activeNetwork === 'solana' && connectedProvider === 'solana') || 
-                            (activeNetwork === 'avalanche' && connectedProvider === 'evm');
-    return walletConnected && correctProvider;
-  }
 
   function connectWallet() {
     document.getElementById('walletModal').style.display = 'flex';
@@ -1657,10 +2050,11 @@
     document.getElementById('walletModal').style.display = 'none';
   }
 
-  // =====================
-  // SOLANA WALLET FLOW
-  // =====================
   async function connectPhantom() {
+    const btn = document.getElementById('walletBtn');
+    const btnText = document.getElementById('walletBtnText');
+
+    // Check if Phantom is installed
     if (!window.solana || !window.solana.isPhantom) {
       document.getElementById('walletModalBody').innerHTML = `
         <div style="text-align:center;padding:24px 0;">
@@ -1680,969 +2074,404 @@
       const resp = await window.solana.connect();
       walletAddress = resp.publicKey.toString();
       walletConnected = true;
-      connectedProvider = 'solana';
       closeWalletModal();
 
-      updateWalletButtonState();
-      renderPortfolioHeader();
-
-      // Show SPL list and hide empty panel
-      document.getElementById('portfolioList').style.display = 'block';
-      document.getElementById('portfolioEmpty').style.display = 'none';
-      
-      // Auto scan SPL portfolio
-      await scanPortfolio();
-
-    } catch(err) {
-      console.log('Phantom connect cancelled', err);
-    }
-  }
-
-  // =====================
-  // AVALANCHE WALLET FLOW
-  // =====================
-  async function connectMetaMask() {
-    if (!window.ethereum) {
-      document.getElementById('walletModalBody').innerHTML = `
-        <div style="text-align:center;padding:24px 0;">
-          <div style="font-size:48px;margin-bottom:16px;">🦊</div>
-          <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-bottom:12px;">MetaMask Not Found</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-muted);margin-bottom:24px;line-height:2;">
-            Install MetaMask or another EVM wallet to continue.<br>This Apex flow uses Avalanche C-Chain wallets.
-          </div>
-          <a href="https://metamask.io/download/" target="_blank" class="btn-primary" style="font-size:11px;padding:13px 32px;text-decoration:none;display:inline-block;">
-            Install MetaMask →
-          </a>
-        </div>`;
-      return;
-    }
-
-    try {
-      installWalletListeners();
-      await ensureAvalancheChain();
-
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      walletAddress = accounts[0];
-      walletConnected = true;
-      connectedProvider = 'evm';
-      closeWalletModal();
-      apexPortfolioAddress = walletAddress;
-      
-      updateWalletButtonState();
-      renderPortfolioHeader();
-
-      // Auto scan Avalanche portfolio
-      await scanPortfolio();
-
-    } catch(err) {
-      console.log('MetaMask connect failed', err);
-    }
-  }
-
-  function disconnectWallet() {
-    if (connectedProvider === 'solana') {
-      if (window.solana) window.solana.disconnect();
-    }
-    walletConnected = false;
-    walletAddress = null;
-    connectedProvider = null;
-    apexPortfolioAddress = null;
-    
-    updateWalletButtonState();
-    renderPortfolioHeader();
-
-    // Reset portfolio UI
-    document.getElementById('portfolioList').style.display = 'none';
-    document.getElementById('portfolioSummary').style.display = 'none';
-    document.getElementById('portfolioEmpty').style.display = 'block';
-  }
-
-  async function syncConnectedWallet(options = {}) {
-    const { silent = false } = options;
-    if (activeNetwork === 'solana') {
-      if (window.solana && window.solana.isConnected) {
-        walletAddress = window.solana.publicKey.toString();
-        walletConnected = true;
-        connectedProvider = 'solana';
-      }
-    } else {
-      if (!window.ethereum) return;
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        if (accounts && accounts.length > 0) {
-          walletAddress = accounts[0];
-          walletConnected = true;
-          connectedProvider = 'evm';
-          apexPortfolioAddress = walletAddress;
-        } else {
-          walletConnected = false;
-          walletAddress = null;
-          connectedProvider = null;
-          apexPortfolioAddress = null;
-        }
-      } catch (err) {
-        if (!silent) console.log('EVM Wallet sync failed', err);
-      }
-    }
-    updateWalletButtonState();
-  }
-
-  function installWalletListeners() {
-    if (!window.ethereum || walletListenersInstalled) return;
-    walletListenersInstalled = true;
-
-    window.ethereum.on('accountsChanged', accounts => {
-      if (activeNetwork !== 'avalanche') return;
-      if (accounts && accounts.length > 0) {
-        walletAddress = accounts[0];
-        walletConnected = true;
-        connectedProvider = 'evm';
-        apexPortfolioAddress = walletAddress;
-        updateWalletButtonState();
-        renderPortfolioHeader();
-        termLine(`<span class="t-out">// Active EVM wallet switched to ${shortAddress(walletAddress)}</span>`);
-        termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-      } else {
-        disconnectWallet();
-        renderPortfolioHeader();
-      }
-    });
-
-    window.ethereum.on('chainChanged', async () => {
-      if (activeNetwork !== 'avalanche') return;
-      await syncConnectedWallet({ silent: true });
-      renderPortfolioHeader();
-    });
-  }
-
-  async function ensureAvalancheChain() {
-    if (!window.ethereum) throw new Error('No EVM wallet detected');
-    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-    if (chainId === '0xa86a') return;
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0xa86a' }]
-      });
-    } catch (switchError) {
-      if (switchError.code === 4902) {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [{
-            chainId: '0xa86a',
-            chainName: 'Avalanche C-Chain',
-            nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
-            rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
-            blockExplorerUrls: ['https://snowtrace.io']
-          }]
-        });
-      } else {
-        throw switchError;
-      }
-    }
-  }
-
-  function updateWalletButtonState() {
-    const btn = document.getElementById('walletBtn');
-    const btnText = document.getElementById('walletBtnText');
-    const walletIcon = document.getElementById('walletIconEmoji');
-    const scanInput = document.getElementById('scanInput');
-
-    if (!btn || !btnText || !walletIcon) return;
-
-    const correctProvider = (activeNetwork === 'solana' && connectedProvider === 'solana') || 
-                            (activeNetwork === 'avalanche' && connectedProvider === 'evm');
-
-    if (walletConnected && walletAddress && correctProvider) {
+      // Update nav button
       const short = walletAddress.slice(0,4) + '...' + walletAddress.slice(-4);
       btnText.textContent = short;
-      walletIcon.textContent = connectedProvider === 'solana' ? '👻' : '🦊';
       btn.style.background = 'rgba(0,255,136,0.1)';
       btn.style.borderColor = 'var(--neon-green)';
       btn.style.boxShadow = '0 0 20px rgba(0,255,136,0.2)';
       btn.onclick = disconnectWallet;
 
+      // Auto-fill scanner input if empty
+      const scanInput = document.getElementById('scanInput');
       if (scanInput && !scanInput.value) {
-        scanInput.placeholder = `${activeNetwork === 'solana' ? 'Solana' : 'Avalanche'} wallet connected: ${short} — paste token address to scan`;
-      }
-    } else {
-      btnText.textContent = activeNetwork === 'solana' ? 'Connect Solana Wallet' : 'Connect Avalanche Wallet';
-      walletIcon.textContent = activeNetwork === 'solana' ? '👻' : '🦊';
-      btn.style.background = 'transparent';
-      btn.style.boxShadow = 'none';
-      btn.style.borderColor = 'rgba(0,245,255,0.3)';
-      btn.onclick = connectWallet;
-
-      if (scanInput && !scanInput.value) {
-        scanInput.placeholder = activeNetwork === 'solana' ? 'Paste Solana token address (mints)...' : 'Paste Avalanche token address (0x)...';
-      }
-    }
-  }
-
-  function renderPortfolioHeader() {
-    const state = document.getElementById('portfolioState');
-    const connectBtn = document.getElementById('portfolioConnectBtn');
-    
-    if (!state || !connectBtn) return;
-
-    const correctProvider = (activeNetwork === 'solana' && connectedProvider === 'solana') || 
-                            (activeNetwork === 'avalanche' && connectedProvider === 'evm');
-
-    if (walletConnected && walletAddress && correctProvider) {
-      state.textContent = 'PORTFOLIO LINKED — SCANNING LIVE HOLDINGS';
-      state.style.color = 'var(--neon-green)';
-      connectBtn.textContent = 'CONNECTED';
-      connectBtn.style.borderColor = 'rgba(0,255,136,0.45)';
-      connectBtn.style.color = 'var(--neon-green)';
-    } else {
-      state.textContent = activeNetwork === 'solana' ? 'CONNECT A SOLANA WALLET TO START' : 'CONNECT AN AVALANCHE WALLET TO START';
-      state.style.color = 'var(--text-muted)';
-      connectBtn.textContent = activeNetwork === 'solana' ? 'CONNECT SOLANA WALLET' : 'CONNECT AVALANCHE WALLET';
-      connectBtn.style.borderColor = 'rgba(0,245,255,0.2)';
-      connectBtn.style.color = 'var(--text-muted)';
-    }
-  }
-
-  // =====================
-  // MULTI-CHAIN SYSTEM TOGGLING
-  // =====================
-  function switchNetwork(net) {
-    activeNetwork = net;
-    
-    const solBtn = document.getElementById('toggleSolanaBtn');
-    const avaxBtn = document.getElementById('toggleAvalancheBtn');
-    const heroChain = document.getElementById('heroChain');
-    const heroDesc = document.getElementById('heroDesc');
-    const scanInput = document.getElementById('scanInput');
-    const exampleBtn = document.getElementById('exampleBtn');
-    const monitorPanel = document.getElementById('monitorPanel');
-    const authReviewerBtn = document.getElementById('authorizeReviewerBtn');
-    const publishBtn = document.getElementById('publishBtn');
-    
-    const evmWalletOpts = document.getElementById('evmWalletOptions');
-    const solWalletOpts = document.getElementById('solanaWalletOptions');
-    const walletModalTitle = document.getElementById('walletModalTitle');
-    
-    const portfolioEmpty = document.getElementById('portfolioEmpty');
-    const portfolioList = document.getElementById('portfolioList');
-    const portfolioSummary = document.getElementById('portfolioSummary');
-    
-    // Reset scanner UI state
-    clearTerminal();
-    document.getElementById('terminalBody').innerHTML = `
-      <div><span class="t-prompt">RB&gt;</span> <span class="t-out">System ready. Awaiting target address...</span></div>
-      <div><span class="t-out">// Paste a ${net === 'solana' ? 'Solana mint' : 'Avalanche 0x'} address and hit SCAN</span></div>
-      <div><span class="t-out">// Powered by RugBuster ${net === 'solana' ? 'Solana threat engine' : 'API + Avalanche live market data'}</span></div>
-      <div><span class="t-pink">// ENGINE: RUGBUSTER ${net === 'solana' ? 'SOLANA v1.0' : 'APEX v1.0'} — ONLINE</span></div>
-      <div>&nbsp;</div>
-      <div><span class="t-prompt">RB&gt;</span> <span class="cursor"></span></div>
-    `;
-    
-    document.getElementById('scoreBoard').style.display = 'none';
-    document.getElementById('riskMeter').style.display = 'none';
-    if (document.getElementById('tokenImageWrap')) {
-      document.getElementById('tokenImageWrap').style.display = 'none';
-    }
-    
-    // Hide lists and reset empty descriptions
-    if (portfolioList) portfolioList.style.display = 'none';
-    if (portfolioSummary) portfolioSummary.style.display = 'none';
-    if (portfolioEmpty) portfolioEmpty.style.display = 'block';
-
-    if (net === 'solana') {
-      solBtn.style.background = 'var(--neon-cyan)';
-      solBtn.style.color = 'var(--dark-bg)';
-      solBtn.style.fontWeight = 'bold';
-      
-      avaxBtn.style.background = 'transparent';
-      avaxBtn.style.color = 'var(--text-muted)';
-      avaxBtn.style.fontWeight = 'normal';
-      
-      if (heroChain) heroChain.innerHTML = 'Solana';
-      if (heroDesc) heroDesc.textContent = 'Paste any Solana token address. Our engine analyzes live chain and market signals in real-time.';
-      
-      if (authReviewerBtn) authReviewerBtn.style.display = 'none';
-      if (publishBtn) publishBtn.style.display = 'none';
-      if (monitorPanel) monitorPanel.style.display = 'none';
-      
-      if (exampleBtn) {
-        exampleBtn.setAttribute('onclick', "loadExample('solana')");
-      }
-      
-      if (evmWalletOpts) evmWalletOpts.style.display = 'none';
-      if (solWalletOpts) solWalletOpts.style.display = 'block';
-      if (walletModalTitle) walletModalTitle.textContent = '// SELECT SOLANA WALLET';
-      
-      if (portfolioEmpty) {
-        portfolioEmpty.innerHTML = `
-          Connect a Solana wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
-        `;
-      }
-      
-      updateWalletButtonState();
-      renderPortfolioHeader();
-      
-      // If Solana wallet is connected, scan SPL tokens!
-      if (walletConnected && connectedProvider === 'solana') {
-        scanPortfolio();
-      }
-    } else {
-      avaxBtn.style.background = 'var(--neon-pink)';
-      avaxBtn.style.color = 'var(--dark-bg)';
-      avaxBtn.style.fontWeight = 'bold';
-      
-      solBtn.style.background = 'transparent';
-      solBtn.style.color = 'var(--text-muted)';
-      solBtn.style.fontWeight = 'normal';
-      
-      if (heroChain) heroChain.innerHTML = 'Avalanche';
-      if (heroDesc) heroDesc.textContent = 'Paste any Avalanche token address. Our engine analyzes live chain and market signals in real-time.';
-      
-      if (authReviewerBtn) authReviewerBtn.style.display = 'inline-block';
-      if (publishBtn) publishBtn.style.display = 'inline-block';
-      if (monitorPanel) monitorPanel.style.display = 'block';
-      
-      if (exampleBtn) {
-        exampleBtn.setAttribute('onclick', "loadExample('apex')");
-      }
-      
-      if (evmWalletOpts) evmWalletOpts.style.display = 'block';
-      if (solWalletOpts) solWalletOpts.style.display = 'none';
-      if (walletModalTitle) walletModalTitle.textContent = '// SELECT AVALANCHE WALLET';
-      
-      if (portfolioEmpty) {
-        portfolioEmpty.innerHTML = `
-          Connect an Avalanche wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
-        `;
-      }
-      
-      updateWalletButtonState();
-      renderPortfolioHeader();
-      
-      // If Avalanche wallet is connected, scan Avalanche ERC20s!
-      if (walletConnected && connectedProvider === 'evm') {
-        scanPortfolio();
-      }
-    }
-  }
-
-  // =====================
-  // DUAL PORTFOLIO ENGINE
-  // =====================
-  async function scanPortfolio() {
-    const correctProvider = (activeNetwork === 'solana' && connectedProvider === 'solana') || 
-                            (activeNetwork === 'avalanche' && connectedProvider === 'evm');
-    if (!walletConnected || !walletAddress || !correctProvider) return;
-
-    if (activeNetwork === 'solana') {
-      await scanPortfolioSolana();
-    } else {
-      await scanPortfolioAvalanche();
-    }
-  }
-
-  async function scanPortfolioSolana() {
-    const btn      = document.getElementById('portfolioRefreshBtn');
-    const status   = document.getElementById('portfolioState');
-    const list     = document.getElementById('portfolioList');
-    const summary  = document.getElementById('portfolioSummary');
-    const empty    = document.getElementById('portfolioEmpty');
-
-    btn.textContent = '⏳ SCANNING...';
-    btn.disabled = true;
-    status.textContent = 'Fetching Solana SPL balances...';
-    list.innerHTML = '';
-    summary.style.display = 'none';
-    empty.style.display = 'none';
-    list.style.display = 'block';
-
-    let mints = [];
-    const programs = [
-      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',  // SPL Token
-      'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'   // Token-2022
-    ];
-
-    for (const prog of programs) {
-      try {
-        const res = await fetch('https://api.mainnet-beta.solana.com', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({
-            jsonrpc:'2.0', id:1,
-            method:'getTokenAccountsByOwner',
-            params:[walletAddress, {programId: prog}, {encoding:'jsonParsed'}]
-          })
-        });
-        const data = await res.json();
-        const accounts = data.result?.value || [];
-        for (const acc of accounts) {
-          const info = acc.account?.data?.parsed?.info;
-          if (!info) continue;
-          const bal = parseFloat(info.tokenAmount?.uiAmount || 0);
-          if (bal <= 0) continue; // skip zero-balance tokens
-          mints.push({
-            mint:     info.mint,
-            balance:  bal,
-            decimals: info.tokenAmount?.decimals || 0
-          });
-        }
-      } catch(e) { console.warn('Solana RPC error:', e); }
-    }
-
-    mints = mints.filter((m,i,a) => a.findIndex(x=>x.mint===m.mint)===i);
-
-    if (mints.length === 0) {
-      list.innerHTML = `<div style="text-align:center;padding:60px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-muted);">
-        // No SPL tokens found in this Solana address</div>`;
-      status.textContent = 'PORTFOLIO STATUS — NO ASSETS DETECTED';
-      btn.textContent = '⚡ RESCAN';
-      btn.disabled = false;
-      return;
-    }
-
-    // Render scanning placeholders
-    for (const t of mints) {
-      const row = document.createElement('div');
-      row.className = 'portfolio-row scanning';
-      row.id = `port-${t.mint}`;
-      row.innerHTML = `
-        <div class="port-icon">◎</div>
-        <div>
-          <div class="port-name" style="color:var(--text-muted);font-size:11px;">${t.mint.slice(0,8)}...${t.mint.slice(-4)}</div>
-          <div class="port-flags">Scanning...</div>
-        </div>
-        <div class="port-balance">${t.balance.toLocaleString(undefined,{maximumFractionDigits:4})}</div>
-        <div class="port-risk r-scan">— / —</div>`;
-      list.appendChild(row);
-    }
-
-    status.textContent = `Scanning ${mints.length} tokens...`;
-
-    let done=0, dangerCount=0, warnCount=0, safeCount=0;
-    const CONCURRENCY = 4;
-
-    async function processSolanaToken(t) {
-      const result = await getTokenRiskQuick(t.mint);
-      done++;
-      status.textContent = `Scanning ${done} / ${mints.length}...`;
-
-      const row = document.getElementById(`port-${t.mint}`);
-      if (!row) return;
-
-      const name   = result.name   || `${t.mint.slice(0,6)}...${t.mint.slice(-4)}`;
-      const symbol = result.symbol || '???';
-      const flags  = [...result.danger, ...result.warn];
-      const flagTxt = flags.length ? flags.slice(0,2).join(' · ') + (flags.length>2?` +${flags.length-2} more`:'') : 'No flags';
-
-      let rowClass='safe', riskClass='r-safe', riskTxt;
-      if (result.risk >= 75) {
-        rowClass='danger'; riskClass='r-danger'; riskTxt=`${result.risk}% HIGH`; dangerCount++;
-      } else if (result.risk >= 40) {
-        rowClass='warning'; riskClass='r-warning'; riskTxt=`${result.risk}% MED`; warnCount++;
-      } else {
-        riskTxt=`${result.risk}% LOW`; safeCount++;
+        scanInput.placeholder = `Wallet connected: ${short} — paste token address to scan`;
       }
 
-      const imgHtml = result.image
-        ? `<img src="${result.image}" onerror="this.parentElement.textContent='◎'" alt=""/>`
-        : '◎';
+      // Show portfolio section
+      document.getElementById('portfolioSection').style.display = 'block';
+      document.getElementById('portfolioSection').scrollIntoView({behavior:'smooth', block:'nearest'});
 
-      row.className = `portfolio-row ${rowClass === 'danger' ? 'risk' : rowClass === 'warning' ? 'warn' : ''}`;
-      row.innerHTML = `
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div class="port-icon" style="width:34px;height:34px;border:1px solid rgba(0,245,255,0.2);display:flex;align-items:center;justify-content:center;overflow:hidden;">${imgHtml}</div>
-          <div>
-            <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">${name}</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-cyan);letter-spacing:2px;">${symbol}</div>
-            <div class="port-flags" style="font-family:'Share Tech Mono',monospace;font-size:10px;margin-top:4px;color:${rowClass==='danger'?'#ff3d3d':rowClass==='warning'?'var(--neon-orange)':'var(--text-muted)'};">${flagTxt}</div>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">BALANCE</div>
-          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">${t.balance.toLocaleString(undefined,{maximumFractionDigits:4})}</div>
-        </div>
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">VALUE</div>
-          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">N/A</div>
-        </div>
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">RUG</div>
-          <div style="font-family:'Orbitron',monospace;font-size:13px;color:${rowClass==='danger'?'#ff3d3d':rowClass==='warning'?'var(--neon-orange)':'var(--neon-green)'};">${riskTxt}</div>
-        </div>
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SPEC</div>
-          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-muted);">—</div>
-        </div>`;
-
-      // Update Summary
-      summary.innerHTML = `
-        <span style="color:var(--neon-cyan);">TOKENS:</span> ${done}
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        <span style="color:${dangerCount ? '#ff5f57' : 'var(--neon-green)'};">SUSPICIOUS:</span> ${dangerCount}
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        <span style="color:${warnCount ? 'var(--neon-orange)' : 'var(--text-muted)'};">UNKNOWN:</span> ${warnCount}
-      `;
-      summary.style.display = 'block';
-    }
-
-    for (let i = 0; i < mints.length; i += CONCURRENCY) {
-      await Promise.all(mints.slice(i, i + CONCURRENCY).map(processSolanaToken));
-    }
-
-    status.textContent = `✓ Scan complete — ${dangerCount} high risk, ${warnCount} medium, ${safeCount} clean`;
-    btn.textContent = '⚡ RESCAN';
-    btn.disabled = false;
-  }
-
-  async function scanPortfolioAvalanche() {
-    const refreshBtn = document.getElementById('portfolioRefreshBtn');
-    refreshBtn.disabled = true;
-    refreshBtn.textContent = 'SCANNING...';
-    document.getElementById('portfolioState').textContent = 'QUERYING WALLET BALANCES AND SCORING TOKENS';
-
-    try {
-      const data = await fetchPortfolioScanFromApi(apexPortfolioAddress);
-      renderPortfolio(data.entries, data.suspicious);
-    } catch (err) {
-      document.getElementById('portfolioPanel').classList.remove('alert');
-      document.getElementById('portfolioEmpty').style.display = 'block';
-      document.getElementById('portfolioList').style.display = 'none';
-      document.getElementById('portfolioSummary').style.display = 'none';
-      document.getElementById('portfolioState').textContent = `PORTFOLIO SCAN FAILED // ${err.message}`;
-    } finally {
-      refreshBtn.disabled = false;
-      refreshBtn.textContent = 'REFRESH PORTFOLIO';
-    }
-  }
-
-  // =====================
-  // DUAL CHAIN THREAT SCANNERS
-  // =====================
-  async function runScan() {
-    if (activeNetwork === 'solana') {
-      await runScanSolana();
-    } else {
-      await runScanAvalanche();
-    }
-  }
-
-  async function runScanSolana() {
-    const address = document.getElementById('scanInput').value.trim();
-    if (!address) {
-      document.getElementById('scanInput').style.borderColor = '#ff3d3d';
-      setTimeout(() => document.getElementById('scanInput').style.borderColor = '', 1000);
-      return;
-    }
-
-    clearTerminal();
-    document.getElementById('riskMeter').style.display = 'none';
-    document.getElementById('tokenImageWrap').style.display = 'none';
-    setAlertButtonState(false, 'SEND ALERT');
-    setPublishButtonState(false, 'PUBLISH REPORT');
-    lastScannedAddress = null;
-    lastScanData = null;
-
-    const short = address.length > 16 ? address.slice(0, 8) + '...' + address.slice(-6) : address;
-    const isSOL = address.length >= 32 && !address.startsWith('0x');
-
-    if (!isSOL) {
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-danger">Unsupported address format</span>`);
-      termLine(`<span class="t-out">// Use a Solana mint address (typically 32-44 characters).</span>`);
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-      return;
-    }
-
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">scan ${short} --chain SOLANA --deep --ai</span>`);
-    await termLineDelay(`<span class="t-out">Initializing threat engine...</span>`, 300);
-    await termLineDelay(`<span class="t-out">Connecting to RugCheck API...</span>`, 500);
-    await termLineDelay(`<span class="t-out">Fetching full token report...</span>`, 700);
-
-    let data = {};
-    let rugcheckOk = false;
-    try {
-      const res = await fetch(`${RUGCHECK_API}/tokens/${encodeURIComponent(address)}/report`);
-      if (res.ok) {
-        data = await res.json();
-        rugcheckOk = true;
-      } else {
-        await termLineDelay(`<span class="t-warn">⚡ RugCheck: token not indexed (HTTP ${res.status}) — limited data available</span>`, 400);
-      }
     } catch(err) {
-      await termLineDelay(`<span class="t-warn">⚡ RugCheck unreachable — limited data available</span>`, 400);
+      console.log('Wallet connect cancelled');
     }
+  }
 
-    const tokenMeta  = data.tokenMeta || data.fileMeta || {};
-    const tokenName  = tokenMeta.name
-      ? `${tokenMeta.name}${tokenMeta.symbol ? ' (' + tokenMeta.symbol + ')' : ''}`
-      : short;
-    const tokenImage = tokenMeta.image || null;
+  function disconnectWallet() {
+    if (window.solana) window.solana.disconnect();
+    walletConnected = false;
+    walletAddress = null;
+    document.getElementById('portfolioSection').style.display = 'none';
+    const btn = document.getElementById('walletBtn');
+    const btnText = document.getElementById('walletBtnText');
+    btnText.textContent = 'Connect Wallet';
+    btn.style.background = 'transparent';
+    btn.style.boxShadow = 'none';
+    btn.onclick = connectWallet;
+  }
 
-    const tokenData  = data.token || {};
-    const mintAuth   = tokenData.mintAuthority;
-    const freezeAuth = tokenData.freezeAuthority;
-    const topHolders = data.topHolders || [];
-    const markets    = data.markets || [];
-    const lpLocked   = data.lpLockedPct || 0;
-    const mutable    = tokenMeta.mutable || false;
+  function openPayment(plan, price, e) {
+    e.preventDefault();
+    currentPlan = plan;
+    currentPrice = parseInt(price);
 
-    const SYSTEM_ADDR = '11111111111111111111111111111111';
-    const dangerFlags = [];
-    const warnFlags   = [];
+    document.getElementById('payPlanName').textContent = plan.toUpperCase();
 
-    if (mintAuth && mintAuth !== SYSTEM_ADDR) {
-      dangerFlags.push('✗ Mint Authority Active — dev can print unlimited tokens');
-    }
-    if (freezeAuth && freezeAuth !== SYSTEM_ADDR) {
-      dangerFlags.push('✗ Freeze Authority Active — wallets can be frozen');
-    }
-    if (topHolders.length > 0) {
-      const top1  = topHolders[0].pct || 0;
-      const top5  = topHolders.slice(0,5).reduce((s,h) => s + (h.pct||0), 0);
-      if (top1 > 50)       dangerFlags.push(`✗ Top holder owns ${top1.toFixed(1)}% of supply — extreme concentration`);
-      else if (top1 > 20)  warnFlags.push(`⚡ Top holder owns ${top1.toFixed(1)}% of supply`);
-      if (top5 > 80)       warnFlags.push(`⚡ Top 5 holders own ${top5.toFixed(1)}% of supply`);
-    }
-    if (markets.length > 0 && lpLocked === 0) {
-      warnFlags.push('⚡ Liquidity not locked — rug pull possible');
-    } else if (lpLocked > 0 && lpLocked < 50) {
-      warnFlags.push(`⚡ Only ${lpLocked.toFixed(0)}% of LP locked`);
-    }
-    if (mutable) warnFlags.push('⚡ Mutable metadata — can be changed by dev');
-
-    (data.risks || []).forEach(r => {
-      if (r.level === 'danger') dangerFlags.push(`✗ ${r.name || '?'}`);
-      else if (r.level === 'warn') warnFlags.push(`⚡ ${r.name || '?'}`);
-    });
-
-    const BLUE_CHIPS = ['JUP','BONK','WIF','SOL','USDC','USDT','RAY','ORCA'];
-    const symUpper   = (tokenMeta.symbol || '').toUpperCase();
-    const isKnownSafe = BLUE_CHIPS.some(x => symUpper.includes(x));
-
-    let risk;
-    if (isKnownSafe)              risk = 5;
-    else if (dangerFlags.length)  risk = 85;
-    else if (warnFlags.length >= 2) risk = 65;
-    else if (warnFlags.length)    risk = 45;
-    else                          risk = 15;
-
-    const allFlags = [...dangerFlags, ...warnFlags];
-
-    await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">SOLANA</span>`, 200);
-    await termLineDelay(`<span class="t-cyan">✓ Token:</span>    <span class="t-cmd">${tokenName}</span>`, 250);
-    await termLineDelay(`<span class="t-cyan">✓ Address:</span>  <span class="t-out">${short}</span>`, 200);
-    const mintDisplay   = !rugcheckOk ? ['t-out','— Unknown'] : mintAuth && mintAuth !== SYSTEM_ADDR ? ['t-danger','🚨 Active'] : ['t-success','✅ Disabled'];
-    const freezeDisplay = !rugcheckOk ? ['t-out','— Unknown'] : freezeAuth && freezeAuth !== SYSTEM_ADDR ? ['t-danger','🚨 Active'] : ['t-success','✅ Disabled'];
-    await termLineDelay(`<span class="t-cyan">✓ Mint Auth:</span>   <span class="${mintDisplay[0]}">${mintDisplay[1]}</span>`, 200);
-    await termLineDelay(`<span class="t-cyan">✓ Freeze Auth:</span> <span class="${freezeDisplay[0]}">${freezeDisplay[1]}</span>`, 200);
-    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-    await termLineDelay(`<span class="t-out">── RISK FLAGS ─────────────────────────────</span>`, 300);
-
-    if (allFlags.length === 0) {
-      await termLineDelay(`<span class="t-success">  ✓ No risk flags found</span>`, 300);
-    }
-    for (let i = 0; i < allFlags.length; i++) {
-      const f   = allFlags[i];
-      const cls = f.startsWith('✗') ? 't-danger' : 't-warn';
-      await termLineDelay(`<span class="${cls}">  ${f}</span>`, 100 + i * 70);
-    }
-
-    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-    await termLineDelay(`<span class="t-out">── VERDICT ────────────────────────────────</span>`, 200);
-
-    if (!rugcheckOk && allFlags.length === 0) {
-      await termLineDelay(`<span class="t-warn">  ⚡ THREAT LEVEL : UNKNOWN</span>`, 250);
-      await termLineDelay(`<span class="t-warn">  ⚡ RESULT       : NOT INDEXED — token not found in RugCheck database</span>`, 200);
-    } else if (risk >= 75) {
-      await termLineDelay(`<span class="t-danger">  ⚠ THREAT LEVEL : CRITICAL</span>`, 250);
-      await termLineDelay(`<span class="t-danger">  ⚠ RESULT       : HIGH RISK — POTENTIAL RUG / SCAM</span>`, 200);
-      await termLineDelay(`<span class="t-danger">  ✗ DO NOT INTERACT WITH THIS TOKEN</span>`, 200);
-    } else if (risk >= 40) {
-      await termLineDelay(`<span class="t-warn">  ⚡ THREAT LEVEL : ELEVATED</span>`, 250);
-      await termLineDelay(`<span class="t-warn">  ⚡ RESULT       : MEDIUM RISK — PROCEED WITH CAUTION</span>`, 200);
+    if (price === '0') {
+      document.getElementById('payPlanPrice').textContent = 'FREE';
+      document.getElementById('payPlanPrice').style.color = 'var(--neon-green)';
+      document.getElementById('payBtn').textContent = '⚡ ACTIVATE FREE PLAN';
+      document.getElementById('payBtn').style.background = 'var(--neon-green)';
+      document.getElementById('paySOL').style.display = 'none';
+      document.getElementById('payUSDC').style.display = 'none';
     } else {
-      await termLineDelay(`<span class="t-success">  ✓ THREAT LEVEL : LOW</span>`, 250);
-      await termLineDelay(`<span class="t-success">  ✓ RESULT       : APPEARS CLEAN</span>`, 200);
+      document.getElementById('payPlanPrice').textContent = '$' + price + '/mo';
+      document.getElementById('payPlanPrice').style.color = 'var(--neon-pink)';
+      document.getElementById('payBtn').textContent = '⚡ CONFIRM PAYMENT';
+      document.getElementById('payBtn').style.background = 'var(--neon-pink)';
+      document.getElementById('paySOL').style.display = 'block';
+      document.getElementById('payUSDC').style.display = 'block';
+      const solAmt = (currentPrice / SOL_PRICE).toFixed(3);
+      document.getElementById('solAmount').textContent = `≈ ${solAmt} SOL`;
+      document.getElementById('usdcAmount').textContent = `${currentPrice} USDC`;
+      selectCurrency('SOL');
     }
 
-    const displayScore = Math.max(0, Math.min(100, risk));
+    if (walletConnected && walletAddress) {
+      const short = walletAddress.slice(0,6) + '...' + walletAddress.slice(-6);
+      document.getElementById('payFromAddr').textContent = short;
+      document.getElementById('walletPayInfo').style.display = 'block';
+      document.getElementById('connectFirst').style.display = 'none';
+    } else {
+      document.getElementById('walletPayInfo').style.display = 'none';
+      if (currentPrice > 0) document.getElementById('connectFirst').style.display = 'block';
+    }
 
-    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-    await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by RugCheck.xyz</span>`, 200);
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+    document.getElementById('paymentModal').style.display = 'flex';
+  }
 
-    setRiskMeter(displayScore);
-    showTokenImage(tokenImage, tokenName, address);
+  function closePaymentModal() {
+    document.getElementById('paymentModal').style.display = 'none';
+  }
 
-    lastScannedAddress = address;
-    lastScanData = {
-      tokenName: tokenName,
-      symbol: symUpper || 'SOL',
-      rugScore: displayScore,
-      rugReasons: allFlags,
-      verdict: risk >= 75 ? 'HIGH RISK — POTENTIAL RUG / SCAM' : risk >= 40 ? 'MEDIUM RISK — PROCEED WITH CAUTION' : 'APPEARS CLEAN'
+  function selectCurrency(cur) {
+    selectedCurrency = cur;
+    const solEl = document.getElementById('paySOL');
+    const usdcEl = document.getElementById('payUSDC');
+    if (cur === 'SOL') {
+      solEl.style.borderColor = 'rgba(0,245,255,0.6)';
+      solEl.style.background = 'rgba(0,245,255,0.08)';
+      usdcEl.style.borderColor = 'rgba(255,255,255,0.08)';
+      usdcEl.style.background = 'transparent';
+    } else {
+      usdcEl.style.borderColor = 'rgba(0,245,255,0.6)';
+      usdcEl.style.background = 'rgba(0,245,255,0.08)';
+      solEl.style.borderColor = 'rgba(255,255,255,0.08)';
+      solEl.style.background = 'transparent';
+    }
+  }
+
+  async function simulatePayment() {
+    if (currentPrice > 0 && !walletConnected) {
+      document.getElementById('connectFirst').style.display = 'block';
+      connectWallet();
+      return;
+    }
+
+    const btn = document.getElementById('payBtn');
+    btn.textContent = '⏳ PROCESSING...';
+    btn.style.opacity = '0.7';
+    btn.disabled = true;
+
+    // Simulate transaction delay
+    await new Promise(r => setTimeout(r, 2200));
+
+    closePaymentModal();
+    showSuccess(currentPlan);
+  }
+
+  function showSuccess(plan) {
+    document.getElementById('successPlan').textContent = plan.toUpperCase() + ' ACTIVATED';
+    const addr = walletAddress
+      ? walletAddress.slice(0,8) + '...' + walletAddress.slice(-8)
+      : 'DEMO MODE';
+    document.getElementById('successAddr').innerHTML =
+      `<span style="color:var(--text-muted);">WALLET:</span> ${addr}`;
+    document.getElementById('successModal').style.display = 'flex';
+  }
+
+  function closeSuccess() {
+    document.getElementById('successModal').style.display = 'none';
+    const btn = document.getElementById('payBtn');
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+  }
+
+  // Close modals on backdrop click
+  document.getElementById('walletModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('walletModal')) closeWalletModal();
+  });
+  document.getElementById('paymentModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('paymentModal')) closePaymentModal();
+  });
+  document.getElementById('finalScanModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('finalScanModal')) closeFinalScan();
+  });
+
+  const RUGCHECK_API = 'https://api.rugcheck.xyz/v1';
+  const SOLANA_FEED_API = 'https://rugbuster-api-production.up.railway.app/api/recent-scans?chain=solana&limit=10';
+  let remoteRecentScans = [];
+
+  // Glitch effect on stat numbers
+  document.querySelectorAll('.stat-number').forEach(el => {
+    const original = el.textContent;
+    el.addEventListener('mouseenter', () => {
+      let i = 0;
+      const chars = '0123456789ABCDEF$%#@!';
+      const interval = setInterval(() => {
+        el.textContent = original.split('').map((c, idx) =>
+          idx < i ? original[idx] : chars[Math.floor(Math.random() * chars.length)]
+        ).join('');
+        i++;
+        if (i > original.length) { el.textContent = original; clearInterval(interval); }
+      }, 40);
+    });
+  });
+
+  // Enter key on input
+  document.getElementById('scanInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') runScan();
+  });
+
+  function loadExample(type) {
+    const examples = {
+      solana: 'GYpwfcxF1AgPYoCbDTQeKrbAH9pwrzTrMDJNw9nVpump'
     };
-    setAlertButtonState(true, 'SEND ALERT');
-
-    if (risk >= 75) {
-      const dangerList = dangerFlags.map(f => `• ${f}`).join('<br>');
-      setTimeout(() => {
-        showCriticalAlert(
-          'HIGH RISK TOKEN DETECTED',
-          `Token: <span style="color:#ff3d3d">${tokenName}</span><br>
-           Address: <span style="color:var(--text-muted)">${short}</span><br>
-           Risk Score: <span style="color:#ff3d3d;font-size:18px">${risk}%</span><br><br>
-           ${dangerList ? `<span style="color:#ff3d3d">${dangerList}</span><br><br>` : ''}
-           <span style="color:#ff3d3d">⚠ DO NOT BUY — DO NOT INTERACT</span>`
-        );
-      }, 800);
-    }
+    document.getElementById('scanInput').value = examples[type] || examples.solana;
   }
 
-  async function runScanAvalanche() {
-    const address = document.getElementById('scanInput').value.trim();
-    if (!address) {
-      document.getElementById('scanInput').style.borderColor = '#ff3d3d';
-      setTimeout(() => document.getElementById('scanInput').style.borderColor = '', 1000);
-      return;
-    }
-
-    clearTerminal();
-    document.getElementById('scoreBoard').style.display = 'none';
-    document.getElementById('tokenImageWrap').style.display = 'none';
-    setAlertButtonState(false, 'SEND ALERT');
-    setPublishButtonState(false, 'PUBLISH REPORT');
-    lastScannedAddress = null;
-    lastScanData = null;
-
-    const short = shortAddress(address);
-    const isAPEX = isApexAddress(address);
-
-    if (!isAPEX) {
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-danger">Unsupported address format</span>`);
-      termLine(`<span class="t-out">// Use an Apex / Avalanche 0x token address.</span>`);
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-      return;
-    }
-
-    const chain = 'APEX/AVALANCHE';
-
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">scan ${short} --chain ${chain} --deep --ai</span>`);
-    await termLineDelay(`<span class="t-out">Initializing threat engine...</span>`, 300);
-    await termLineDelay(`<span class="t-out">Connecting to Avalanche live market feeds...</span>`, 500);
-    await termLineDelay(`<span class="t-out">Fetching Apex token pairs and liquidity...</span>`, 700);
-
-    let apexData;
-    try {
-      apexData = await fetchApexScan(address);
-    } catch (err) {
-      await termLineDelay(`<span class="t-danger">✗ SCAN FAILED: ${err.message}</span>`, 400);
-      await termLineDelay(`<span class="t-out">// Ensure this is an Avalanche token address with live liquidity.</span>`, 200);
-      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-      return;
-    }
-
-    const rugFlags = [
-      ...apexData.rugReasons.high,
-      ...apexData.rugReasons.medium,
-      ...apexData.rugReasons.neutral.map(reason => `· ${reason}`)
-    ];
-    const speculationFlags = [
-      ...apexData.speculationReasons.high,
-      ...apexData.speculationReasons.medium,
-      ...apexData.speculationReasons.neutral.map(reason => `· ${reason}`)
-    ];
-
-    await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">APEX / AVALANCHE</span>`, 200);
-    await termLineDelay(`<span class="t-cyan">✓ Token:</span>    <span class="t-cmd">${apexData.tokenName}</span>`, 220);
-    await termLineDelay(`<span class="t-cyan">✓ Address:</span>  <span class="t-out">${short}</span>`, 180);
-    await termLineDelay(`<span class="t-cyan">✓ Primary DEX:</span> <span class="t-cmd">${apexData.dexId}</span>`, 180);
-    await termLineDelay(`<span class="t-cyan">✓ Pair:</span>     <span class="t-out">${apexData.pairLabel}</span>`, 180);
-    await termLineDelay(`<span class="t-cyan">✓ Liquidity:</span> <span class="t-cmd">${formatUsd(apexData.liquidityUsd)}</span>`, 180);
-    await termLineDelay(`<span class="t-cyan">✓ FDV:</span>      <span class="t-cmd">${formatUsd(apexData.fdv)}</span>`, 180);
-    await termLineDelay(`<span class="t-cyan">✓ 24h Volume:</span> <span class="t-cmd">${formatUsd(apexData.volume24h)}</span>`, 180);
-    await termLineDelay(`<span class="t-cyan">✓ 24h Flow:</span> <span class="t-out">${apexData.buys24h === null || apexData.sells24h === null ? 'UNKNOWN' : `${apexData.buys24h} buys / ${apexData.sells24h} sells`}</span>`, 180);
-    await termLineDelay(`<span class="t-cyan">✓ 24h Price:</span> <span class="${apexData.priceChange24h !== null && apexData.priceChange24h < 0 ? 't-warn' : 't-success'}">${apexData.priceChange24h === null ? 'UNKNOWN' : `${apexData.priceChange24h.toFixed(1)}%`}</span>`, 180);
-    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-    await termLineDelay(`<span class="t-out">── RUG SCORE // ON-CHAIN FACTS ───────────</span>`, 260);
-    await termLineDelay(`<span class="${apexData.rugStatus === 'HIGH' ? 't-danger' : apexData.rugStatus === 'ELEVATED' ? 't-warn' : apexData.rugStatus === 'LOW' ? 't-success' : 't-out'}">  ${apexData.rugStatus} : ${apexData.rugScore === null ? 'UNKNOWN' : apexData.rugScore}</span>`, 180);
-    if (!rugFlags.length) {
-      await termLineDelay(`<span class="t-success">  ✓ No hard-fact rug flags detected</span>`, 220);
-    }
-    for (let i = 0; i < rugFlags.length; i++) {
-      const flag = rugFlags[i];
-      const cls = flag.startsWith('✗') ? 't-danger' : flag.startsWith('⚡') ? 't-warn' : 't-out';
-      await termLineDelay(`<span class="${cls}">  ${flag}</span>`, 90 + i * 60);
-    }
-
-    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-    await termLineDelay(`<span class="t-out">── SPECULATION SCORE // MARKET DATA ──────</span>`, 200);
-    await termLineDelay(`<span class="${apexData.speculationStatus === 'HIGH' ? 't-danger' : apexData.speculationStatus === 'ELEVATED' ? 't-warn' : apexData.speculationStatus === 'LOW' ? 't-success' : 't-out'}">  ${apexData.speculationStatus} : ${apexData.speculationScore === null ? 'UNKNOWN' : apexData.speculationScore}</span>`, 180);
-    if (!speculationFlags.length) {
-      await termLineDelay(`<span class="t-success">  ✓ No market-structure speculation flags detected</span>`, 220);
-    }
-    for (let i = 0; i < speculationFlags.length; i++) {
-      const flag = speculationFlags[i];
-      const cls = flag.startsWith('✗') ? 't-danger' : flag.startsWith('⚡') ? 't-warn' : 't-out';
-      await termLineDelay(`<span class="${cls}">  ${flag}</span>`, 90 + i * 60);
-    }
-
-    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-    await termLineDelay(`<span class="t-out">── FINAL READOUT ──────────────────────────</span>`, 200);
-
-    if (apexData.rugStatus === 'HIGH') {
-      await termLineDelay(`<span class="t-danger">  ⚠ RUG STATUS   : HIGH</span>`, 230);
-      await termLineDelay(`<span class="t-danger">  ⚠ RESULT       : HARD ON-CHAIN FACTS LOOK BAD</span>`, 200);
-      await termLineDelay(`<span class="t-danger">  ✗ DO NOT INTERACT WITHOUT MANUAL REVIEW</span>`, 180);
-    } else if (apexData.speculationStatus === 'HIGH') {
-      await termLineDelay(`<span class="t-danger">  ⚠ SPECULATION  : HIGH</span>`, 230);
-      await termLineDelay(`<span class="t-danger">  ⚠ RESULT       : MARKET DEPTH LOOKS DANGEROUS</span>`, 200);
-      await termLineDelay(`<span class="t-danger">  ✗ EXIT LIQUIDITY MAY BE TOO THIN FOR SAFE SIZE</span>`, 180);
-    } else if (apexData.speculationStatus === 'ELEVATED') {
-      await termLineDelay(`<span class="t-warn">  ⚠ SPECULATION  : ELEVATED</span>`, 230);
-      await termLineDelay(`<span class="t-warn">  ⚠ RESULT       : LOW RUG RISK, BUT MARKET DEPTH IS SHALLOW</span>`, 200);
-      await termLineDelay(`<span class="t-warn">  ⚡ TREAT THIS AS A SPECULATIVE POSITION, NOT A STABLE ONE</span>`, 180);
-    } else if (apexData.speculationStatus === 'UNKNOWN') {
-      await termLineDelay(`<span class="t-out">  · SPECULATION  : UNKNOWN</span>`, 230);
-      await termLineDelay(`<span class="t-out">  · RESULT       : NO LIQUIDITY EVIDENCE, DO NOT GUESS</span>`, 200);
-    } else {
-      await termLineDelay(`<span class="t-success">  ✓ RUG STATUS   : ${apexData.rugStatus}</span>`, 230);
-      await termLineDelay(`<span class="t-success">  ✓ SPECULATION  : ${apexData.speculationStatus}</span>`, 200);
-    }
-
-    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-    await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by ${apexData.source || 'RugBuster Avalanche data'}</span>`, 200);
-    if (apexData.pairUrl) {
-      await termLineDelay(`<span class="t-out">// Pair URL: ${apexData.pairUrl}</span>`, 120);
-    }
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-
-    setScoreMeter('rugScore', apexData.rugScore, apexData.rugStatus, '· UNKNOWN — ON-CHAIN FACTS ARE INCOMPLETE');
-    setScoreMeter('specScore', apexData.speculationScore, apexData.speculationStatus, '· UNKNOWN — NO LIVE LIQUIDITY EVIDENCE');
-    showTokenImage(apexData.tokenImage, apexData.tokenName, address);
-    
-    lastScannedAddress = address;
-    lastScanData = apexData;
-    
-    setAlertButtonState(true, 'SEND ALERT');
-    setPublishButtonState(true, 'PUBLISH REPORT');
-
-    if (apexData.rugStatus === 'HIGH' || apexData.speculationStatus === 'HIGH') {
-      const dangerList = [...apexData.rugReasons.high, ...apexData.speculationReasons.high].map(flag => `• ${flag.replace(/^[✗⚡·]\s*/, '')}`).join('<br>');
-      setTimeout(() => {
-        showCriticalAlert(
-          apexData.rugStatus === 'HIGH' ? 'HIGH RUG RISK DETECTED' : 'HIGH SPECULATION DETECTED',
-          `Token: <span style="color:#ff3d3d">${apexData.tokenName}</span><br>
-           Address: <span style="color:var(--text-muted)">${short}</span><br>
-           Rug Score: <span style="color:#ff3d3d;font-size:18px">${apexData.rugScore === null ? 'UNKNOWN' : `${apexData.rugScore}%`}</span><br>
-           Speculation Score: <span style="color:#ff3d3d;font-size:18px">${apexData.speculationScore === null ? 'UNKNOWN' : `${apexData.speculationScore}%`}</span><br><br>
-           ${dangerList ? `<span style="color:#ff3d3d">${dangerList}</span><br><br>` : ''}
-           <span style="color:#ff3d3d">⚠ REVIEW THE HARD FACTS AND MARKET EVIDENCE BEFORE TOUCHING THIS TOKEN</span>`
-        );
-      }, 800);
-    }
+  function termLine(html) {
+    const body = document.getElementById('terminalBody');
+    const line = document.createElement('div');
+    line.innerHTML = html;
+    // Remove old cursor
+    const oldCursor = body.querySelector('.cursor');
+    if (oldCursor) oldCursor.parentElement.remove();
+    body.appendChild(line);
+    body.scrollTop = body.scrollHeight;
   }
 
-  // =====================
-  // SOLANA HELPER THREAT GETTER
-  // =====================
-  async function getTokenRiskQuick(mint) {
-    let data = {};
-    try {
-      const res = await fetch(`${RUGCHECK_API}/tokens/${encodeURIComponent(mint)}/report`);
-      if (res.ok) data = await res.json();
-    } catch(e) {}
+  function termLineDelay(html, delay) {
+    return new Promise(r => setTimeout(() => { termLine(html); r(); }, delay));
+  }
 
-    const SYSTEM = '11111111111111111111111111111111';
-    const tokenData  = data.token || {};
-    const mintAuth   = tokenData.mintAuthority;
-    const freezeAuth = tokenData.freezeAuthority;
-    const topHolders = data.topHolders || [];
-    const markets    = data.markets    || [];
-    const lpLocked   = data.lpLockedPct || 0;
-    const meta       = data.tokenMeta  || {};
+  function clearTerminal() {
+    const body = document.getElementById('terminalBody');
+    body.innerHTML = '';
+  }
 
-    const danger = [], warn = [];
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[ch]));
+  }
 
-    if (mintAuth   && mintAuth   !== SYSTEM) danger.push('Mint Authority Active');
-    if (freezeAuth && freezeAuth !== SYSTEM) danger.push('Freeze Authority Active');
+  function lerpScore(value, x0, x1, y0, y1) {
+    if (x1 <= x0) return y1;
+    const ratio = Math.max(0, Math.min(1, (value - x0) / (x1 - x0)));
+    return y0 + ratio * (y1 - y0);
+  }
 
-    if (topHolders.length) {
-      const t1 = topHolders[0].pct || 0;
-      const t5 = topHolders.slice(0,5).reduce((s,h)=>s+(h.pct||0),0);
-      if (t1 > 50)  danger.push(`Top holder ${t1.toFixed(0)}%`);
-      else if(t1>20) warn.push(`Top holder ${t1.toFixed(0)}%`);
-      if (t5 > 80)  warn.push(`Top 5 own ${t5.toFixed(0)}%`);
-    }
-    if (markets.length && lpLocked === 0) warn.push('LP not locked');
-    if (meta.mutable) warn.push('Mutable metadata');
-    (data.risks||[]).forEach(r => {
-      if(r.level==='danger') danger.push(r.name||'?');
-      else if(r.level==='warn') warn.push(r.name||'?');
+  function rugcheckScoreToRiskPercent(score) {
+    const raw = Number(score);
+    if (!Number.isFinite(raw) || raw < 0) return 50;
+    if (raw < 100) return Math.round(lerpScore(raw, 0, 100, 5, 15));
+    if (raw < 2000) return Math.round(lerpScore(raw, 100, 2000, 30, 50));
+    if (raw < 5000) return Math.round(lerpScore(raw, 2000, 5000, 50, 65));
+    if (raw < 12000) return Math.round(lerpScore(raw, 5000, 12000, 65, 78));
+    if (raw < 72000) return Math.round(lerpScore(raw, 12000, 72000, 78, 90));
+    return Math.round(Math.min(98, lerpScore(raw, 72000, 162000, 90, 98)));
+  }
+
+  function riskLabelFromPercent(risk) {
+    if (risk >= 75) return 'DANGER';
+    if (risk >= 30) return 'WARN';
+    return 'GOOD';
+  }
+
+  function hasCreatorRugHistory(riskNames) {
+    return riskNames.some(name => /creator history of rugged tokens/i.test(name));
+  }
+
+  function resetCiaPath(address) {
+    const short = address ? (address.length > 16 ? address.slice(0, 8) + '...' + address.slice(-6) : address) : 'Awaiting Solana mint';
+    document.getElementById('ciaStatus').textContent = address ? 'SCANNING' : 'READY';
+    document.getElementById('ciaStatus').className = address ? 'cia-status active' : 'cia-status';
+    document.getElementById('ciaTargetName').textContent = short;
+    document.getElementById('ciaTargetMeta').textContent = address ? 'SOLANA · live browser scan' : 'Paste a mint and run scan';
+    document.querySelectorAll('.cia-module').forEach(module => {
+      module.classList.remove('scanning', 'done', 'warn', 'danger');
     });
-
-    const CHIPS = ['JUP','BONK','WIF','SOL','USDC','USDT','RAY','ORCA'];
-    const sym = (meta.symbol || '').toUpperCase();
-    const safe = CHIPS.some(x => sym.includes(x));
-
-    let risk;
-    if (safe)              risk = 5;
-    else if (danger.length) risk = 85;
-    else if (warn.length>=2) risk = 65;
-    else if (warn.length)   risk = 45;
-    else                    risk = 15;
-
-    const name   = meta.name   || null;
-    const symbol = meta.symbol || null;
-    const image  = meta.image  || null;
-    return {risk, danger, warn, name, symbol, image, hasData: Object.keys(data).length > 0};
+    const defaults = {
+      'cia-rugcheck': 'waiting',
+      'cia-authority': 'waiting',
+      'cia-holders': 'waiting',
+      'cia-liquidity': 'waiting',
+      'cia-metadata': 'waiting',
+      'cia-syndicate': 'deterministic model online'
+    };
+    Object.entries(defaults).forEach(([id, text]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    });
+    const final = document.getElementById('ciaFinal');
+    final.className = 'cia-final low';
+    document.getElementById('ciaFinalTitle').textContent = 'ANALYZING';
+    document.getElementById('ciaFinalMeta').textContent = 'Rug score pending';
   }
 
-  // =====================
-  // AVALANCHE SCORES & RENDERING
-  // =====================
-  function scorePresentation(status) {
-    if (status === 'HIGH') {
-      return { color: '#ff3d3d', label: 'HIGH', text: '⚠ HIGH RISK — HARD EVIDENCE LOOKS BAD' };
-    }
-    if (status === 'ELEVATED') {
-      return { color: 'var(--neon-orange)', label: 'ELEVATED', text: '⚡ ELEVATED RISK — REVIEW BEFORE ACTION' };
-    }
-    if (status === 'LOW') {
-      return { color: 'var(--neon-green)', label: 'LOW', text: '✓ LOW RISK — EVIDENCE LOOKS CLEAN' };
-    }
-    return { color: 'var(--text-muted)', label: 'UNKNOWN', text: '· UNKNOWN — NOT ENOUGH EVIDENCE YET' };
+  async function activateCiaModule(key, value, severity = 'good', delay = 140) {
+    const module = document.querySelector(`.cia-module[data-module="${key}"]`);
+    const valueEl = document.getElementById(`cia-${key}`);
+    if (!module || !valueEl) return;
+    module.classList.add('scanning');
+    await new Promise(r => setTimeout(r, delay));
+    valueEl.textContent = value;
+    module.classList.remove('scanning');
+    module.classList.add('done');
+    if (severity === 'warn') module.classList.add('warn');
+    if (severity === 'danger') module.classList.add('danger');
   }
 
-  function setScoreMeter(prefix, score, status, emptyText) {
-    const board = document.getElementById('scoreBoard');
-    const bar = document.getElementById(`${prefix}Bar`);
-    const scoreEl = document.getElementById(`${prefix}Value`);
-    const label = document.getElementById(`${prefix}Label`);
-    board.style.display = 'block';
-
-    const present = scorePresentation(status);
-    bar.style.background = present.color;
-    scoreEl.style.color = present.color;
-    scoreEl.style.textShadow = `0 0 20px ${present.color}`;
-    label.style.color = present.color;
-    label.textContent = score === null ? emptyText : present.text;
-
-    if (score === null) {
-      bar.style.width = '0%';
-      scoreEl.textContent = 'UNKNOWN';
-      return;
-    }
-
-    setTimeout(() => {
-      bar.style.width = `${score}%`;
-      let current = 0;
-      const step = setInterval(() => {
-        current += 2;
-        scoreEl.textContent = Math.min(current, score);
-        if (current >= score) clearInterval(step);
-      }, 20);
-    }, 100);
+  function setCiaFinal(risk, summary, tokenName) {
+    const final = document.getElementById('ciaFinal');
+    let cls = 'low';
+    let title = 'LOW RISK';
+    if (risk >= 75) { cls = 'high'; title = 'HIGH RISK'; }
+    else if (risk >= 40) { cls = 'medium'; title = 'MEDIUM RISK'; }
+    final.className = `cia-final ${cls}`;
+    document.getElementById('ciaFinalTitle').textContent = title;
+    document.getElementById('ciaFinalMeta').textContent = `Rug ${risk} · ${summary}`;
+    document.getElementById('ciaStatus').textContent = 'COMPLETE';
+    document.getElementById('ciaStatus').className = 'cia-status complete';
+    document.getElementById('ciaTargetName').textContent = tokenName;
   }
+
+  function getRecentScans() {
+    try {
+      return JSON.parse(localStorage.getItem('rugbuster_solana_recent_scans') || '[]');
+    } catch(e) {
+      return [];
+    }
+  }
+
+  function saveRecentScan(entry) {
+    const next = [entry, ...getRecentScans().filter(x => x.address !== entry.address)].slice(0, 10);
+    localStorage.setItem('rugbuster_solana_recent_scans', JSON.stringify(next));
+    renderRecentScans();
+  }
+
+  function riskFromVerdict(verdict) {
+    const value = String(verdict || '').toUpperCase();
+    if (value === 'DANGER' || value === 'HIGH') return 85;
+    if (value === 'WARN' || value === 'ELEVATED') return 55;
+    if (value === 'GOOD' || value === 'LOW') return 15;
+    return 40;
+  }
+
+  function shortTime(value) {
+    const parsed = Date.parse(value || '');
+    if (!Number.isFinite(parsed)) return value || 'LIVE';
+    return new Date(parsed).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+  }
+
+  function normalizeRemoteScan(item) {
+    const name = item.token_name || item.token_symbol || item.address || 'Solana token';
+    const symbol = item.token_symbol || 'SOL';
+    const risk = riskFromVerdict(item.verdict || item.label);
+    return {
+      time: shortTime(item.created_at),
+      name,
+      symbol,
+      address: item.address || '',
+      risk,
+      summary: item.flag || item.output || 'Bot scan recorded in Solana corpus',
+      source: 'bot'
+    };
+  }
+
+  async function fetchRemoteRecentScans() {
+    try {
+      const response = await fetch(SOLANA_FEED_API, {cache: 'no-store'});
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      remoteRecentScans = Array.isArray(data.items) ? data.items.map(normalizeRemoteScan) : [];
+      renderRecentScans();
+      const state = document.getElementById('scanFeedState');
+      if (state) state.textContent = remoteRecentScans.length ? 'BOT FEED LIVE' : 'WAITING FOR BOT FEED';
+    } catch (err) {
+      const state = document.getElementById('scanFeedState');
+      if (state) state.textContent = 'LOCAL FEED';
+    }
+  }
+
+  function renderRecentScans() {
+    const rows = document.getElementById('scanFeedRows');
+    if (!rows) return;
+    const seen = new Set();
+    const scans = [...remoteRecentScans, ...getRecentScans()].filter(scan => {
+      const key = String(scan.address || scan.name || '') + String(scan.time || '');
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 10);
+    if (!scans.length) return;
+    rows.innerHTML = scans.map(scan => {
+      const cls = scan.risk >= 75 ? 'danger' : scan.risk >= 40 ? 'warn' : 'good';
+      const verdict = scan.risk >= 75 ? 'DANGER' : scan.risk >= 40 ? 'WARN' : 'GOOD';
+      return `
+        <div class="scan-feed-row">
+          <div class="scan-feed-time">${escapeHtml(scan.time)}</div>
+          <div>
+            <div class="scan-feed-token">${escapeHtml(scan.name)}</div>
+            <div class="scan-feed-chain">SOL · ${escapeHtml(scan.symbol || 'TOKEN')}</div>
+          </div>
+          <div class="scan-feed-verdict ${cls}">${verdict}</div>
+          <div class="scan-feed-summary">${escapeHtml(scan.summary)}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function showFinalScan(risk, tokenName, address, summary, flags) {
+    const card = document.getElementById('finalScanCard');
+    const title = document.getElementById('finalScanTitle');
+    const body = document.getElementById('finalScanBody');
+    const cls = risk >= 75 ? 'danger' : risk >= 40 ? 'warn' : 'good';
+    const heading = risk >= 75 ? 'HIGH RISK' : risk >= 40 ? 'MEDIUM RISK' : 'LOW RISK';
+    card.className = `final-card ${cls}`;
+    title.textContent = heading;
+    body.innerHTML = `
+      Token: <span style="color:var(--text-primary)">${escapeHtml(tokenName)}</span><br>
+      Address: <span style="color:var(--text-muted)">${escapeHtml(address.slice(0, 10) + '...' + address.slice(-8))}</span><br>
+      Rug Score: <span style="color:var(--text-primary)">${risk}</span><br>
+      Verdict: <span style="color:var(--text-primary)">${escapeHtml(summary)}</span><br>
+      Signals: ${flags.length ? escapeHtml(flags.slice(0, 3).join(' · ')) : 'No hard risk flags detected'}
+    `;
+    document.getElementById('finalScanModal').style.display = 'flex';
+  }
+
+  function closeFinalScan() {
+    document.getElementById('finalScanModal').style.display = 'none';
+  }
+
+  renderRecentScans();
+  fetchRemoteRecentScans();
+  setInterval(fetchRemoteRecentScans, 60000);
 
   function setRiskMeter(score) {
     const meter = document.getElementById('riskMeter');
@@ -2680,652 +2509,6 @@
     }, 100);
   }
 
-  function portfolioRowClass(report) {
-    if (report.rug_status === 'HIGH' || report.rug_status === 'ELEVATED' || report.speculation_status === 'HIGH') return 'risk';
-    if (report.rug_status === 'UNKNOWN' || report.speculation_status === 'UNKNOWN' || report.speculation_status === 'ELEVATED') return 'warn';
-    return '';
-  }
-
-  function portfolioVerdict(report) {
-    if (report.rug_status === 'HIGH') return 'HARD RUG FLAGS';
-    if (report.speculation_status === 'HIGH') return 'HIGH SPECULATION';
-    if (report.rug_status === 'UNKNOWN' || report.speculation_status === 'UNKNOWN') return 'UNKNOWN / REVIEW';
-    return 'LOOKS CLEAN';
-  }
-
-  async function fetchPortfolioScanFromApi(address) {
-    const res = await fetch(`${RUGBUSTER_API}/api/portfolio`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.ok || !Array.isArray(data.entries)) {
-      throw new Error(data.error || `HTTP ${res.status} — Portfolio scan unavailable`);
-    }
-    return data;
-  }
-
-  function renderPortfolio(entries, suspicious) {
-    const panel = document.getElementById('portfolioPanel');
-    const list = document.getElementById('portfolioList');
-    const empty = document.getElementById('portfolioEmpty');
-    const summary = document.getElementById('portfolioSummary');
-    const state = document.getElementById('portfolioState');
-
-    panel.classList.toggle('alert', Boolean(suspicious));
-    empty.style.display = 'none';
-    list.style.display = 'block';
-    summary.style.display = 'block';
-
-    const suspiciousCount = entries.filter(entry =>
-      ['HIGH', 'ELEVATED'].includes(entry.report.rug_status) || entry.report.speculation_status === 'HIGH'
-    ).length;
-    const unknownCount = entries.filter(entry =>
-      entry.report.rug_status === 'UNKNOWN' || entry.report.speculation_status === 'UNKNOWN'
-    ).length;
-
-    if (!entries.length) {
-      panel.classList.remove('alert');
-      list.style.display = 'none';
-      summary.style.display = 'block';
-      empty.style.display = 'block';
-      state.textContent = 'PORTFOLIO STATUS — NO ERC-20 HOLDINGS DETECTED';
-      state.style.color = 'var(--neon-cyan)';
-      summary.innerHTML = `
-        <span style="color:var(--neon-cyan);">TOKENS:</span> 0
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        <span style="color:var(--text-muted);">SUSPICIOUS:</span> 0
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        <span style="color:var(--text-muted);">UNKNOWN:</span> 0
-      `;
-      empty.innerHTML = `
-        <div style="font-family:'Orbitron',monospace;font-size:18px;color:var(--text-primary);margin-bottom:8px;">Wallet is clean, but empty.</div>
-        <div style="margin-bottom:8px;">No Avalanche ERC-20 holdings were detected in this address.</div>
-      `;
-      return;
-    }
-
-    state.textContent = suspicious
-      ? 'PORTFOLIO STATUS — SUSPICIOUS ASSETS DETECTED'
-      : 'PORTFOLIO STATUS — NO HARD RUG SIGNALS DETECTED';
-    state.style.color = suspicious ? '#ff5f57' : 'var(--neon-green)';
-
-    summary.innerHTML = `
-      <span style="color:var(--neon-cyan);">TOKENS:</span> ${entries.length}
-      &nbsp;&nbsp;|&nbsp;&nbsp;
-      <span style="color:${suspiciousCount ? '#ff5f57' : 'var(--neon-green)'};">SUSPICIOUS:</span> ${suspiciousCount}
-      &nbsp;&nbsp;|&nbsp;&nbsp;
-      <span style="color:${unknownCount ? 'var(--neon-orange)' : 'var(--text-muted)'};">UNKNOWN:</span> ${unknownCount}
-    `;
-
-    list.innerHTML = entries.map(({ token, report }) => `
-      <div class="portfolio-row ${portfolioRowClass(report)}">
-        <div style="display:flex;align-items:center;gap:12px;">
-          ${report.image_url ? `<img src="${report.image_url}" alt="" style="width:34px;height:34px;border:1px solid rgba(0,245,255,0.2);background:rgba(0,245,255,0.04);object-fit:cover;">` : `<div style="width:34px;height:34px;border:1px solid rgba(0,245,255,0.15);background:rgba(0,245,255,0.04);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:11px;color:var(--neon-cyan);">${(report.symbol || '?').slice(0,3)}</div>`}
-          <div>
-            <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">${report.token_name || token.name}</div>
-            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-cyan);letter-spacing:2px;">${report.symbol || token.symbol}</div>
-          </div>
-        </div>
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">BALANCE</div>
-          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">${formatCompactTokenBalance(token.balance)}</div>
-        </div>
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">VALUE</div>
-          <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">${formatUsd(token.value_usd)}</div>
-        </div>
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">RUG</div>
-          <div style="font-family:'Orbitron',monospace;font-size:13px;color:${report.rug_status === 'HIGH' ? '#ff5f57' : report.rug_status === 'ELEVATED' ? 'var(--neon-orange)' : report.rug_status === 'LOW' ? 'var(--neon-green)' : 'var(--text-muted)'};">${report.rug_score === null ? 'UNKNOWN' : report.rug_score} // ${report.rug_status}</div>
-        </div>
-        <div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SPEC</div>
-          <div style="font-family:'Orbitron',monospace;font-size:13px;color:${report.speculation_status === 'HIGH' ? '#ff5f57' : report.speculation_status === 'ELEVATED' ? 'var(--neon-orange)' : report.speculation_status === 'LOW' ? 'var(--neon-green)' : 'var(--text-muted)'};">${report.speculation_score === null ? 'UNKNOWN' : report.speculation_score} // ${report.speculation_status}</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);margin-top:4px;">${portfolioVerdict(report)}</div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  // =====================
-  // AVALANCHE ON-CHAIN WRITES & SIGNING
-  // =====================
-  async function getRegistryContractWithSigner() {
-    if (!window.ethereum || !window.ethers) {
-      throw new Error('MetaMask or another EVM wallet is required');
-    }
-    await ensureAvalancheChain();
-    const provider = new window.ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const contract = new window.ethers.Contract(REGISTRY_ADDRESS, REGISTRY_ABI, signer);
-    return { provider, signer, contract };
-  }
-
-  async function isAuthorizedReviewerAddress(address) {
-    const { contract } = await getRegistryContractWithSigner();
-    const [owner, reviewer] = await Promise.all([
-      contract.owner(),
-      contract.authorizedReviewers(address)
-    ]);
-    return owner.toLowerCase() === address.toLowerCase() || Boolean(reviewer);
-  }
-
-  async function authorizeReviewerWallet() {
-    setAuthorizeReviewerButtonState(false, 'AUTHORIZING...');
-    await termLineDelay(`<span class="t-out">RB&gt; authorize-reviewer --mainnet</span>`, 120);
-    await termLineDelay(`<span class="t-out">Preparing reviewer authorization flow...</span>`, 180);
-
-    try {
-      if (!walletConnected || connectedProvider !== 'evm' || !window.ethereum) {
-        throw new Error('Connect your owner MetaMask wallet first');
-      }
-
-      const reviewerInput = window.prompt('Enter the Avalanche C-Chain wallet address to authorize for direct publish:');
-      if (!reviewerInput) {
-        throw new Error('Authorization canceled');
-      }
-
-      const reviewerAddress = window.ethers.getAddress(reviewerInput.trim());
-      const { signer, contract } = await getRegistryContractWithSigner();
-      const signerAddress = await signer.getAddress();
-      const ownerAddress = await contract.owner();
-
-      if (signerAddress.toLowerCase() !== ownerAddress.toLowerCase()) {
-        throw new Error(`Connected wallet ${shortAddress(signerAddress)} is not the registry owner`);
-      }
-
-      await termLineDelay(`<span class="t-out">// Owner wallet: ${shortAddress(signerAddress)}</span>`, 120);
-      await termLineDelay(`<span class="t-out">// Reviewer wallet: ${shortAddress(reviewerAddress)}</span>`, 120);
-
-      const tx = await contract.setReviewer(reviewerAddress, true);
-      const receipt = await tx.wait();
-
-      await termLineDelay(`<span class="t-success">✓ Reviewer wallet authorized for direct publish.</span>`, 220);
-      await termLineDelay(`<span class="t-out">// TX: ${tx.hash}</span>`, 120);
-      setAuthorizeReviewerButtonState(true, 'AUTHORIZED');
-      setTimeout(() => setAuthorizeReviewerButtonState(true, 'AUTHORIZE REVIEWER'), 2600);
-    } catch (err) {
-      await termLineDelay(`<span class="t-danger">✗ REVIEWER AUTH FAILED: ${err.message}</span>`, 220);
-      setAuthorizeReviewerButtonState(true, 'AUTHORIZE REVIEWER');
-    }
-
-    termLine('');
-  }
-
-  async function publishCurrentReport() {
-    if (!lastScannedAddress || !lastScanData) {
-      termLine(`<span class="t-warn">⚡ Scan a token first before publishing to the registry.</span>`);
-      return;
-    }
-
-    setPublishButtonState(false, 'PUBLISHING...');
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">publish ${shortAddress(lastScannedAddress)} --registry</span>`);
-    await termLineDelay(`<span class="t-out">Preparing mainnet registry write...</span>`, 220);
-
-    try {
-      if (walletConnected && connectedProvider === 'evm' && window.ethereum) {
-        const { signer, contract } = await getRegistryContractWithSigner();
-        const signerAddress = await signer.getAddress();
-        const isReviewer = await isAuthorizedReviewerAddress(signerAddress);
-
-        if (!isReviewer) {
-          throw new Error('Connected wallet is not an authorized reviewer yet. Owner must approve it before direct publish.');
-        }
-
-        if (lastScanData.rugScore === null || lastScanData.rugScore === undefined) {
-          throw new Error('Cannot publish without a Rug Score');
-        }
-
-        const metadataHash = await sha256Bytes32({ report: lastScanData });
-        await termLineDelay(`<span class="t-out">// Signing with connected wallet ${shortAddress(signerAddress)}</span>`, 120);
-        const tx = await contract.updateScore(
-          lastScannedAddress,
-          Number(lastScanData.rugScore),
-          metadataHash
-        );
-        const receipt = await tx.wait();
-        await termLineDelay(`<span class="t-success">✓ Registry publish confirmed from connected wallet.</span>`, 220);
-        setPublishButtonState(true, 'PUBLISHED');
-        setTimeout(() => setPublishButtonState(true, 'PUBLISH REPORT'), 2600);
-      } else {
-        const response = await postRegistryPublish(lastScannedAddress);
-        if (!response.published || !response.published.tx_hash) {
-          throw new Error('Registry API did not confirm on-chain publication');
-        }
-        await termLineDelay(`<span class="t-success">✓ Registry publish confirmed via backend signer.</span>`, 220);
-        setPublishButtonState(true, 'PUBLISHED');
-        setTimeout(() => setPublishButtonState(true, 'PUBLISH REPORT'), 2600);
-      }
-    } catch (err) {
-      await termLineDelay(`<span class="t-danger">✗ REGISTRY PUBLISH FAILED: ${err.message}</span>`, 220);
-      setPublishButtonState(true, 'PUBLISH REPORT');
-    }
-
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-  }
-
-  async function sendTelegramAlert() {
-    if (!lastScannedAddress || !lastScanData) {
-      termLine(`<span class="t-warn">⚡ Scan a token first before sending an alert.</span>`);
-      return;
-    }
-
-    setAlertButtonState(false, 'SENDING...');
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">send-alert ${shortAddress(lastScannedAddress)} --telegram</span>`);
-    await termLineDelay(`<span class="t-out">Packaging final readout for Telegram...</span>`, 220);
-
-    try {
-      const response = await postTelegramAlert(lastScannedAddress);
-      if (!response.telegram || response.telegram.ok !== true) {
-        throw new Error('Telegram API did not confirm delivery');
-      }
-      await termLineDelay(`<span class="t-success">✓ Telegram alert delivered successfully.</span>`, 220);
-      setAlertButtonState(true, 'ALERT SENT');
-      setTimeout(() => setAlertButtonState(true, 'SEND ALERT'), 2400);
-    } catch (err) {
-      await termLineDelay(`<span class="t-danger">✗ TELEGRAM ALERT FAILED: ${err.message}</span>`, 220);
-      setAlertButtonState(true, 'SEND ALERT');
-    }
-
-    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
-  }
-
-  // =====================
-  // AVALANCHE API CONSUMERS
-  // =====================
-  async function fetchApexScan(address) {
-    try {
-      return await fetchApexScanFromApi(address);
-    } catch (apiErr) {
-      console.warn('RugBuster API unavailable, falling back to DexScreener:', apiErr);
-      return await fetchApexScanFromDex(address);
-    }
-  }
-
-  async function fetchApexScanFromApi(address) {
-    const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.ok || !data.report) {
-      throw new Error(data.error || `HTTP ${res.status} — RugBuster API unavailable`);
-    }
-    return normalizeApexApiReport(data.report);
-  }
-
-  async function postTelegramAlert(address) {
-    const isSolanaAddress = address.length >= 32 && !address.startsWith('0x');
-    if (isSolanaAddress && lastScanData) {
-      const botToken = '8253503786:AAFlRe6S52WU-OZMYfLEeEleGeOLpWVnrQU';
-      const chatId = '@RugBusterAlerts';
-
-      let message = `🛡️ <b>RugBuster Solana Alert</b>\n\n`;
-      message += `💎 <b>Token:</b> ${lastScanData.tokenName || 'Unknown'} (${lastScanData.symbol || 'SOL'})\n`;
-      message += `🔑 <b>Mint:</b> <code>${address}</code>\n`;
-      message += `📉 <b>Rug Risk Score:</b> <b>${lastScanData.rugScore}/100</b>\n`;
-      message += `✅ <b>Verdict:</b> ${lastScanData.verdict || 'Scanned via RugCheck'}\n\n`;
-
-      const reasons = lastScanData.rugReasons || [];
-      if (reasons.length > 0) {
-        message += `<b>Risk Factors:</b>\n`;
-        reasons.slice(0, 6).forEach(r => {
-          message += `• ${r}\n`;
-        });
-        message += `\n`;
-      }
-
-      message += `🔗 <a href="https://rugcheck.xyz/tokens/${address}">RugCheck Report</a>`;
-
-      const params = new URLSearchParams();
-      params.append('chat_id', chatId);
-      params.append('text', message);
-      params.append('parse_mode', 'HTML');
-      params.append('disable_web_page_preview', 'true');
-
-      const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString()
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) {
-        throw new Error((data && data.description) || `HTTP ${res.status} — Telegram direct send failed`);
-      }
-      return { telegram: { ok: true } };
-    }
-
-    const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address, notify: true, use_cached: true })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.ok) {
-      throw new Error(data.error || `HTTP ${res.status} — Telegram alert failed`);
-    }
-    return data;
-  }
-
-  async function postRegistryPublish(address) {
-    const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address, publish: true, use_cached: true })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || !data.ok) {
-      throw new Error(data.error || `HTTP ${res.status} — Registry publish failed`);
-    }
-    return data;
-  }
-
-  async function fetchApexScanFromDex(address) {
-    const res = await fetch(`${DEXSCREENER_API}/${encodeURIComponent(address)}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status} — token not found or unsupported`);
-
-    const data = await res.json();
-    const avalanchePairs = (data.pairs || []).filter(pair => (pair.chainId || '').toLowerCase() === 'avalanche');
-    if (!avalanchePairs.length) {
-      throw new Error('Token not found on Avalanche liquidity venues');
-    }
-
-    const bestPair = avalanchePairs.sort((a, b) => {
-      const liqA = Number(a.liquidity?.usd || 0);
-      const liqB = Number(b.liquidity?.usd || 0);
-      return liqB - liqA;
-    })[0];
-
-    const normalized = address.toLowerCase();
-    const tokenSide = [bestPair.baseToken, bestPair.quoteToken].find(token => (token?.address || '').toLowerCase() === normalized) || bestPair.baseToken;
-    const pairSide = tokenSide === bestPair.baseToken ? bestPair.quoteToken : bestPair.baseToken;
-
-    const liquidityUsd = toNumberOrNull(bestPair.liquidity?.usd);
-    const fdv = toNumberOrNull(bestPair.fdv || bestPair.marketCap);
-    const marketCap = toNumberOrNull(bestPair.marketCap);
-    const volume24h = toNumberOrNull(bestPair.volume?.h24);
-    const priceChange24h = toNumberOrNull(bestPair.priceChange?.h24);
-    const txns24h = bestPair.txns?.h24 || {};
-    const buys24h = toNumberOrNull(txns24h.buys);
-    const sells24h = toNumberOrNull(txns24h.sells);
-    const imageUrl = bestPair.info?.imageUrl || null;
-    const rugScore = null;
-    const rugStatus = 'UNKNOWN';
-    const rugReasons = {
-      high: [],
-      medium: ['⚡ Rug score unavailable in client-only fallback'],
-      neutral: []
-    };
-
-    const speculationReasons = { high: [], medium: [], neutral: [] };
-    let speculationScore = 20;
-
-    if (liquidityUsd === null) {
-      speculationScore = null;
-      speculationReasons.medium.push('⚡ No priced liquidity evidence available');
-    } else {
-      if (liquidityUsd < 5000) {
-        speculationReasons.high.push(`✗ Very thin live liquidity at ${formatUsd(liquidityUsd)}`);
-        speculationScore += 42;
-      } else if (liquidityUsd < 25000) {
-        speculationReasons.high.push(`✗ Thin live liquidity at ${formatUsd(liquidityUsd)}`);
-        speculationScore += 24;
-      } else if (liquidityUsd < 100000) {
-        speculationReasons.medium.push(`⚡ Shallow live liquidity at ${formatUsd(liquidityUsd)}`);
-        speculationScore += 8;
-      } else if (liquidityUsd >= 500000) {
-        speculationScore -= 10;
-        speculationReasons.neutral.push(`Deep live liquidity at ${formatUsd(liquidityUsd)}`);
-      } else {
-        speculationScore -= 2;
-        speculationReasons.neutral.push(`Meaningful live liquidity at ${formatUsd(liquidityUsd)}`);
-      }
-
-      if (fdv && fdv > 0) {
-        const liquidityRatio = liquidityUsd / fdv;
-        if (liquidityRatio < 0.01) {
-          speculationReasons.high.push('✗ Liquidity to FDV ratio is under 1% — exit liquidity risk is extreme');
-          speculationScore += 45;
-        } else if (liquidityRatio < 0.03) {
-          speculationReasons.high.push('✗ Liquidity to FDV ratio is under 3% — market depth is dangerously thin');
-          speculationScore += 35;
-        } else if (liquidityRatio < 0.05) {
-          speculationReasons.high.push('✗ Liquidity to FDV ratio is under 5% — exit liquidity looks fragile');
-          speculationScore += 28;
-        } else if (liquidityRatio < 0.15) {
-          speculationReasons.medium.push('⚡ Liquidity to FDV ratio is under 15% — market depth is shallow');
-          speculationScore += 14;
-        } else if (liquidityRatio >= 0.3) {
-          speculationScore -= 8;
-          speculationReasons.neutral.push('Liquidity to FDV ratio is very healthy');
-        } else if (liquidityRatio >= 0.15) {
-          speculationScore -= 4;
-          speculationReasons.neutral.push('Liquidity to FDV ratio is healthy');
-        }
-      }
-
-      if (volume24h === null) {
-        speculationReasons.medium.push('⚡ 24h volume unavailable');
-      } else if (volume24h < 10000) {
-        speculationReasons.medium.push(`⚡ Low 24h volume at ${formatUsd(volume24h)}`);
-        speculationScore += 10;
-      } else if (volume24h >= 100000) {
-        speculationScore -= 4;
-        speculationReasons.neutral.push(`Strong 24h volume at ${formatUsd(volume24h)}`);
-      }
-
-      if (priceChange24h === null) {
-        speculationReasons.medium.push('⚡ 24h price change unavailable');
-      } else {
-        const absMove = Math.abs(priceChange24h);
-        if (absMove >= 60) {
-          speculationReasons.high.push(`✗ Very high 24h volatility at ${priceChange24h.toFixed(1)}%`);
-          speculationScore += 18;
-        } else if (absMove >= 25) {
-          speculationReasons.medium.push(`⚡ Elevated 24h volatility at ${priceChange24h.toFixed(1)}%`);
-          speculationScore += 8;
-        } else {
-          speculationReasons.neutral.push(`24h volatility is moderate at ${priceChange24h.toFixed(1)}%`);
-        }
-      }
-
-      if (buys24h === null || sells24h === null) {
-        speculationReasons.medium.push('⚡ 24h buy/sell flow unavailable');
-      } else {
-        if (sells24h > buys24h * 3 && sells24h > 20) {
-          speculationReasons.high.push(`✗ Heavy sell pressure: ${sells24h} sells vs ${buys24h} buys`);
-          speculationScore += 8;
-        } else if (buys24h > sells24h * 2 && buys24h > 20) {
-          speculationScore -= 2;
-          speculationReasons.neutral.push(`Buy-side demand leads: ${buys24h} buys vs ${sells24h} sells`);
-        }
-      }
-
-      speculationScore = Math.max(0, Math.min(100, Math.round(speculationScore)));
-    }
-
-    const speculationStatus = speculationScore === null
-      ? 'UNKNOWN'
-      : speculationScore >= 75
-        ? 'HIGH'
-        : speculationScore >= 45
-          ? 'ELEVATED'
-          : 'LOW';
-
-    return {
-      tokenName: `${tokenSide?.name || 'Unknown Token'}${tokenSide?.symbol ? ` (${tokenSide.symbol})` : ''}`,
-      tokenImage: imageUrl,
-      dexId: (bestPair.dexId || 'unknown').toUpperCase(),
-      pairLabel: `${pairSide?.symbol || 'PAIR'} / ${tokenSide?.symbol || 'TOKEN'}`,
-      liquidityUsd,
-      fdv,
-      marketCap,
-      volume24h,
-      priceChange24h,
-      buys24h,
-      sells24h,
-      pairAddress: bestPair.pairAddress,
-      pairUrl: bestPair.url,
-      rugScore,
-      rugStatus,
-      rugReasons,
-      speculationScore,
-      speculationStatus,
-      speculationReasons,
-      hasLiquidityEvidence: liquidityUsd !== null || Boolean(bestPair.pairAddress),
-      source: 'DexScreener fallback'
-    };
-  }
-
-  function normalizeReasons(reasons, highPattern, mediumPattern) {
-    const list = Array.isArray(reasons) ? reasons : [];
-    return {
-      high: list.filter(reason => highPattern.test(reason)).map(reason => `✗ ${reason}`),
-      medium: list.filter(reason => !highPattern.test(reason) && mediumPattern.test(reason)).map(reason => `⚡ ${reason}`),
-      neutral: list.filter(reason => !highPattern.test(reason) && !mediumPattern.test(reason)),
-    };
-  }
-
-  function normalizeApexApiReport(report) {
-    const sourceMap = {
-      dexscreener: 'RugBuster API (DexScreener + on-chain)',
-      onchain_pair_lookup: 'RugBuster API (factory pair lookup)',
-      none: 'RugBuster API (on-chain only, no live market evidence)'
-    };
-    const rugReasons = normalizeReasons(
-      report.rug_reasons,
-      /invalid|suspicious|zero or invalid|unusual/i,
-      /unavailable|unknown/i
-    );
-    const speculationReasons = normalizeReasons(
-      report.speculation_reasons,
-      /very thin|under 1%|heavy sell|very high/i,
-      /thin|low|elevated|unavailable|unknown/i
-    );
-
-    return {
-      tokenName: `${report.token_name || 'Unknown Token'}${report.symbol ? ` (${report.symbol})` : ''}`,
-      tokenImage: report.image_url || null,
-      dexId: String(report.dex_id || 'unknown').toUpperCase(),
-      pairLabel: report.symbol ? `${report.symbol} / AVAX` : 'TOKEN / AVAX',
-      liquidityUsd: toNumberOrNull(report.liquidity_usd),
-      fdv: toNumberOrNull(report.fdv),
-      marketCap: toNumberOrNull(report.fdv),
-      volume24h: toNumberOrNull(report.volume24h),
-      priceChange24h: toNumberOrNull(report.price_change24h),
-      buys24h: toNumberOrNull(report.buys24h),
-      sells24h: toNumberOrNull(report.sells24h),
-      pairAddress: report.pair_address || '',
-      pairUrl: report.pair_url || '',
-      rugScore: toNumberOrNull(report.rug_score),
-      rugStatus: report.rug_status || 'UNKNOWN',
-      rugReasons,
-      speculationScore: toNumberOrNull(report.speculation_score),
-      speculationStatus: report.speculation_status || 'UNKNOWN',
-      speculationReasons,
-      hasLiquidityEvidence: Boolean(report.has_liquidity_evidence),
-      source: sourceMap[report.source] || `RugBuster API (${report.source || 'live market + on-chain'})`
-    };
-  }
-
-  // =====================
-  // HELPER UTILITIES
-  // =====================
-  function loadExample(type) {
-    const examples = {
-      solana: 'GYpwfcxF1AgPYoCbDTQeKrbAH9pwrzTrMDJNw9nVpump',
-      apex: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
-    };
-    document.getElementById('scanInput').value = examples[type] || examples.solana;
-  }
-
-  function formatUsd(value) {
-    if (value === null || value === undefined || value === '') return 'UNKNOWN';
-    const num = Number(value);
-    if (!Number.isFinite(num)) return 'UNKNOWN';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      notation: num >= 1000000 ? 'compact' : 'standard',
-      maximumFractionDigits: num >= 1000 ? 1 : 2
-    }).format(num);
-  }
-
-  function isApexAddress(address) {
-    return /^0x[a-fA-F0-9]{40}$/.test(address);
-  }
-
-  function shortAddress(address) {
-    return address.length > 16 ? address.slice(0, 8) + '...' + address.slice(-6) : address;
-  }
-
-  function toNumberOrNull(value) {
-    return value === null || value === undefined || value === '' ? null : Number(value);
-  }
-
-  function formatCompactTokenBalance(value) {
-    if (value === null || value === undefined || Number.isNaN(Number(value))) return 'UNKNOWN';
-    const num = Number(value);
-    if (num >= 1000000) return `${(num / 1000000).toFixed(2)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(2)}K`;
-    if (num >= 1) return num.toFixed(4);
-    if (num === 0) return '0';
-    return num.toPrecision(4);
-  }
-
-  function termLine(html) {
-    const body = document.getElementById('terminalBody');
-    if (!body) return;
-    const line = document.createElement('div');
-    line.innerHTML = html;
-    const oldCursor = body.querySelector('.cursor');
-    if (oldCursor) oldCursor.parentElement.remove();
-    body.appendChild(line);
-    body.scrollTop = body.scrollHeight;
-  }
-
-  function termLineDelay(html, delay) {
-    return new Promise(r => setTimeout(() => { termLine(html); r(); }, delay));
-  }
-
-  function clearTerminal() {
-    const body = document.getElementById('terminalBody');
-    if (body) body.innerHTML = '';
-  }
-
-  function setAlertButtonState(enabled, text = 'SEND ALERT') {
-    const btn = document.getElementById('sendAlertBtn');
-    if (!btn) return;
-    btn.disabled = !enabled;
-    btn.textContent = text;
-    btn.style.opacity = enabled ? '1' : '0.6';
-    btn.style.borderColor = enabled ? 'rgba(0,255,136,0.45)' : 'rgba(0,255,136,0.22)';
-    btn.style.color = enabled ? 'var(--neon-green)' : 'rgba(0,255,136,0.55)';
-  }
-
-  function setPublishButtonState(enabled, text = 'PUBLISH REPORT') {
-    const btn = document.getElementById('publishBtn');
-    if (!btn) return;
-    btn.disabled = !enabled;
-    btn.textContent = text;
-    btn.style.opacity = enabled ? '1' : '0.6';
-    btn.style.borderColor = enabled ? 'rgba(255,0,200,0.45)' : 'rgba(255,0,200,0.22)';
-    btn.style.color = enabled ? 'var(--neon-pink)' : 'rgba(255,0,200,0.58)';
-  }
-
-  function setAuthorizeReviewerButtonState(enabled, text = 'AUTHORIZE REVIEWER') {
-    const btn = document.getElementById('authorizeReviewerBtn');
-    if (!btn) return;
-    btn.disabled = !enabled;
-    btn.textContent = text;
-    btn.style.opacity = enabled ? '1' : '0.6';
-    btn.style.borderColor = enabled ? 'rgba(0,245,255,0.45)' : 'rgba(0,245,255,0.22)';
-    btn.style.color = enabled ? 'var(--neon-cyan)' : 'rgba(0,245,255,0.58)';
-  }
-
   function showCriticalAlert(title, body) {
     document.getElementById('alertTitle').textContent = title;
     document.getElementById('alertBody').innerHTML = body;
@@ -3337,13 +2520,213 @@
     document.getElementById('criticalAlert').style.display = 'none';
   }
 
+  // ── Portfolio Risk Engine ────────────────────────────────────────────
+  async function getTokenRiskQuick(mint) {
+    let data = {};
+    try {
+      const res = await fetch(`${RUGCHECK_API}/tokens/${encodeURIComponent(mint)}/report`);
+      if (res.ok) data = await res.json();
+    } catch(e) {}
+
+    const SYSTEM = '11111111111111111111111111111111';
+    const tokenData  = data.token || {};
+    const mintAuth   = tokenData.mintAuthority;
+    const freezeAuth = tokenData.freezeAuthority;
+    const topHolders = data.topHolders || [];
+    const markets    = data.markets    || [];
+    const lpLocked   = data.lpLockedPct || 0;
+    const meta       = data.tokenMeta  || {};
+
+    const danger = [], warn = [];
+
+    if (mintAuth   && mintAuth   !== SYSTEM) danger.push('Mint Authority Active');
+    if (freezeAuth && freezeAuth !== SYSTEM) danger.push('Freeze Authority Active');
+
+    if (topHolders.length) {
+      const t1 = topHolders[0].pct || 0;
+      const t5 = topHolders.slice(0,5).reduce((s,h)=>s+(h.pct||0),0);
+      if (t1 > 50)  danger.push(`Top holder ${t1.toFixed(0)}%`);
+      else if(t1>20) warn.push(`Top holder ${t1.toFixed(0)}%`);
+      if (t5 > 80)  warn.push(`Top 5 own ${t5.toFixed(0)}%`);
+    }
+    if (markets.length && lpLocked === 0) warn.push('LP not locked');
+    if (meta.mutable) warn.push('Mutable metadata');
+    const rugcheckRiskNames = [];
+    (data.risks||[]).forEach(r => {
+      rugcheckRiskNames.push(r.name || '?');
+      if(r.level==='danger') danger.push(r.name||'?');
+      else if(r.level==='warn') warn.push(r.name||'?');
+    });
+
+    const CHIPS = ['JUP','BONK','WIF','SOL','USDC','USDT','RAY','ORCA'];
+    const sym = (meta.symbol || '').toUpperCase();
+    const safe = CHIPS.some(x => sym.includes(x));
+
+    let risk = rugcheckScoreToRiskPercent(data.score ?? 1);
+    if (safe) risk = Math.min(risk, 12);
+    if (hasCreatorRugHistory(rugcheckRiskNames)) risk = Math.max(risk, 85);
+
+    const name   = meta.name   || null;
+    const symbol = meta.symbol || null;
+    const image  = meta.image  || null;
+    return {risk, danger, warn, name, symbol, image, rugcheckScore: data.score ?? null, hasData: Object.keys(data).length > 0};
+  }
+
+  async function scanPortfolio() {
+    if (!walletConnected || !walletAddress) return;
+
+    const btn      = document.getElementById('portfolioBtn');
+    const status   = document.getElementById('portfolioStatus');
+    const list     = document.getElementById('portfolioList');
+    const empty    = document.getElementById('portfolioEmpty');
+    const summary  = document.getElementById('portfolioSummary');
+
+    btn.textContent = '⏳ SCANNING...';
+    btn.style.opacity = '0.6';
+    btn.disabled = true;
+    status.textContent = 'Fetching wallet tokens...';
+    list.innerHTML = '';
+    summary.style.display = 'none';
+
+    // 1. Fetch token accounts from both SPL programs
+    let mints = [];
+    const programs = [
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',  // SPL Token
+      'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'   // Token-2022
+    ];
+
+    for (const prog of programs) {
+      try {
+        const res = await fetch('https://api.mainnet-beta.solana.com', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+            jsonrpc:'2.0', id:1,
+            method:'getTokenAccountsByOwner',
+            params:[walletAddress, {programId: prog}, {encoding:'jsonParsed'}]
+          })
+        });
+        const data = await res.json();
+        const accounts = data.result?.value || [];
+        for (const acc of accounts) {
+          const info = acc.account?.data?.parsed?.info;
+          if (!info) continue;
+          const bal = parseFloat(info.tokenAmount?.uiAmount || 0);
+          if (bal <= 0) continue; // skip zero-balance tokens
+          mints.push({
+            mint:     info.mint,
+            balance:  bal,
+            decimals: info.tokenAmount?.decimals || 0
+          });
+        }
+      } catch(e) { console.warn('RPC error:', e); }
+    }
+
+    // Deduplicate
+    mints = mints.filter((m,i,a) => a.findIndex(x=>x.mint===m.mint)===i);
+
+    if (mints.length === 0) {
+      list.innerHTML = `<div style="text-align:center;padding:60px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-muted);">
+        // No tokens found in this wallet</div>`;
+      status.textContent = '';
+      btn.textContent = '⚡ SCAN PORTFOLIO';
+      btn.style.opacity = '1';
+      btn.disabled = false;
+      return;
+    }
+
+    // 2. Render skeleton rows immediately
+    for (const t of mints) {
+      const row = document.createElement('div');
+      row.className = 'portfolio-row scanning';
+      row.id = `port-${t.mint}`;
+      row.innerHTML = `
+        <div class="port-icon">◎</div>
+        <div>
+          <div class="port-name" style="color:var(--text-muted);font-size:11px;">${t.mint.slice(0,8)}...${t.mint.slice(-4)}</div>
+          <div class="port-flags">Scanning...</div>
+        </div>
+        <div class="port-balance">${t.balance.toLocaleString(undefined,{maximumFractionDigits:4})}</div>
+        <div class="port-risk r-scan">— / —</div>`;
+      list.appendChild(row);
+    }
+
+    status.textContent = `Scanning ${mints.length} tokens...`;
+
+    // 3. Scan each token (max 4 concurrent)
+    let done=0, dangerCount=0, warnCount=0, safeCount=0;
+    const CONCURRENCY = 4;
+
+    async function processToken(t) {
+      const result = await getTokenRiskQuick(t.mint);
+      done++;
+      status.textContent = `Scanning ${done} / ${mints.length}...`;
+
+      const row = document.getElementById(`port-${t.mint}`);
+      if (!row) return;
+
+      const name   = result.name   || `${t.mint.slice(0,6)}...${t.mint.slice(-4)}`;
+      const symbol = result.symbol || '???';
+      const flags  = [...result.danger, ...result.warn];
+      const flagTxt = flags.length ? flags.slice(0,2).join(' · ') + (flags.length>2?` +${flags.length-2} more`:'') : 'No flags';
+
+      let rowClass='safe', riskClass='r-safe', riskTxt;
+      if (result.risk >= 75) {
+        rowClass='danger'; riskClass='r-danger'; riskTxt=`${result.risk}% HIGH`; dangerCount++;
+      } else if (result.risk >= 40) {
+        rowClass='warning'; riskClass='r-warning'; riskTxt=`${result.risk}% MED`; warnCount++;
+      } else {
+        riskTxt=`${result.risk}% LOW`; safeCount++;
+      }
+
+      const imgHtml = result.image
+        ? `<img src="${result.image}" onerror="this.parentElement.textContent='◎'" alt=""/>`
+        : '◎';
+
+      row.className = `portfolio-row ${rowClass}`;
+      row.innerHTML = `
+        <div class="port-icon">${imgHtml}</div>
+        <div>
+          <div class="port-name">${name} <span style="color:var(--text-muted);font-weight:400;">(${symbol})</span></div>
+          <div class="port-flags" style="color:${rowClass==='danger'?'#ff3d3d':rowClass==='warning'?'var(--neon-orange)':'var(--text-muted)'};">${flagTxt}</div>
+        </div>
+        <div class="port-balance">${t.balance.toLocaleString(undefined,{maximumFractionDigits:4})} ${symbol}</div>
+        <div class="port-risk ${riskClass}">${riskTxt}</div>`;
+
+      // update summary
+      document.getElementById('portTotal').textContent  = done;
+      document.getElementById('portDanger').textContent = dangerCount;
+      document.getElementById('portWarn').textContent   = warnCount;
+      document.getElementById('portSafe').textContent   = safeCount;
+      summary.style.display = 'block';
+    }
+
+    // Run with concurrency limit
+    for (let i = 0; i < mints.length; i += CONCURRENCY) {
+      await Promise.all(mints.slice(i, i + CONCURRENCY).map(processToken));
+    }
+
+    // Sort: danger first, then warning, then safe
+    const rows = Array.from(list.querySelectorAll('.portfolio-row'));
+    rows.sort((a,b) => {
+      const score = r => r.classList.contains('danger')?0 : r.classList.contains('warning')?1 : 2;
+      return score(a) - score(b);
+    });
+    rows.forEach(r => list.appendChild(r));
+
+    status.textContent = `✓ Scan complete — ${dangerCount} high risk, ${warnCount} medium, ${safeCount} clean`;
+    btn.textContent = '⚡ RESCAN';
+    btn.style.opacity = '1';
+    btn.disabled = false;
+  }
+
   async function showTokenImage(imageUrl, name, address) {
     const wrap   = document.getElementById('tokenImageWrap');
-    if (!wrap) return;
     const imgEl  = document.getElementById('tokenImage');
     const nameEl = document.getElementById('tokenImageName');
     const symEl  = document.getElementById('tokenImageSymbol');
 
+    // Extract name / symbol from "Name (SYM)" format
     const match = name.match(/^(.+?)\s*\(([^)]+)\)$/);
     const displayName = match ? match[1] : name;
     const displaySym  = match ? match[2] : '';
@@ -3358,6 +2741,7 @@
       return;
     }
 
+    // Fallback: try DexScreener for image
     try {
       const dex = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`);
       const dexData = await dex.json();
@@ -3369,170 +2753,236 @@
         wrap.style.display  = 'block';
         return;
       }
-    } catch(e) {}
+    } catch(e) { /* silent */ }
 
+    // No image found — show name card only (no img)
     imgEl.style.display = 'none';
     wrap.style.display  = 'block';
   }
 
-  function sortDeep(value) {
-    if (Array.isArray(value)) return value.map(sortDeep);
-    if (value && typeof value === 'object') {
-      return Object.keys(value).sort().reduce((acc, key) => {
-        acc[key] = sortDeep(value[key]);
-        return acc;
-      }, {});
+  async function runScan() {
+    const address = document.getElementById('scanInput').value.trim();
+    if (!address) {
+      document.getElementById('scanInput').style.borderColor = '#ff3d3d';
+      setTimeout(() => document.getElementById('scanInput').style.borderColor = '', 1000);
+      return;
     }
-    return value;
-  }
 
-  function stableJson(value) {
-    return JSON.stringify(sortDeep(value));
-  }
+    clearTerminal();
+    document.getElementById('riskMeter').style.display = 'none';
+    document.getElementById('tokenImageWrap').style.display = 'none';
+    resetCiaPath(address);
 
-  function sha256Pure(ascii) {
-    function rightRotate(value, amount) {
-      return (value >>> amount) | (value << (32 - amount));
+    const short = address.length > 16 ? address.slice(0, 8) + '...' + address.slice(-6) : address;
+    const isSOL = address.length >= 32 && !address.startsWith('0x');
+    const chain = isSOL ? 'SOLANA' : 'UNSUPPORTED';
+
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">scan ${short} --chain ${chain} --deep --ai</span>`);
+    if (!isSOL) {
+      await termLineDelay(`<span class="t-danger">✗ This scanner is tuned for Solana token mints. Paste a Solana mint address.</span>`, 200);
+      termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+      document.getElementById('ciaStatus').textContent = 'INPUT REQUIRED';
+      document.getElementById('ciaStatus').className = 'cia-status active';
+      return;
     }
-    
-    const mathPow = Math.pow;
-    const maxWord = mathPow(2, 32);
-    const lengthProperty = 'length';
-    let i, j;
+    await termLineDelay(`<span class="t-out">Initializing threat engine...</span>`, 300);
+    await termLineDelay(`<span class="t-out">Connecting to RugCheck API...</span>`, 500);
+    await termLineDelay(`<span class="t-out">Fetching full token report...</span>`, 700);
 
-    let result = '';
-
-    const words = [];
-    const asciiLength = ascii[lengthProperty] * 8;
-    
-    const hash = [];
-    const k = [];
-    let primeCounter = 0;
-
-    const isPrime = {};
-    for (let candidate = 2; primeCounter < 64; candidate++) {
-      if (!isPrime[candidate]) {
-        for (i = 0; i < 313; i += candidate) {
-          isPrime[i] = 1;
-        }
-        hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;
-        k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+    let data = {};
+    let rugcheckOk = false;
+    try {
+      const res = await fetch(`${RUGCHECK_API}/tokens/${encodeURIComponent(address)}/report`);
+      if (res.ok) {
+        data = await res.json();
+        rugcheckOk = true;
+      } else {
+        await termLineDelay(`<span class="t-warn">⚡ RugCheck: token not indexed (HTTP ${res.status}) — limited data available</span>`, 400);
       }
+    } catch(err) {
+      await termLineDelay(`<span class="t-warn">⚡ RugCheck unreachable — limited data available</span>`, 400);
     }
-    
-    ascii += '\x80';
-    while (ascii[lengthProperty] % 64 - 56) {
-      ascii += '\x00';
-    }
-    for (i = 0; i < ascii[lengthProperty]; i++) {
-      j = ascii.charCodeAt(i);
-      if (j >> 8) return; // invalid chars
-      words[i >> 2] |= j << ((3 - i % 4) * 8);
-    }
-    words[words[lengthProperty]] = ((asciiLength / maxWord) | 0);
-    words[words[lengthProperty]] = (asciiLength);
-    
-    const w = [];
-    let h0 = hash[0], h1 = hash[1], h2 = hash[2], h3 = hash[3], h4 = hash[4], h5 = hash[5], h6 = hash[6], h7 = hash[7];
-    
-    for (i = 0; i < words[lengthProperty]; i += 16) {
-      let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
-      for (j = 0; j < 64; j++) {
-        if (j < 16) {
-          w[j] = words[i + j];
-        } else {
-          const s0 = rightRotate(w[j - 15], 7) ^ rightRotate(w[j - 15], 18) ^ (w[j - 15] >>> 3);
-          const s1 = rightRotate(w[j - 2], 17) ^ rightRotate(w[j - 2], 19) ^ (w[j - 2] >>> 10);
-          w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
-        }
-        
-        const ch = (e & f) ^ (~e & g);
-        const maj = (a & b) ^ (a & c) ^ (b & c);
-        const temp1 = (h + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ch + k[j] + w[j]) | 0;
-        const temp2 = ((rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + maj) | 0;
-        
-        h = g;
-        g = f;
-        f = e;
-        e = (d + temp1) | 0;
-        d = c;
-        c = b;
-        b = a;
-        a = (temp1 + temp2) | 0;
-      }
-      
-      h0 = (h0 + a) | 0;
-      h1 = (h1 + b) | 0;
-      h2 = (h2 + c) | 0;
-      h3 = (h3 + d) | 0;
-      h4 = (h4 + e) | 0;
-      h5 = (h5 + f) | 0;
-      h6 = (h6 + g) | 0;
-      h7 = (h7 + h) | 0;
-    }
-    
-    const bytes = [h0, h1, h2, h3, h4, h5, h6, h7];
-    for (i = 0; i < 8; i++) {
-      const word = bytes[i];
-      for (j = 24; j >= 0; j -= 8) {
-        const byteVal = (word >>> j) & 0xff;
-        result += byteVal.toString(16).padStart(2, '0');
-      }
-    }
-    return `0x${result}`;
-  }
 
-  async function sha256Bytes32(value) {
-    const jsonStr = stableJson(value);
-    if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle) {
-      try {
-        const encoded = new TextEncoder().encode(jsonStr);
-        const digest = await window.crypto.subtle.digest('SHA-256', encoded);
-        const bytes = Array.from(new Uint8Array(digest));
-        return `0x${bytes.map(b => b.toString(16).padStart(2, '0')).join('')}`;
-      } catch (e) {
-        console.warn('SubtleCrypto failed, falling back to pure JS SHA-256:', e);
-      }
-    }
-    return sha256Pure(jsonStr);
-  }
+    // ── Parse RugCheck report fields (same logic as Telegram bot) ───────
+    const tokenMeta  = data.tokenMeta || data.fileMeta || {};
+    const tokenName  = tokenMeta.name
+      ? `${tokenMeta.name}${tokenMeta.symbol ? ' (' + tokenMeta.symbol + ')' : ''}`
+      : short;
+    const tokenImage = tokenMeta.image || null;
 
-  // Glitch effect on stat numbers
-  document.querySelectorAll('.stat-number').forEach(el => {
-    const original = el.textContent;
-    el.addEventListener('mouseenter', () => {
-      let i = 0;
-      const chars = '0123456789ABCDEF$%#@!';
-      const interval = setInterval(() => {
-        el.textContent = original.split('').map((c, idx) =>
-          idx < i ? original[idx] : chars[Math.floor(Math.random() * chars.length)]
-        ).join('');
-        i++;
-        if (i > original.length) { el.textContent = original; clearInterval(interval); }
-      }, 40);
+    const tokenData  = data.token || {};
+    const mintAuth   = tokenData.mintAuthority;
+    const freezeAuth = tokenData.freezeAuthority;
+    const topHolders = data.topHolders || [];
+    const markets    = data.markets || [];
+    const lpLocked   = data.lpLockedPct || 0;
+    const mutable    = tokenMeta.mutable || false;
+
+    const SYSTEM_ADDR = '11111111111111111111111111111111';
+    const dangerFlags = [];
+    const warnFlags   = [];
+
+    // Mint authority
+    if (mintAuth && mintAuth !== SYSTEM_ADDR) {
+      dangerFlags.push('✗ Mint Authority Active — dev can print unlimited tokens');
+    }
+    // Freeze authority
+    if (freezeAuth && freezeAuth !== SYSTEM_ADDR) {
+      dangerFlags.push('✗ Freeze Authority Active — wallets can be frozen');
+    }
+    // Top holder concentration
+    if (topHolders.length > 0) {
+      const top1  = topHolders[0].pct || 0;
+      const top5  = topHolders.slice(0,5).reduce((s,h) => s + (h.pct||0), 0);
+      if (top1 > 50)       dangerFlags.push(`✗ Top holder owns ${top1.toFixed(1)}% of supply — extreme concentration`);
+      else if (top1 > 20)  warnFlags.push(`⚡ Top holder owns ${top1.toFixed(1)}% of supply`);
+      if (top5 > 80)       warnFlags.push(`⚡ Top 5 holders own ${top5.toFixed(1)}% of supply`);
+    }
+    // LP lock
+    if (markets.length > 0 && lpLocked === 0) {
+      warnFlags.push('⚡ Liquidity not locked — rug pull possible');
+    } else if (lpLocked > 0 && lpLocked < 50) {
+      warnFlags.push(`⚡ Only ${lpLocked.toFixed(0)}% of LP locked`);
+    }
+    // Mutable metadata
+    if (mutable) warnFlags.push('⚡ Mutable metadata — can be changed by dev');
+
+    // RugCheck risks array (if populated)
+    const rugcheckRiskNames = [];
+    (data.risks || []).forEach(r => {
+      rugcheckRiskNames.push(r.name || '?');
+      if (r.level === 'danger') dangerFlags.push(`✗ ${r.name || '?'}`);
+      else if (r.level === 'warn') warnFlags.push(`⚡ ${r.name || '?'}`);
     });
-  });
 
-  // Enter key on input
-  document.getElementById('scanInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') runScan();
-  });
+    // ── Risk classification ─────────────────────────────────────────────
+    const BLUE_CHIPS = ['JUP','BONK','WIF','SOL','USDC','USDT','RAY','ORCA'];
+    const symUpper   = (tokenMeta.symbol || '').toUpperCase();
+    const isKnownSafe = BLUE_CHIPS.some(x => symUpper.includes(x));
 
-  window.addEventListener('load', async () => {
-    installWalletListeners();
-    await syncConnectedWallet({ silent: true });
-    // Initialize default system setup
-    switchNetwork('solana');
-  });
+    const rugcheckScore = Number.isFinite(Number(data.score)) ? Number(data.score) : (rugcheckOk ? 1 : -1);
+    let risk = rugcheckScoreToRiskPercent(rugcheckScore);
+    if (isKnownSafe) risk = Math.min(risk, 12);
+    if (hasCreatorRugHistory(rugcheckRiskNames)) risk = Math.max(risk, 85);
+    risk = Math.max(0, Math.min(98, Math.round(risk)));
 
-  // Close modals on backdrop click
-  document.getElementById('walletModal').addEventListener('click', e => {
-    if (e.target === document.getElementById('walletModal')) closeWalletModal();
-  });
-  if (document.getElementById('paymentModal')) {
-    document.getElementById('paymentModal').addEventListener('click', e => {
-      if (e.target === document.getElementById('paymentModal')) closePaymentModal();
+    const allFlags = [...dangerFlags, ...warnFlags];
+
+    const top1Pct = topHolders[0]?.pct || 0;
+    const top5Pct = topHolders.slice(0,5).reduce((s,h) => s + (h.pct || 0), 0);
+    const authorityValue = [
+      `mint ${mintAuth && mintAuth !== SYSTEM_ADDR ? 'active' : 'disabled'}`,
+      `freeze ${freezeAuth && freezeAuth !== SYSTEM_ADDR ? 'active' : 'disabled'}`
+    ].join(' · ');
+    const authoritySeverity = (mintAuth && mintAuth !== SYSTEM_ADDR) || (freezeAuth && freezeAuth !== SYSTEM_ADDR) ? 'danger' : 'good';
+    const holderValue = topHolders.length ? `top1 ${top1Pct.toFixed(1)}% · top5 ${top5Pct.toFixed(1)}%` : 'holder data limited';
+    const holderSeverity = top1Pct > 50 ? 'danger' : top1Pct > 20 || top5Pct > 80 ? 'warn' : 'good';
+    const liquidityValue = markets.length ? `${markets.length} market${markets.length === 1 ? '' : 's'} · LP lock ${Number(lpLocked || 0).toFixed(0)}%` : 'market data limited';
+    const liquiditySeverity = markets.length && lpLocked === 0 ? 'warn' : 'good';
+    const metadataValue = mutable ? 'mutable metadata' : tokenMeta.name || tokenMeta.symbol ? 'readable metadata' : 'metadata limited';
+    const metadataSeverity = mutable ? 'warn' : 'good';
+    const riskLabel = riskLabelFromPercent(risk);
+    const syndicateSummary = risk >= 75
+      ? 'Block interaction until manual review'
+      : risk >= 40
+        ? 'Caution: elevated Solana risk'
+        : 'No hard rug signals detected';
+
+    await activateCiaModule('rugcheck', rugcheckOk ? 'indexed report loaded' : 'not indexed · limited data', rugcheckOk ? 'good' : 'warn', 120);
+    await activateCiaModule('authority', authorityValue, authoritySeverity, 120);
+    await activateCiaModule('holders', holderValue, holderSeverity, 120);
+    await activateCiaModule('liquidity', liquidityValue, liquiditySeverity, 120);
+    await activateCiaModule('metadata', metadataValue, metadataSeverity, 120);
+    await activateCiaModule('syndicate', syndicateSummary, risk >= 75 ? 'danger' : risk >= 40 ? 'warn' : 'good', 120);
+    setCiaFinal(risk, syndicateSummary, tokenName);
+
+    // ── Terminal output ─────────────────────────────────────────────────
+    await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">SOLANA</span>`, 200);
+    await termLineDelay(`<span class="t-cyan">✓ Token:</span>    <span class="t-cmd">${escapeHtml(tokenName)}</span>`, 250);
+    await termLineDelay(`<span class="t-cyan">✓ Address:</span>  <span class="t-out">${short}</span>`, 200);
+    await termLineDelay(`<span class="t-cyan">✓ RugCheck:</span> <span class="t-out">score ${rugcheckScore >= 0 ? rugcheckScore : 'unknown'} · calibrated risk ${risk}% (${riskLabel})</span>`, 200);
+    const mintDisplay   = !rugcheckOk ? ['t-out','— Unknown'] : mintAuth && mintAuth !== SYSTEM_ADDR ? ['t-danger','🚨 Active'] : ['t-success','✅ Disabled'];
+    const freezeDisplay = !rugcheckOk ? ['t-out','— Unknown'] : freezeAuth && freezeAuth !== SYSTEM_ADDR ? ['t-danger','🚨 Active'] : ['t-success','✅ Disabled'];
+    await termLineDelay(`<span class="t-cyan">✓ Mint Auth:</span>   <span class="${mintDisplay[0]}">${mintDisplay[1]}</span>`, 200);
+    await termLineDelay(`<span class="t-cyan">✓ Freeze Auth:</span> <span class="${freezeDisplay[0]}">${freezeDisplay[1]}</span>`, 200);
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-out">── RISK FLAGS ─────────────────────────────</span>`, 300);
+
+    if (allFlags.length === 0) {
+      await termLineDelay(`<span class="t-success">  ✓ No risk flags found</span>`, 300);
+    }
+    for (let i = 0; i < allFlags.length; i++) {
+      const f   = allFlags[i];
+      const cls = f.startsWith('✗') ? 't-danger' : 't-warn';
+      await termLineDelay(`<span class="${cls}">  ${escapeHtml(f)}</span>`, 100 + i * 70);
+    }
+
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-out">── VERDICT ────────────────────────────────</span>`, 200);
+
+    if (!rugcheckOk && allFlags.length === 0) {
+      await termLineDelay(`<span class="t-warn">  ⚡ THREAT LEVEL : UNKNOWN</span>`, 250);
+      await termLineDelay(`<span class="t-warn">  ⚡ RESULT       : NOT INDEXED — token not found in RugCheck database</span>`, 200);
+      await termLineDelay(`<span class="t-warn">  ⚡ Verify manually on rugcheck.xyz or dexscreener.com</span>`, 200);
+    } else if (risk >= 75) {
+      await termLineDelay(`<span class="t-danger">  ⚠ THREAT LEVEL : CRITICAL</span>`, 250);
+      await termLineDelay(`<span class="t-danger">  ⚠ RESULT       : HIGH RISK — POTENTIAL RUG / SCAM</span>`, 200);
+      await termLineDelay(`<span class="t-danger">  ✗ DO NOT INTERACT WITH THIS TOKEN</span>`, 200);
+    } else if (risk >= 40) {
+      await termLineDelay(`<span class="t-warn">  ⚡ THREAT LEVEL : ELEVATED</span>`, 250);
+      await termLineDelay(`<span class="t-warn">  ⚡ RESULT       : MEDIUM RISK — PROCEED WITH CAUTION</span>`, 200);
+    } else {
+      await termLineDelay(`<span class="t-success">  ✓ THREAT LEVEL : LOW</span>`, 250);
+      await termLineDelay(`<span class="t-success">  ✓ RESULT       : APPEARS CLEAN</span>`, 200);
+    }
+
+    // displayScore for risk meter (0-100)
+    const displayScore = Math.max(0, Math.min(100, risk));
+
+    await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
+    await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by RugCheck + Syndicate CIA modules</span>`, 200);
+    termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
+
+    setRiskMeter(displayScore);
+
+    // Show token image if available (RugCheck or DexScreener fallback)
+    showTokenImage(tokenImage, tokenName, address);
+
+    const feedSummary = risk >= 75
+      ? (dangerFlags[0] || 'High-risk Solana token')
+      : risk >= 40
+        ? (warnFlags[0] || 'Elevated Solana risk')
+        : 'Low risk clean Solana scan';
+    saveRecentScan({
+      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}),
+      name: tokenMeta.name || tokenName,
+      symbol: tokenMeta.symbol || 'SOL',
+      address,
+      risk,
+      rugcheck_score: rugcheckScore,
+      label: riskLabel,
+      summary: feedSummary.replace(/[✗⚡✓🚨✅]/g, '').trim()
     });
+
+    setTimeout(() => {
+      showFinalScan(risk, tokenName, address, syndicateSummary, allFlags.map(f => f.replace(/[✗⚡✓🚨✅]/g, '').trim()));
+    }, 450);
+
+    // Critical alert popup for high-risk tokens
+    if (risk >= 75) {
+      const dangerList = dangerFlags.map(f => `• ${escapeHtml(f)}`).join('<br>');
+      setTimeout(() => {
+        showCriticalAlert(
+          'HIGH RISK TOKEN DETECTED',
+          `Token: <span style="color:#ff3d3d">${escapeHtml(tokenName)}</span><br>
+           Address: <span style="color:var(--text-muted)">${short}</span><br>
+           Risk Score: <span style="color:#ff3d3d;font-size:18px">${risk}%</span><br><br>
+           ${dangerList ? `<span style="color:#ff3d3d">${dangerList}</span><br><br>` : ''}
+           <span style="color:#ff3d3d">⚠ DO NOT BUY — DO NOT INTERACT</span><br>
+           If you hold this token, consider exiting immediately.`
+        );
+      }, 800);
+    }
   }
 </script>
 
