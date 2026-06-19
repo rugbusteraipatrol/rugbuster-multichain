@@ -3656,5 +3656,122 @@ html{scrollbar-gutter:stable}
   });
 </script>
 
+
+<script>
+/* RugBuster Pre-sign Firewall (EVM) — prototip
+   Omota window.ethereum, presreće opasne tx/potpise pre nego sto wallet otvori.
+   Fail-open: ako analiza pukne, tx ide normalno (ne lomi wallet). */
+(function () {
+  if (window.__rbFirewall) return;
+  window.__rbFirewall = true;
+
+  var SEL = {
+    approve: "0x095ea7b3",            // approve(address,uint256)
+    setApprovalForAll: "0xa22cb465",  // setApprovalForAll(address,bool)
+    increaseAllowance: "0x39509351"   // increaseAllowance(address,uint256)
+  };
+
+  // Poznati drainer/scam spender-i (lowercase). Prototip lista — dopuniti kasnije / iz backenda.
+  var DENYLIST = new Set([]);
+
+  function short(a) { return a ? a.slice(0, 6) + "…" + a.slice(-4) : "?"; }
+  function big(h) { try { return BigInt("0x" + h.replace(/^0x/, "")); } catch (e) { return 0n; } }
+
+  function decodeTx(tx) {
+    var data = ((tx && (tx.data || tx.input)) || "").toLowerCase();
+    var to = ((tx && tx.to) || "").toLowerCase();
+    var reasons = [], level = "ok";
+    if (data.length >= 10) {
+      var sel = data.slice(0, 10);
+      if (sel === SEL.approve) {
+        var spender = "0x" + data.slice(34, 74);
+        var amountHex = data.slice(74, 138);
+        var amt = big(amountHex);
+        var unlimited = amt > (2n ** 200n);
+        reasons.push((unlimited ? "Unlimited" : "Token") + " spending approval → " + short(spender));
+        level = unlimited ? "danger" : "warn";
+        if (DENYLIST.has(spender)) { reasons.push("Spender is on known-drainer list"); level = "danger"; }
+      } else if (sel === SEL.setApprovalForAll) {
+        var operator = "0x" + data.slice(34, 74);
+        var approved = data.slice(74).replace(/0/g, "") !== "";
+        if (approved) {
+          reasons.push("Grants control of ALL your NFTs in a collection → " + short(operator));
+          level = "danger";
+          if (DENYLIST.has(operator)) reasons.push("Operator is on known-drainer list");
+        }
+      } else if (sel === SEL.increaseAllowance) {
+        reasons.push("Increases token spending allowance");
+        level = "warn";
+      }
+    }
+    if (to && DENYLIST.has(to)) { reasons.push("Destination is on known-drainer list"); level = "danger"; }
+    return { level: level, reasons: reasons };
+  }
+
+  function decodeTypedData(params) {
+    try {
+      var raw = params && (typeof params[1] === "string" ? params[1] : (typeof params[0] === "string" ? params[0] : null));
+      var json = raw ? JSON.parse(raw) : (params && params[1]) || (params && params[0]);
+      var pt = (json && json.primaryType) || "";
+      if (/permit/i.test(pt)) {
+        return { level: "danger", reasons: ["Off-chain " + pt + " signature — lets a spender move your tokens with no on-chain approve (gasless drain vector)"] };
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function ask(info) {
+    return new Promise(function (resolve) {
+      var color = info.level === "danger" ? "#ff3b5c" : "#f3ba2f";
+      var ov = document.createElement("div");
+      ov.style.cssText = "position:fixed;inset:0;z-index:2147483647;background:rgba(2,4,10,.82);display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace";
+      ov.innerHTML =
+        '<div style="max-width:430px;width:90%;background:#0a0e17;border:1px solid ' + color + ';box-shadow:0 0 40px ' + color + '55;padding:26px 24px">' +
+          '<div style="font-size:12px;letter-spacing:3px;color:' + color + ';margin-bottom:8px">⚠ RUGBUSTER FIREWALL</div>' +
+          '<div style="font-size:18px;font-weight:bold;color:#fff;margin-bottom:14px">' + (info.level === "danger" ? "Dangerous transaction" : "Review this transaction") + '</div>' +
+          '<div style="font-size:12px;line-height:1.8;color:#cdd3dc;margin-bottom:20px">' + info.reasons.map(function (r) { return "• " + r; }).join("<br>") + '</div>' +
+          '<div style="display:flex;gap:12px">' +
+            '<button id="rbCancel" style="flex:1;padding:12px;background:' + color + ';color:#0a0e17;border:none;font-family:inherit;font-weight:bold;letter-spacing:1px;cursor:pointer;clip-path:polygon(6% 0,100% 0,94% 100%,0 100%)">CANCEL — stay safe</button>' +
+            '<button id="rbProceed" style="flex:1;padding:12px;background:#1b2230;color:#9aa4b2;border:none;font-family:inherit;cursor:pointer;clip-path:polygon(6% 0,100% 0,94% 100%,0 100%)">Proceed anyway</button>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(ov);
+      ov.querySelector("#rbCancel").onclick = function () { ov.remove(); resolve(false); };
+      ov.querySelector("#rbProceed").onclick = function () { ov.remove(); resolve(true); };
+    });
+  }
+
+  function wrap(provider) {
+    if (!provider || provider.__rbWrapped) return;
+    var orig = provider.request && provider.request.bind(provider);
+    if (!orig) return;
+    provider.request = async function (args) {
+      try {
+        var m = args && args.method, info = null;
+        if (m === "eth_sendTransaction" && args.params && args.params[0]) info = decodeTx(args.params[0]);
+        else if ((m === "eth_signTypedData_v4" || m === "eth_signTypedData") && args.params) info = decodeTypedData(args.params);
+        if (info && info.level !== "ok" && info.reasons.length) {
+          var proceed = await ask(info);
+          if (!proceed) { var e = new Error("Blocked by RugBuster Firewall"); e.code = 4001; throw e; }
+        }
+      } catch (err) { if (err && err.code === 4001) throw err; }
+      return orig(args);
+    };
+    provider.__rbWrapped = true;
+  }
+
+  function tryWrap() { if (window.ethereum) wrap(window.ethereum); }
+  tryWrap();
+  window.addEventListener("ethereum#initialized", tryWrap, { once: true });
+  var n = 0, iv = setInterval(function () {
+    tryWrap();
+    if (++n > 20 || (window.ethereum && window.ethereum.__rbWrapped)) clearInterval(iv);
+  }, 300);
+
+  // demo/test hook: window.__rbTest({to:'0x..', data:'0x095ea7b3...'})
+  window.__rbTest = function (sample) { return ask(decodeTx(sample)); };
+})();
+
+</script>
 </body>
 </html>

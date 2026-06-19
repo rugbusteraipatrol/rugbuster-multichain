@@ -697,6 +697,28 @@
   .price-features li.off { color: rgba(90, 122, 154, 0.4); }
   .price-features li.off::before { color: rgba(90,122,154,0.3); }
 
+  /* SOLANA BUILDER API */
+  .builder-api-panel {
+    max-width: 1280px;
+    margin: 28px auto 0;
+    border: 1px solid rgba(0,245,255,0.14);
+    background: rgba(10,15,30,0.82);
+    padding: 22px;
+    box-shadow: inset 0 0 24px rgba(0,245,255,0.03);
+  }
+
+  .builder-api-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .builder-api-card {
+    border: 1px solid rgba(0,245,255,0.1);
+    padding: 14px 16px;
+    background: rgba(0,245,255,0.03);
+  }
+
   /* HOW IT WORKS */
   .how-grid {
     display: grid;
@@ -1233,6 +1255,7 @@
     .port-balance { display: none; }
     .cia-workflow { grid-template-columns: 1fr; }
     .cia-modules { grid-template-columns: 1fr; }
+    .builder-api-grid { grid-template-columns: 1fr; }
     .scan-feed-row { grid-template-columns: 1fr; gap: 6px; }
     .scan-feed-head { align-items: start; flex-direction: column; }
   }
@@ -1285,6 +1308,7 @@ html{scrollbar-gutter:stable}
     <li><a href="#features">Protocol</a></li>
     <li><a href="#intelligence">Intel</a></li>
     <li><a href="#scanner">Scanner</a></li>
+    <li><a href="#api">API</a></li>
     <li><a href="#how">How</a></li>
     <li><a href="#pricing">Access</a></li>
     <li><a href="#scanner" class="nav-cta">Scan Now</a></li>
@@ -1916,6 +1940,51 @@ html{scrollbar-gutter:stable}
   </div>
 </div>
 
+<!-- SOLANA BUILDER API -->
+<section id="api" class="z1">
+  <div class="builder-api-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+      <div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;">// solana builder tooling</div>
+        <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-top:6px;">Solana Risk Intelligence API</div>
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-green);letter-spacing:2px;">CACHE SCORE ONLINE</div>
+    </div>
+
+    <div class="builder-api-grid">
+      <div class="builder-api-card">
+        <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">Public Score Lookup</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.8;word-break:break-all;">
+          GET https://rugbuster-score-staging-production.up.railway.app/score?chain=solana&amp;address=&lt;mint&gt;
+        </div>
+      </div>
+
+      <div class="builder-api-card">
+        <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">Multichain Contract</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.8;">
+          Stable JSON response with label, risk score, source, classifier, and chain.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;border:1px solid rgba(0,245,255,0.12);background:rgba(0,245,255,0.03);padding:18px 20px;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;margin-bottom:12px;">// live cache score demo</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <input id="apiScoreInput" value="45cuA5DyNWWfoSQ8ZkxqDJh3CAkqsEnLnRRetQnHpump" placeholder="Solana token mint" style="
+          flex:1;min-width:260px;background:rgba(5,8,17,0.8);
+          border:1px solid rgba(0,245,255,0.22);color:var(--text-primary);
+          padding:13px 14px;font-family:'Share Tech Mono',monospace;
+          font-size:12px;letter-spacing:1px;outline:none;
+        ">
+        <button onclick="fetchSolanaApiScore()" class="btn-primary" style="font-size:11px;padding:13px 24px;clip-path:none;">Check API Score</button>
+      </div>
+      <div id="apiScoreResult" style="margin-top:14px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.9;">
+        Ready. Enter a cached Solana mint to verify the public endpoint.
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- HOW IT WORKS -->
 <section id="how" class="z1">
   <div class="section-label">// deployment sequence</div>
@@ -2212,6 +2281,7 @@ html{scrollbar-gutter:stable}
   });
 
   const RUGCHECK_API = 'https://api.rugcheck.xyz/v1';
+  const SOLANA_SCORE_API = 'https://rugbuster-score-staging-production.up.railway.app';
   const SOLANA_FEED_API = 'https://rugbuster-api-production.up.railway.app/api/recent-scans?chain=solana&limit=10';
   let remoteRecentScans = [];
 
@@ -2235,6 +2305,13 @@ html{scrollbar-gutter:stable}
   document.getElementById('scanInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') runScan();
   });
+
+  const apiScoreInput = document.getElementById('apiScoreInput');
+  if (apiScoreInput) {
+    apiScoreInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') fetchSolanaApiScore();
+    });
+  }
 
   function loadExample(type) {
     const examples = {
@@ -2271,6 +2348,73 @@ html{scrollbar-gutter:stable}
       '"': '&quot;',
       "'": '&#039;'
     }[ch]));
+  }
+
+  function isSolanaMint(value) {
+    return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value);
+  }
+
+  async function fetchSolanaApiScore() {
+    const input = document.getElementById('apiScoreInput');
+    const result = document.getElementById('apiScoreResult');
+    if (!input || !result) return;
+
+    const address = input.value.trim();
+    if (!isSolanaMint(address)) {
+      result.innerHTML = '<span style="color:var(--neon-orange);">WARN</span> // Enter a valid Solana token mint.';
+      return;
+    }
+
+    result.innerHTML = '<span style="color:var(--neon-cyan);">QUERYING</span> // checking Solana score cache';
+
+    try {
+      const url = `${SOLANA_SCORE_API}/score?chain=solana&address=${encodeURIComponent(address)}`;
+      const response = await fetch(url, { cache: 'no-store' });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.ok === false) {
+        result.innerHTML = '<span style="color:var(--neon-orange);">CACHE MISS</span> // running a new Solana scan...';
+        const live = await getTokenRiskQuick(address);
+
+        if (!live.hasData) {
+          result.innerHTML = '<span style="color:#ff3d3d;">SCAN UNAVAILABLE</span> // This mint is not indexed yet. Try again shortly.';
+          return;
+        }
+
+        const label = riskLabelFromPercent(live.risk);
+        const color = label === 'DANGER' ? '#ff3d3d' : label === 'WARN' ? 'var(--neon-orange)' : 'var(--neon-green)';
+        const tokenName = [live.name, live.symbol ? `(${live.symbol})` : ''].filter(Boolean).join(' ');
+        const displayToken = tokenName || `${address.slice(0, 8)}...${address.slice(-6)}`;
+        const flags = [...live.danger, ...live.warn];
+        const flagLines = flags.length
+          ? flags.slice(0, 5).map(flag => `<div>&gt; ${escapeHtml(flag)}</div>`).join('')
+          : '<div>&gt; No major risk flags detected.</div>';
+
+        result.innerHTML = `
+          <div><span style="color:${color};">${escapeHtml(label)}</span> // ${escapeHtml(displayToken)}</div>
+          <div>source=live_rugcheck classifier=weighted_v2 chain=SOLANA risk=${escapeHtml(live.risk)}%</div>
+          <div>rugcheck_score=${escapeHtml(live.rugcheckScore ?? 'unknown')}</div>
+          ${flagLines}
+        `;
+        return;
+      }
+
+      const label = String(data.label || 'UNKNOWN').toUpperCase();
+      const color = label === 'DANGER' ? '#ff3d3d' : label === 'WARN' ? 'var(--neon-orange)' : label === 'GOOD' ? 'var(--neon-green)' : 'var(--text-muted)';
+      const tokenName = [data.token_name, data.token_symbol ? `(${data.token_symbol})` : ''].filter(Boolean).join(' ');
+      const displayToken = tokenName && !/^Unknown(?: \(Unknown\))?$/i.test(tokenName)
+        ? tokenName
+        : `${address.slice(0, 8)}...${address.slice(-6)}`;
+      const risk = data.risk_score ?? data.risk_percent ?? data.risk;
+      const riskText = risk === null || risk === undefined ? '' : ` risk=${escapeHtml(risk)}%`;
+
+      result.innerHTML = `
+        <div><span style="color:${color};">${escapeHtml(label)}</span> // ${escapeHtml(displayToken)}</div>
+        <div>source=${escapeHtml(data.source || 'postgres_cache')} classifier=${escapeHtml(data.classifier_version || data.classifier || 'weighted_v2')} chain=SOLANA${riskText}</div>
+      `;
+    } catch (error) {
+      result.innerHTML = `<span style="color:#ff3d3d;">ERROR</span> // ${escapeHtml(error.message || 'Solana score API unavailable')}`;
+    }
   }
 
   function lerpScore(value, x0, x1, y0, y1) {
