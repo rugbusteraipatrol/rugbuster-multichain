@@ -108,6 +108,7 @@
     gap: 18px;
     margin-left: 20px;
     margin-right: auto;
+    min-width: 0;
   }
 
   .rb-cs {
@@ -654,6 +655,37 @@
   }
 
   @media (max-width: 680px) {
+    nav {
+      gap: 10px;
+      padding: 14px 12px;
+    }
+    .logo {
+      flex: 0 0 auto;
+      min-width: 0;
+      font-size: 18px;
+      letter-spacing: 2px;
+    }
+    .rb-chain-switch {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      gap: 10px;
+      margin-left: 0;
+      margin-right: 0;
+      padding: 4px 2px;
+    }
+    .rb-chain-switch::-webkit-scrollbar {
+      display: none;
+    }
+    .rb-cs {
+      width: 74px;
+      flex: 0 0 74px;
+      height: 38px;
+      font-size: 11px;
+    }
     .hero { padding: 110px 22px 60px; }
     section { padding: 72px 20px; }
     .hero-title { font-size: clamp(42px, 14vw, 66px); }
