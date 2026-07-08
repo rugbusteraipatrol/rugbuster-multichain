@@ -1170,7 +1170,7 @@
         display:flex;align-items:center;gap:8px;
       " onmouseover="this.style.background='rgba(35,209,139,0.1)'" onmouseout="if(!walletConnected)this.style.background='transparent'">
         <span style="font-size:16px;">🦊</span>
-        <span id="walletBtnText">Connect Avalanche Wallet</span>
+        <span id="walletBtnText">Connect Wallet</span>
       </button>
     </li>
   </ul>
@@ -1195,7 +1195,7 @@
     position:relative;
   ">
     <button onclick="closeWalletModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:var(--text-muted);font-size:20px;cursor:crosshair;">✕</button>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon-cyan);margin-bottom:24px;">// SELECT AVALANCHE WALLET</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon-cyan);margin-bottom:24px;">// SELECT WALLET</div>
     <div id="walletModalBody">
       <!-- metamask option -->
       <div onclick="connectMetaMask()" style="
@@ -1210,10 +1210,10 @@
          onmouseout="this.style.borderColor='rgba(232,65,66,0.15)';this.style.background='rgba(232,65,66,0.02)'">
         <span style="font-size:32px;">🦊</span>
         <div style="text-align:left;">
-          <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">MetaMask</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Avalanche C-Chain / EVM wallet</div>
+          <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">EVM Wallet</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">MetaMask / Rabby / Core for Avalanche, BNB Chain, and Base</div>
         </div>
-        <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-green);letter-spacing:2px;">RECOMMENDED</div>
+        <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-green);letter-spacing:2px;">LIVE NOW</div>
       </div>
       <div style="
         border:1px solid rgba(255,255,255,0.08);
@@ -1228,10 +1228,38 @@
         </div>
         <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SUPPORTED</div>
       </div>
+      <div style="
+        border:1px solid rgba(255,255,255,0.08);
+        padding:20px 24px;
+        margin-top:12px;
+        display:flex;align-items:center;gap:16px;
+        background:rgba(255,255,255,0.01);
+      ">
+        <span style="font-size:32px;">◎</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Phantom / Solflare</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Solana wallet connect coming soon; use the Solana scanner page now</div>
+        </div>
+        <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SOON</div>
+      </div>
+      <div style="
+        border:1px solid rgba(255,255,255,0.08);
+        padding:20px 24px;
+        margin-top:12px;
+        display:flex;align-items:center;gap:16px;
+        background:rgba(255,255,255,0.01);
+      ">
+        <span style="font-size:32px;">T</span>
+        <div style="text-align:left;">
+          <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">TronLink</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">TRON wallet connect coming soon; use the TRON scanner page now</div>
+        </div>
+        <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SOON</div>
+      </div>
       <div style="margin-top:18px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-muted);text-align:left;">
-        Portfolio scan uses your connected Avalanche wallet.<br>
+        EVM wallet connect is live now for the Avalanche registry flow. BNB and Base share EVM wallet rails; Solana and TRON wallet connect are labeled separately until native wallet support is wired in.<br>
         <span style="color:var(--neon-cyan);">PUBLISH REPORT</span> requires an authorized reviewer wallet.<br>
-        Each module write is confirmed in your wallet and burns AVAX from that wallet.
+        Avalanche registry writes are confirmed in your wallet and burn AVAX from that wallet.
       </div>
     </div>
   </div>
@@ -1260,7 +1288,10 @@
     <div id="payPlanName" style="font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:var(--text-primary);margin-bottom:4px;"></div>
     <div id="payPlanPrice" style="font-family:'Orbitron',monospace;font-size:48px;font-weight:900;color:var(--neon-pink);text-shadow:0 0 30px rgba(255,255,255,0.5);margin-bottom:32px;"></div>
 
-    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--text-muted);margin-bottom:16px;">SELECT CURRENCY</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--text-muted);margin-bottom:8px;">SELECT CURRENCY</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;margin-bottom:16px;text-align:left;">
+      Payments are currently accepted in AVAX or USDC through the AVAX registry wallet flow. BNB, Base, Solana, and TRON payment rails are not enabled yet.
+    </div>
     <div style="display:flex;gap:12px;margin-bottom:32px;">
       <div id="paySOL" onclick="selectCurrency('AVAX')" style="
         flex:1;border:1px solid rgba(232,65,66,0.4);padding:16px;cursor:crosshair;
@@ -1332,7 +1363,7 @@
     <div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-muted);margin-bottom:32px;line-height:2;">
       Your wallet has been verified.<br>
       <span style="color:var(--neon-green);">Full access activated.</span><br>
-      Transaction confirmed on Avalanche C-Chain.
+      Transaction confirmed through the AVAX payment flow.
     </div>
     <div id="successAddr" style="
       border:1px solid rgba(35,209,139,0.15);
@@ -1448,7 +1479,19 @@
     <div>
       <div class="section-label">// live threat scanner</div>
       <h2 class="section-title">Scan Any<br><span>Token Now</span></h2>
-      <p class="section-desc" style="margin-bottom:32px;">Use the chain tabs for BNB, Base, Solana, and TRON. This panel scans Avalanche/Apex 0x tokens with live chain and market signals.</p>
+      <p class="section-desc" style="margin-bottom:24px;">Pick a chain before scanning. Avalanche scans run in this panel with registry write support; the other chain options route to their live scanner pages.</p>
+
+      <div style="margin-bottom:16px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--text-muted);margin-bottom:10px;">TARGET CHAIN</div>
+        <div id="scanChainSelector" style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="scan-chain-option active" data-scan-chain="avax" onclick="selectScanChain('avax')" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;padding:10px 14px;border:1px solid rgba(232,65,66,0.45);background:rgba(232,65,66,0.12);color:var(--neon-cyan);cursor:crosshair;">AVAX</button>
+          <button type="button" class="scan-chain-option" data-scan-chain="bnb" onclick="selectScanChain('bnb')" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;padding:10px 14px;border:1px solid rgba(255,255,255,0.14);background:transparent;color:var(--text-muted);cursor:crosshair;">BNB</button>
+          <button type="button" class="scan-chain-option" data-scan-chain="base" onclick="selectScanChain('base')" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;padding:10px 14px;border:1px solid rgba(255,255,255,0.14);background:transparent;color:var(--text-muted);cursor:crosshair;">BASE</button>
+          <button type="button" class="scan-chain-option" data-scan-chain="sol" onclick="selectScanChain('sol')" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;padding:10px 14px;border:1px solid rgba(255,255,255,0.14);background:transparent;color:var(--text-muted);cursor:crosshair;">SOL</button>
+          <button type="button" class="scan-chain-option" data-scan-chain="tron" onclick="selectScanChain('tron')" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;padding:10px 14px;border:1px solid rgba(255,255,255,0.14);background:transparent;color:var(--text-muted);cursor:crosshair;">TRON</button>
+        </div>
+        <div id="scanChainNote" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;margin-top:10px;">Avalanche/Apex scan runs here. BNB, Base, Solana, and TRON have dedicated scanner pages.</div>
+      </div>
 
       <!-- INPUT -->
       <div style="margin-bottom:16px;">
@@ -1469,7 +1512,7 @@
           <input
             id="scanInput"
             type="text"
-            placeholder="Paste token address (Apex / Avalanche)..."
+            placeholder="Paste an Avalanche/Apex 0x token address..."
             style="
               flex:1;
               background:transparent;
@@ -1599,9 +1642,9 @@
       </div>
       <div class="terminal-body" id="terminalBody" style="min-height:320px;max-height:420px;overflow-y:auto;">
         <div><span class="t-prompt">RB&gt;</span> <span class="t-out">System ready. Awaiting target address...</span></div>
-        <div><span class="t-out">// Paste an Apex or Avalanche 0x address and hit SCAN</span></div>
-        <div><span class="t-out">// Multi-chain RugBuster platform · this panel uses Avalanche live market data</span></div>
-        <div><span class="t-pink">// ENGINE: RUGBUSTER APEX v1.0 — ONLINE</span></div>
+        <div><span class="t-out">// Select AVAX, BNB, BASE, SOL, or TRON before scanning</span></div>
+        <div><span class="t-out">// AVAX scans run here; other chains route to their dedicated scanner pages</span></div>
+        <div><span class="t-pink">// ENGINE: RUGBUSTER MULTI-CHAIN v2.5 — ONLINE</span></div>
         <div>&nbsp;</div>
         <div><span class="t-prompt">RB&gt;</span> <span class="cursor"></span></div>
       </div>
@@ -1621,7 +1664,7 @@
       <div class="cia-node">
         <div class="cia-node-label">Target Token</div>
         <div class="cia-node-main" id="ciaTargetName">Awaiting target</div>
-        <div class="cia-node-sub" id="ciaTargetAddress">Paste an Avalanche address and start scan.</div>
+        <div class="cia-node-sub" id="ciaTargetAddress">Select a chain and paste a token address.</div>
       </div>
 
       <div class="cia-module-stack" id="ciaModuleStack">
@@ -1693,11 +1736,11 @@
         <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;">// my portfolio scan</div>
         <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-top:6px;">Wallet Threat Surface</div>
       </div>
-      <div id="portfolioState" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">CONNECT AN AVALANCHE WALLET TO START</div>
+      <div id="portfolioState" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">CONNECT AN EVM WALLET TO START</div>
     </div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
-      <button id="portfolioConnectBtn" onclick="connectApexWallet()" class="btn-secondary" style="font-size:11px;padding:12px 24px;">CONNECT AVALANCHE WALLET</button>
+      <button id="portfolioConnectBtn" onclick="connectApexWallet()" class="btn-secondary" style="font-size:11px;padding:12px 24px;">CONNECT EVM WALLET</button>
       <button id="portfolioRefreshBtn" onclick="scanPortfolio()" style="
         font-family:'Share Tech Mono',monospace;
         font-size:11px;
@@ -1716,7 +1759,7 @@
 
     <div id="portfolioList" style="display:none;"></div>
     <div id="portfolioEmpty" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.9;border:1px solid rgba(232,65,66,0.08);background:rgba(232,65,66,0.03);padding:18px 20px;">
-      Connect an Avalanche wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
+      Connect an EVM wallet for the live Avalanche registry/portfolio flow. BNB and Base share EVM rails; Solana and TRON portfolio support will be wired separately.
     </div>
   </div>
 
@@ -1975,7 +2018,7 @@
   <p class="cta-sub">Use RugBuster for token risk lookups, reviewer attestations, and Sentinel-ready monitoring across supported chains.</p>
   <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
     <a href="#api" class="btn-primary">Test Builder API</a>
-    <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/L1_SECURITY_ROADMAP.md" target="_blank" rel="noopener" class="btn-secondary">View L1 Roadmap</a>
+    <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/L1_SECURITY_ROADMAP.md" target="_blank" rel="noopener" class="btn-secondary">View Registry Roadmap</a>
   </div>
 </div>
 
@@ -2013,6 +2056,61 @@
   let lastScanData = null;
   let apexPortfolioAddress = null;
   let walletListenersInstalled = false;
+  let selectedScanChain = 'avax';
+  const SCAN_CHAIN_CONFIG = {
+    avax: {
+      label: 'AVAX',
+      placeholder: 'Paste an Avalanche/Apex 0x token address...',
+      emptyTarget: 'Select AVAX and paste an Avalanche/Apex 0x token address.',
+      note: 'Avalanche/Apex scan runs here with registry write support.'
+    },
+    bnb: {
+      label: 'BNB',
+      placeholder: 'Paste a BNB Chain 0x token address...',
+      emptyTarget: 'BNB scans run on the dedicated RugBuster BNB page.',
+      note: 'BNB scanner is live on rugbuster.io/bnb/. Selecting BNB here routes there.',
+      route: 'https://rugbuster.io/bnb/'
+    },
+    base: {
+      label: 'BASE',
+      placeholder: 'Paste a Base 0x token address...',
+      emptyTarget: 'Base scans run on the dedicated RugBuster Base page.',
+      note: 'Base scanner is live on rugbuster.io/base/. Selecting Base here routes there.',
+      route: 'https://rugbuster.io/base/'
+    },
+    sol: {
+      label: 'SOL',
+      placeholder: 'Paste a Solana token mint...',
+      emptyTarget: 'Solana scans run on the dedicated RugBuster Solana page.',
+      note: 'Solana scanner is live on rugbuster.io/solana/. Selecting SOL here routes there.',
+      route: 'https://rugbuster.io/solana/'
+    },
+    tron: {
+      label: 'TRON',
+      placeholder: 'Paste a TRON TRC-20 token address...',
+      emptyTarget: 'TRON scans run on the dedicated RugBuster TRON page.',
+      note: 'TRON scanner is live on rugbuster.io/tron/. Selecting TRON here routes there.',
+      route: 'https://rugbuster.io/tron/'
+    }
+  };
+
+  function selectScanChain(chain) {
+    selectedScanChain = SCAN_CHAIN_CONFIG[chain] ? chain : 'avax';
+    const config = SCAN_CHAIN_CONFIG[selectedScanChain];
+    document.querySelectorAll('.scan-chain-option').forEach(btn => {
+      const active = btn.dataset.scanChain === selectedScanChain;
+      btn.classList.toggle('active', active);
+      btn.style.borderColor = active ? 'rgba(232,65,66,0.45)' : 'rgba(255,255,255,0.14)';
+      btn.style.background = active ? 'rgba(232,65,66,0.12)' : 'transparent';
+      btn.style.color = active ? 'var(--neon-cyan)' : 'var(--text-muted)';
+    });
+    const input = document.getElementById('scanInput');
+    if (input && !input.value) input.placeholder = config.placeholder;
+    const note = document.getElementById('scanChainNote');
+    if (note) note.textContent = config.note;
+    const target = document.getElementById('ciaTargetAddress');
+    if (target) target.textContent = config.emptyTarget;
+  }
 
   function updateWalletButtonState() {
     const btn = document.getElementById('walletBtn');
@@ -2029,19 +2127,15 @@
       btn.style.boxShadow = '0 0 20px rgba(35,209,139,0.2)';
       btn.onclick = disconnectWallet;
 
-      if (scanInput && !scanInput.value) {
-        scanInput.placeholder = `Avalanche wallet connected: ${short} — paste token address to scan`;
-      }
+      if (scanInput && !scanInput.value) scanInput.placeholder = selectedScanChain === 'avax' ? `EVM wallet connected: ${short} — paste Avalanche/Apex token address` : SCAN_CHAIN_CONFIG[selectedScanChain].placeholder;
     } else {
-      btnText.textContent = 'Connect Avalanche Wallet';
+      btnText.textContent = 'Connect Wallet';
       btn.style.background = 'transparent';
       btn.style.boxShadow = 'none';
       btn.style.borderColor = 'rgba(232,65,66,0.3)';
       btn.onclick = connectWallet;
 
-      if (scanInput && !scanInput.value) {
-        scanInput.placeholder = 'Paste token address (Apex / Avalanche)...';
-      }
+      if (scanInput && !scanInput.value) scanInput.placeholder = SCAN_CHAIN_CONFIG[selectedScanChain].placeholder;
     }
   }
 
@@ -2753,7 +2847,7 @@
       `;
       empty.innerHTML = `
         <div style="font-family:'Orbitron',monospace;font-size:18px;color:var(--text-primary);margin-bottom:8px;">Wallet is clean, but empty.</div>
-        <div style="margin-bottom:8px;">No Avalanche ERC-20 holdings were detected in this address.</div>
+        <div style="margin-bottom:8px;">No supported ERC-20 holdings were detected for this wallet in the live registry flow.</div>
         <div style="color:var(--neon-cyan);">That is a valid result — not a scanner error.</div>
       `;
       return;
@@ -2804,7 +2898,7 @@
 
   async function scanPortfolio() {
     if (!apexPortfolioAddress) {
-      document.getElementById('portfolioState').textContent = 'CONNECT AN AVALANCHE WALLET FIRST';
+      document.getElementById('portfolioState').textContent = 'CONNECT AN EVM WALLET FIRST';
       return;
     }
 
@@ -3335,7 +3429,7 @@
   function resetCiaFlow() {
     setCiaStatus('IDLE');
     document.getElementById('ciaTargetName').textContent = 'Awaiting target';
-    document.getElementById('ciaTargetAddress').textContent = 'Paste an Avalanche address and start scan.';
+    document.getElementById('ciaTargetAddress').textContent = SCAN_CHAIN_CONFIG[selectedScanChain]?.emptyTarget || 'Select a chain and paste a token address.';
     document.getElementById('ciaFinalVerdict').textContent = 'Not analyzed';
     document.getElementById('ciaFinalScore').textContent = 'Rug and speculation scores will appear here.';
     const finalNode = document.getElementById('ciaFinalNode');
@@ -3437,6 +3531,19 @@
       return;
     }
 
+    const selectedConfig = SCAN_CHAIN_CONFIG[selectedScanChain] || SCAN_CHAIN_CONFIG.avax;
+    if (selectedScanChain !== 'avax') {
+      clearTerminal();
+      resetCiaFlow();
+      setCiaStatus('ROUTING', 'scanning');
+      termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">scan ${shortAddress(address)} --chain ${selectedConfig.label}</span>`);
+      termLine(`<span class="t-out">// ${selectedConfig.label} scans run on a dedicated RugBuster page.</span>`);
+      termLine(`<span class="t-out">// Opening ${selectedConfig.route}</span>`);
+      const route = selectedConfig.route + '?address=' + encodeURIComponent(address);
+      setTimeout(() => { window.location.href = route; }, 650);
+      return;
+    }
+
     clearTerminal();
     resetCiaFlow();
     document.getElementById('scoreBoard').style.display = 'none';
@@ -3451,7 +3558,7 @@
 
     if (!isAPEX) {
       termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-danger">Unsupported address format</span>`);
-      termLine(`<span class="t-out">// Use an Apex / Avalanche 0x token address.</span>`);
+      termLine(`<span class="t-out">// AVAX is selected. Use an Avalanche/Apex 0x token address, or choose another chain above.</span>`);
       termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
       setCiaStatus('UNSUPPORTED', 'danger');
       return;
@@ -3463,7 +3570,7 @@
 
     termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">scan ${short} --chain ${chain} --deep --ai</span>`);
     await termLineDelay(`<span class="t-out">Initializing threat engine...</span>`, 300);
-    await termLineDelay(`<span class="t-out">Connecting to Avalanche live market feeds...</span>`, 500);
+    await termLineDelay(`<span class="t-out">Connecting to AVAX live market feeds...</span>`, 500);
     await termLineDelay(`<span class="t-out">Fetching Apex token pairs and liquidity...</span>`, 700);
 
     let apexData;
@@ -3471,7 +3578,7 @@
       apexData = await fetchApexScan(address);
     } catch (err) {
       await termLineDelay(`<span class="t-danger">✗ SCAN FAILED: ${err.message}</span>`, 400);
-      await termLineDelay(`<span class="t-out">// Ensure this is an Avalanche token address with live liquidity.</span>`, 200);
+      await termLineDelay(`<span class="t-out">// AVAX is selected. Ensure this is an Avalanche/Apex token with live liquidity.</span>`, 200);
       termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
       setCiaStatus('SCAN FAILED', 'danger');
       return;
@@ -3568,7 +3675,7 @@
       }
 
       await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-      await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by ${apexData.source || 'RugBuster Avalanche data'}</span>`, 200);
+    await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by ${apexData.source || 'RugBuster AVAX registry data'}</span>`, 200);
     if (apexData.pairUrl) {
       await termLineDelay(`<span class="t-out">// Pair URL: ${apexData.pairUrl}</span>`, 120);
     }
@@ -3633,7 +3740,7 @@
 
     try {
       if (!walletConnected || connectedProvider !== 'evm' || !window.ethereum) {
-        throw new Error('Connect an Avalanche wallet before publishing');
+        throw new Error('Connect an EVM wallet before publishing to the AVAX registry');
       }
 
       const { signer, contract } = await getRegistryContractWithSigner();
@@ -3673,7 +3780,7 @@
       setTimeout(() => setPublishButtonState(true, 'PUBLISH REPORT'), 2600);
     } catch (err) {
       await termLineDelay(`<span class="t-danger">✗ REGISTRY PUBLISH FAILED: ${err.message}</span>`, 220);
-      await termLineDelay(`<span class="t-out">// Connect Avalanche C-Chain, authorize this reviewer wallet, and keep enough AVAX for gas.</span>`, 120);
+      await termLineDelay(`<span class="t-out">// Connect the AVAX registry wallet, authorize this reviewer, and keep enough AVAX for gas.</span>`, 120);
       setPublishButtonState(true, 'PUBLISH REPORT');
     }
 
