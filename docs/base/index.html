@@ -1,31 +1,33 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RugBuster — Multi-Chain Crypto Fraud Detection</title>
-<meta name="description" content="RugBuster monitors token risk across Avalanche, BNB Chain, Base, Solana, and TRON with live scanners, CIA behavioral modules, alerts, and builder APIs.">
-<meta property="og:title" content="RugBuster — Multi-Chain Crypto Fraud Detection">
-<meta property="og:description" content="Live token intelligence for Avalanche, BNB Chain, Base, Solana, and TRON. Scan tokens, inspect CIA behavioral risk, and monitor new launches.">
+<title>RugBuster Base — Multi-Chain Crypto Fraud Detection</title>
+<meta name="description" content="RugBuster Base is part of the RugBuster multi-chain security feed across Avalanche, BNB Chain, Base, Solana, and TRON.">
+<meta property="og:title" content="RugBuster Base — Multi-Chain Crypto Fraud Detection">
+<meta property="og:description" content="Base token risk scanning with RugBuster CIA behavioral modules, live scan feed, and builder API access.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RugBuster — Multi-Chain Crypto Fraud Detection">
-<meta name="twitter:description" content="Multi-chain token risk scanning across Avalanche, BNB Chain, Base, Solana, and TRON.">
+<meta name="twitter:title" content="RugBuster Base — Multi-Chain Crypto Fraud Detection">
+<meta name="twitter:description" content="Base token risk scanning connected to the RugBuster multi-chain security feed.">
+<meta name="rugbuster-build" content="base-live-counter-2026-07-07">
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="8" fill="%232f80ff"/><rect x="10" y="10" width="44" height="44" rx="5" fill="%230052ff"/><path d="M18 32h28" stroke="%23ffffff" stroke-width="5" stroke-linecap="square"/><path d="M32 18v28" stroke="%23ffffff" stroke-width="5" stroke-linecap="square" opacity=".9"/></svg>'>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --neon-cyan: #E84142;
-    --neon-pink: #F8FAFC;
-    --neon-green: #23D18B;
-    --neon-orange: #FFB020;
-    --dark-bg: #070708;
-    --dark-panel: #121316;
-    --dark-card: #1B1C20;
-    --grid-line: rgba(232, 65, 66, 0.055);
-    --text-primary: #F8FAFC;
-    --text-muted: #A5A8B3;
+    --neon-cyan: #2f80ff;
+    --neon-pink: #7fb7ff;
+    --neon-green: #23d18b;
+    --neon-orange: #ff9f1a;
+    --dark-bg: #111318;
+    --dark-panel: #181b22;
+    --dark-card: #20242c;
+    --grid-line: rgba(47, 128, 255, 0.055);
+    --text-primary: #f4f4f5;
+    --text-muted: #9aa0ad;
   }
 
   html { scroll-behavior: smooth; }
@@ -83,22 +85,23 @@
     align-items: center;
     gap: 20px;
     padding: 18px 48px;
-    background: rgba(7, 7, 8, 0.9);
+    background: rgba(17, 19, 24, 0.88);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(232, 65, 66, 0.15);
+    border-bottom: 1px solid rgba(47, 128, 255, 0.15);
   }
 
   .logo {
     font-family: 'Orbitron', monospace;
     font-size: 22px;
     font-weight: 900;
+    min-width: 176px;
     color: var(--neon-cyan);
-    text-shadow: 0 0 20px rgba(232, 65, 66, 0.6), 0 0 60px rgba(232, 65, 66, 0.22);
+    text-shadow: 0 0 20px rgba(47, 128, 255, 0.52), 0 0 60px rgba(47, 128, 255, 0.2);
     letter-spacing: 3px;
     text-decoration: none;
   }
 
-  .logo span { color: var(--neon-pink); text-shadow: 0 0 20px rgba(255,255,255,0.35); }
+  .logo span { color: var(--neon-pink); text-shadow: 0 0 20px rgba(47,128,255,0.45); }
 
   .rb-chain-switch {
     display: flex;
@@ -121,6 +124,7 @@
     letter-spacing: 2px;
     line-height: 1;
     text-align: center;
+    color: #fff;
     text-decoration: none;
     text-transform: uppercase;
     clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
@@ -137,13 +141,13 @@
   .rb-cs-avax { background: #E84142; color: #fff; }
   .rb-cs-bnb { background: #F3BA2F; color: #1a1500; }
   .rb-cs-base { background: #0052ff; color: #fff; }
-  .rb-cs-sol { background: #9945FF; color: #fff; box-shadow: 0 0 18px rgba(153,69,255,.55); }
+  .rb-cs-sol { background: #9945FF; color: #fff; }
   .rb-cs-tron { background: #ef0027; color: #fff; }
+  .rb-cs-base.active { box-shadow: 0 0 18px rgba(0,82,255,.65); }
 
   nav ul {
     display: flex;
-    gap: 24px;
-    align-items: center;
+    gap: 36px;
     list-style: none;
   }
 
@@ -159,7 +163,7 @@
 
   nav a:hover {
     color: var(--neon-cyan);
-    text-shadow: 0 0 10px rgba(232, 65, 66, 0.6);
+    text-shadow: 0 0 10px rgba(47, 128, 255, 0.6);
   }
 
   .nav-cta {
@@ -171,14 +175,14 @@
     letter-spacing: 2px;
     text-transform: uppercase;
     transition: all 0.2s !important;
-    text-shadow: 0 0 8px rgba(255,255,255,0.4) !important;
+    text-shadow: 0 0 8px rgba(47,128,255,0.4) !important;
   }
 
   .nav-cta:hover {
     background: var(--neon-pink);
     color: var(--dark-bg) !important;
     text-shadow: none !important;
-    box-shadow: 0 0 30px rgba(255,255,255,0.5);
+    box-shadow: 0 0 30px rgba(47,128,255,0.5);
   }
 
   /* HERO */
@@ -227,7 +231,7 @@
   .hero-title .line2 {
     display: block;
     color: var(--neon-cyan);
-    text-shadow: 0 0 30px rgba(232, 65, 66, 0.8), 0 0 80px rgba(232, 65, 66, 0.4);
+    text-shadow: 0 0 30px rgba(47, 128, 255, 0.8), 0 0 80px rgba(47, 128, 255, 0.4);
   }
 
   @keyframes glitch {
@@ -277,12 +281,12 @@
     transition: all 0.2s;
     text-decoration: none;
     display: inline-block;
-    box-shadow: 0 0 30px rgba(232, 65, 66, 0.4), 0 0 80px rgba(232, 65, 66, 0.1);
+    box-shadow: 0 0 30px rgba(47, 128, 255, 0.4), 0 0 80px rgba(47, 128, 255, 0.1);
   }
 
   .btn-primary:hover {
     background: #fff;
-    box-shadow: 0 0 50px rgba(232, 65, 66, 0.8), 0 0 120px rgba(232, 65, 66, 0.3);
+    box-shadow: 0 0 50px rgba(47, 128, 255, 0.8), 0 0 120px rgba(47, 128, 255, 0.3);
     transform: translateY(-2px);
   }
 
@@ -301,20 +305,20 @@
     transition: all 0.2s;
     text-decoration: none;
     display: inline-block;
-    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    text-shadow: 0 0 10px rgba(47,128,255,0.5);
   }
 
   .btn-secondary:hover {
-    background: rgba(255,255,255,0.1);
-    box-shadow: 0 0 30px rgba(255,255,255,0.4);
+    background: rgba(47,128,255,0.1);
+    box-shadow: 0 0 30px rgba(47,128,255,0.4);
     transform: translateY(-2px);
   }
 
   /* STATS BAR */
   .stats-bar {
     background: var(--dark-panel);
-    border-top: 1px solid rgba(232, 65, 66, 0.1);
-    border-bottom: 1px solid rgba(232, 65, 66, 0.1);
+    border-top: 1px solid rgba(47, 128, 255, 0.1);
+    border-bottom: 1px solid rgba(47, 128, 255, 0.1);
     padding: 28px 48px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -324,7 +328,7 @@
   .stat-item {
     text-align: center;
     padding: 12px 24px;
-    border-right: 1px solid rgba(232, 65, 66, 0.08);
+    border-right: 1px solid rgba(47, 128, 255, 0.08);
   }
 
   .stat-item:last-child { border-right: none; }
@@ -334,7 +338,7 @@
     font-size: 32px;
     font-weight: 700;
     color: var(--neon-cyan);
-    text-shadow: 0 0 20px rgba(232, 65, 66, 0.6);
+    text-shadow: 0 0 20px rgba(47, 128, 255, 0.6);
     display: block;
     line-height: 1;
     margin-bottom: 6px;
@@ -362,7 +366,7 @@
     color: var(--neon-pink);
     text-transform: uppercase;
     margin-bottom: 12px;
-    text-shadow: 0 0 8px rgba(255,255,255,0.4);
+    text-shadow: 0 0 8px rgba(47,128,255,0.4);
   }
 
   .section-title {
@@ -374,7 +378,7 @@
     color: var(--text-primary);
   }
 
-  .section-title span { color: var(--neon-cyan); text-shadow: 0 0 20px rgba(232,65,66,0.5); }
+  .section-title span { color: var(--neon-cyan); text-shadow: 0 0 20px rgba(47,128,255,0.5); }
 
   .section-desc {
     font-size: 17px;
@@ -390,13 +394,13 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 2px;
     margin-top: 64px;
-    border: 1px solid rgba(232, 65, 66, 0.08);
+    border: 1px solid rgba(47, 128, 255, 0.08);
   }
 
   .feature-card {
     background: var(--dark-card);
     padding: 40px 36px;
-    border: 1px solid rgba(232, 65, 66, 0.06);
+    border: 1px solid rgba(47, 128, 255, 0.06);
     transition: all 0.3s;
     position: relative;
     overflow: hidden;
@@ -415,27 +419,27 @@
   .feature-card:hover::before { opacity: 1; }
 
   .feature-card:hover {
-    background: rgba(232, 65, 66, 0.03);
-    border-color: rgba(232, 65, 66, 0.2);
+    background: rgba(47, 128, 255, 0.03);
+    border-color: rgba(47, 128, 255, 0.2);
     transform: translateY(-4px);
   }
 
   .feature-icon {
     width: 52px;
     height: 52px;
-    border: 1px solid rgba(232, 65, 66, 0.3);
+    border: 1px solid rgba(47, 128, 255, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 24px;
     font-size: 22px;
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
-    background: rgba(232, 65, 66, 0.05);
+    background: rgba(47, 128, 255, 0.05);
   }
 
   .feature-card.pink .feature-icon {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(47, 128, 255, 0.3);
+    background: rgba(47, 128, 255, 0.05);
   }
 
   .feature-card.green .feature-icon {
@@ -463,8 +467,8 @@
   /* TERMINAL */
   .terminal-section {
     background: var(--dark-panel);
-    border-top: 1px solid rgba(232, 65, 66, 0.08);
-    border-bottom: 1px solid rgba(232, 65, 66, 0.08);
+    border-top: 1px solid rgba(47, 128, 255, 0.08);
+    border-bottom: 1px solid rgba(47, 128, 255, 0.08);
     padding: 100px 48px;
   }
 
@@ -480,10 +484,10 @@
   .monitor-panel {
     max-width: 1280px;
     margin: 28px auto 0;
-    border: 1px solid rgba(232,65,66,0.14);
+    border: 1px solid rgba(47,128,255,0.14);
     background: rgba(10,15,30,0.82);
     padding: 22px 22px 18px;
-    box-shadow: inset 0 0 24px rgba(232,65,66,0.03);
+    box-shadow: inset 0 0 24px rgba(47,128,255,0.03);
   }
 
   .monitor-grid {
@@ -493,22 +497,22 @@
   }
 
   .monitor-card {
-    border: 1px solid rgba(232,65,66,0.1);
+    border: 1px solid rgba(47,128,255,0.1);
     padding: 14px 16px;
-    background: rgba(232,65,66,0.03);
+    background: rgba(47,128,255,0.03);
   }
 
   .cia-flow-panel {
     max-width: 1280px;
     margin: 28px auto 0;
-    border: 1px solid rgba(232,65,66,0.16);
+    border: 1px solid rgba(47,128,255,0.16);
     background:
-      linear-gradient(90deg, rgba(232,65,66,0.035) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(232,65,66,0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(47,128,255,0.035) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(47,128,255,0.028) 1px, transparent 1px),
       rgba(7,12,24,0.9);
     background-size: 44px 44px;
     padding: 22px;
-    box-shadow: inset 0 0 34px rgba(232,65,66,0.035);
+    box-shadow: inset 0 0 34px rgba(47,128,255,0.035);
     overflow: hidden;
   }
 
@@ -555,12 +559,12 @@
   }
 
   .cia-node {
-    border: 1px solid rgba(232,65,66,0.18);
-    background: rgba(232,65,66,0.04);
+    border: 1px solid rgba(47,128,255,0.18);
+    background: rgba(47,128,255,0.04);
     padding: 16px;
     min-height: 92px;
     position: relative;
-    box-shadow: inset 0 0 24px rgba(232,65,66,0.025);
+    box-shadow: inset 0 0 24px rgba(47,128,255,0.025);
   }
 
   .cia-node-label {
@@ -598,8 +602,8 @@
   }
 
   .cia-module-node {
-    border: 1px solid rgba(232,65,66,0.12);
-    background: rgba(232,65,66,0.03);
+    border: 1px solid rgba(47,128,255,0.12);
+    background: rgba(47,128,255,0.03);
     min-height: 78px;
     padding: 12px 12px 10px;
     position: relative;
@@ -614,20 +618,20 @@
     width: 8px;
     height: 8px;
     transform: translateY(-50%);
-    background: rgba(232,65,66,0.25);
+    background: rgba(47,128,255,0.25);
     border-radius: 50%;
-    box-shadow: 0 0 10px rgba(232,65,66,0.2);
+    box-shadow: 0 0 10px rgba(47,128,255,0.2);
   }
 
   .cia-module-node.active {
-    border-color: rgba(255,255,255,0.72);
-    background: rgba(255,255,255,0.055);
-    box-shadow: 0 0 22px rgba(255,255,255,0.14);
+    border-color: rgba(47,128,255,0.72);
+    background: rgba(47,128,255,0.055);
+    box-shadow: 0 0 22px rgba(47,128,255,0.14);
   }
 
   .cia-module-node.active::before {
     background: var(--neon-pink);
-    box-shadow: 0 0 18px rgba(255,255,255,0.85);
+    box-shadow: 0 0 18px rgba(47,128,255,0.85);
     animation: pulse-glow 0.9s ease-in-out infinite;
   }
 
@@ -678,7 +682,7 @@
     left: 0;
     right: 0;
     top: 50%;
-    background: linear-gradient(90deg, rgba(232,65,66,0.05), rgba(255,255,255,0.55), rgba(35,209,139,0.18));
+    background: linear-gradient(90deg, rgba(47,128,255,0.05), rgba(47,128,255,0.55), rgba(35,209,139,0.18));
   }
 
   .cia-link::after {
@@ -690,7 +694,7 @@
     height: 7px;
     border-radius: 50%;
     background: var(--neon-cyan);
-    box-shadow: 0 0 18px rgba(232,65,66,0.9);
+    box-shadow: 0 0 18px rgba(47,128,255,0.9);
     animation: ciaTrace 2.3s linear infinite;
   }
 
@@ -725,10 +729,10 @@
   .portfolio-panel {
     max-width: 1280px;
     margin: 28px auto 0;
-    border: 1px solid rgba(232,65,66,0.14);
+    border: 1px solid rgba(47,128,255,0.14);
     background: rgba(10,15,30,0.82);
     padding: 22px;
-    box-shadow: inset 0 0 24px rgba(232,65,66,0.03);
+    box-shadow: inset 0 0 24px rgba(47,128,255,0.03);
   }
 
   .portfolio-panel.alert {
@@ -742,8 +746,8 @@
     gap: 12px;
     align-items: center;
     padding: 14px 16px;
-    border: 1px solid rgba(232,65,66,0.08);
-    background: rgba(232,65,66,0.03);
+    border: 1px solid rgba(47,128,255,0.08);
+    background: rgba(47,128,255,0.03);
   }
 
   .portfolio-row + .portfolio-row {
@@ -762,16 +766,16 @@
 
   .terminal {
     background: #020408;
-    border: 1px solid rgba(232, 65, 66, 0.2);
+    border: 1px solid rgba(47, 128, 255, 0.2);
     padding: 0;
     font-family: 'Share Tech Mono', monospace;
     font-size: 13px;
-    box-shadow: 0 0 60px rgba(232, 65, 66, 0.08), inset 0 0 30px rgba(232, 65, 66, 0.02);
+    box-shadow: 0 0 60px rgba(47, 128, 255, 0.08), inset 0 0 30px rgba(47, 128, 255, 0.02);
   }
 
   .terminal-bar {
-    background: rgba(232, 65, 66, 0.05);
-    border-bottom: 1px solid rgba(232, 65, 66, 0.15);
+    background: rgba(47, 128, 255, 0.05);
+    border-bottom: 1px solid rgba(47, 128, 255, 0.15);
     padding: 10px 16px;
     display: flex;
     align-items: center;
@@ -830,7 +834,7 @@
 
   .pricing-card {
     background: var(--dark-card);
-    border: 1px solid rgba(232, 65, 66, 0.08);
+    border: 1px solid rgba(47, 128, 255, 0.08);
     padding: 40px 32px;
     position: relative;
     transition: all 0.3s;
@@ -838,14 +842,14 @@
   }
 
   .pricing-card.featured {
-    border-color: rgba(232, 65, 66, 0.4);
-    background: rgba(232, 65, 66, 0.03);
-    box-shadow: 0 0 60px rgba(232, 65, 66, 0.08);
+    border-color: rgba(47, 128, 255, 0.4);
+    background: rgba(47, 128, 255, 0.03);
+    box-shadow: 0 0 60px rgba(47, 128, 255, 0.08);
   }
 
   .pricing-card:hover {
     transform: translateY(-6px);
-    border-color: rgba(232, 65, 66, 0.3);
+    border-color: rgba(47, 128, 255, 0.3);
   }
 
   .featured-badge {
@@ -874,7 +878,7 @@
     font-size: 52px;
     font-weight: 900;
     color: var(--neon-cyan);
-    text-shadow: 0 0 30px rgba(232,65,66,0.5);
+    text-shadow: 0 0 30px rgba(47,128,255,0.5);
     line-height: 1;
     margin-bottom: 4px;
   }
@@ -896,7 +900,7 @@
 
   .price-divider {
     border: none;
-    border-top: 1px solid rgba(232,65,66,0.08);
+    border-top: 1px solid rgba(47,128,255,0.08);
     margin-bottom: 28px;
   }
 
@@ -914,7 +918,7 @@
     align-items: center;
     gap: 10px;
     letter-spacing: 0.5px;
-    border-bottom: 1px solid rgba(232,65,66,0.04);
+    border-bottom: 1px solid rgba(47,128,255,0.04);
   }
 
   .price-features li::before {
@@ -955,7 +959,7 @@
   .how-num {
     width: 56px;
     height: 56px;
-    border: 1px solid rgba(232, 65, 66, 0.3);
+    border: 1px solid rgba(47, 128, 255, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -964,7 +968,7 @@
     font-size: 18px;
     font-weight: 700;
     color: var(--neon-cyan);
-    text-shadow: 0 0 15px rgba(232,65,66,0.6);
+    text-shadow: 0 0 15px rgba(47,128,255,0.6);
     background: var(--dark-bg);
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
     position: relative;
@@ -991,7 +995,7 @@
   /* CTA FOOTER */
   .cta-section {
     background: var(--dark-panel);
-    border-top: 1px solid rgba(232, 65, 66, 0.1);
+    border-top: 1px solid rgba(47, 128, 255, 0.1);
     text-align: center;
     padding: 120px 48px;
     position: relative;
@@ -1005,7 +1009,7 @@
     transform: translate(-50%, -50%);
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(232,65,66,0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(47,128,255,0.05) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -1018,7 +1022,7 @@
     line-height: 1;
   }
 
-  .cta-title span { color: var(--neon-pink); text-shadow: 0 0 30px rgba(255,255,255,0.6); }
+  .cta-title span { color: var(--neon-pink); text-shadow: 0 0 30px rgba(47,128,255,0.6); }
 
   .cta-sub {
     font-size: 17px;
@@ -1033,7 +1037,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid rgba(232, 65, 66, 0.06);
+    border-top: 1px solid rgba(47, 128, 255, 0.06);
     background: rgba(5, 8, 17, 0.9);
   }
 
@@ -1067,7 +1071,7 @@
     position: absolute;
     font-family: 'Share Tech Mono', monospace;
     font-size: 11px;
-    color: rgba(232, 65, 66, 0.04);
+    color: rgba(47, 128, 255, 0.04);
     pointer-events: none;
     letter-spacing: 2px;
     line-height: 2.2;
@@ -1105,6 +1109,7 @@
     nav { padding: 16px 24px; }
     .rb-chain-switch { gap: 10px; margin-left: 8px; }
     .rb-cs { width: 74px; flex-basis: 74px; font-size: 11px; }
+    nav ul { display: none; }
     .features-grid { grid-template-columns: 1fr; }
     .pricing-grid { grid-template-columns: 1fr; }
     .how-grid { grid-template-columns: 1fr 1fr; }
@@ -1131,7 +1136,6 @@
     }
   }
 </style>
-
 </head>
 <body>
 
@@ -1141,9 +1145,9 @@
 <nav class="z1">
   <a href="#" class="logo">RUG<span>BUSTER</span></a>
   <div class="rb-chain-switch" aria-label="RugBuster chain sites">
-    <a class="rb-cs rb-cs-avax active" href="https://rugbuster.io/">AVAX</a>
+    <a class="rb-cs rb-cs-avax" href="https://rugbuster.io/">AVAX</a>
     <a class="rb-cs rb-cs-bnb" href="https://rugbuster.io/bnb/">BNB</a>
-    <a class="rb-cs rb-cs-base" href="https://rugbuster.io/base/">BASE</a>
+    <a class="rb-cs rb-cs-base active" href="https://rugbuster.io/base/">BASE</a>
     <a class="rb-cs rb-cs-sol" href="https://rugbuster.io/solana/">SOL</a>
     <a class="rb-cs rb-cs-tron" href="https://rugbuster.io/tron/">TRON</a>
   </div>
@@ -1170,7 +1174,7 @@
         display:flex;align-items:center;gap:8px;
       " onmouseover="this.style.background='rgba(35,209,139,0.1)'" onmouseout="if(!walletConnected)this.style.background='transparent'">
         <span style="font-size:16px;">🦊</span>
-        <span id="walletBtnText">Connect Avalanche Wallet</span>
+        <span id="walletBtnText">Connect Base Wallet</span>
       </button>
     </li>
   </ul>
@@ -1186,32 +1190,32 @@
   justify-content:center;
 ">
   <div style="
-    border:1px solid rgba(232,65,66,0.3);
+    border:1px solid rgba(47,128,255,0.3);
     background:var(--dark-card);
     padding:48px;
     max-width:460px;width:90%;
     text-align:center;
-    box-shadow:0 0 80px rgba(232,65,66,0.08);
+    box-shadow:0 0 80px rgba(47,128,255,0.08);
     position:relative;
   ">
     <button onclick="closeWalletModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:var(--text-muted);font-size:20px;cursor:crosshair;">✕</button>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon-cyan);margin-bottom:24px;">// SELECT AVALANCHE WALLET</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon-cyan);margin-bottom:24px;">// SELECT BASE WALLET</div>
     <div id="walletModalBody">
       <!-- metamask option -->
       <div onclick="connectMetaMask()" style="
-        border:1px solid rgba(232,65,66,0.15);
+        border:1px solid rgba(47,128,255,0.15);
         padding:20px 24px;
         margin-bottom:12px;
         cursor:crosshair;
         display:flex;align-items:center;gap:16px;
         transition:all 0.2s;
-        background:rgba(232,65,66,0.02);
-      " onmouseover="this.style.borderColor='rgba(232,65,66,0.5)';this.style.background='rgba(232,65,66,0.05)'"
-         onmouseout="this.style.borderColor='rgba(232,65,66,0.15)';this.style.background='rgba(232,65,66,0.02)'">
+        background:rgba(47,128,255,0.02);
+      " onmouseover="this.style.borderColor='rgba(47,128,255,0.5)';this.style.background='rgba(47,128,255,0.05)'"
+         onmouseout="this.style.borderColor='rgba(47,128,255,0.15)';this.style.background='rgba(47,128,255,0.02)'">
         <span style="font-size:32px;">🦊</span>
         <div style="text-align:left;">
           <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">MetaMask</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Avalanche C-Chain / EVM wallet</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);">Base mainnet / EVM wallet</div>
         </div>
         <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--neon-green);letter-spacing:2px;">RECOMMENDED</div>
       </div>
@@ -1229,9 +1233,8 @@
         <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;">SUPPORTED</div>
       </div>
       <div style="margin-top:18px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-muted);text-align:left;">
-        Portfolio scan uses your connected Avalanche wallet.<br>
-        <span style="color:var(--neon-cyan);">PUBLISH REPORT</span> requires an authorized reviewer wallet.<br>
-        Each module write is confirmed in your wallet and burns AVAX from that wallet.
+        Portfolio scan uses your connected Base wallet.<br>
+        Base mode shows live wallet risk locally without Telegram spam or on-chain write prompts.
       </div>
     </div>
   </div>
@@ -1247,27 +1250,27 @@
   justify-content:center;
 ">
   <div style="
-    border:1px solid rgba(255,255,255,0.3);
+    border:1px solid rgba(47,128,255,0.3);
     background:var(--dark-card);
     padding:48px;
     max-width:500px;width:90%;
     text-align:center;
-    box-shadow:0 0 80px rgba(255,255,255,0.08);
+    box-shadow:0 0 80px rgba(47,128,255,0.08);
     position:relative;
   ">
     <button onclick="closePaymentModal()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:var(--text-muted);font-size:20px;cursor:crosshair;">✕</button>
     <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon-pink);margin-bottom:8px;">// ACTIVATE PLAN</div>
     <div id="payPlanName" style="font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:var(--text-primary);margin-bottom:4px;"></div>
-    <div id="payPlanPrice" style="font-family:'Orbitron',monospace;font-size:48px;font-weight:900;color:var(--neon-pink);text-shadow:0 0 30px rgba(255,255,255,0.5);margin-bottom:32px;"></div>
+    <div id="payPlanPrice" style="font-family:'Orbitron',monospace;font-size:48px;font-weight:900;color:var(--neon-pink);text-shadow:0 0 30px rgba(47,128,255,0.5);margin-bottom:32px;"></div>
 
     <div style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--text-muted);margin-bottom:16px;">SELECT CURRENCY</div>
     <div style="display:flex;gap:12px;margin-bottom:32px;">
-      <div id="paySOL" onclick="selectCurrency('AVAX')" style="
-        flex:1;border:1px solid rgba(232,65,66,0.4);padding:16px;cursor:crosshair;
-        background:rgba(232,65,66,0.05);transition:all 0.2s;
+      <div id="paySOL" onclick="selectCurrency('ETH')" style="
+        flex:1;border:1px solid rgba(47,128,255,0.4);padding:16px;cursor:crosshair;
+        background:rgba(47,128,255,0.05);transition:all 0.2s;
       ">
-        <div style="font-size:24px;margin-bottom:6px;">▲</div>
-        <div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--neon-cyan);">AVAX</div>
+        <div style="font-size:24px;margin-bottom:6px;">◆</div>
+        <div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--neon-cyan);">ETH</div>
         <div id="solAmount" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:4px;"></div>
       </div>
       <div id="payUSDC" onclick="selectCurrency('USDC')" style="
@@ -1281,7 +1284,7 @@
     </div>
 
     <div id="walletPayInfo" style="
-      border:1px solid rgba(232,65,66,0.1);
+      border:1px solid rgba(47,128,255,0.1);
       padding:12px 16px;
       margin-bottom:24px;
       font-family:'Share Tech Mono',monospace;
@@ -1300,7 +1303,7 @@
       letter-spacing:3px;padding:16px;
       background:var(--neon-pink);color:var(--dark-bg);
       border:none;cursor:crosshair;
-      box-shadow:0 0 30px rgba(255,255,255,0.4);
+      box-shadow:0 0 30px rgba(47,128,255,0.4);
       transition:all 0.2s;
     ">⚡ CONFIRM PAYMENT</button>
     <div id="connectFirst" style="display:none;margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-orange);">
@@ -1332,7 +1335,7 @@
     <div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-muted);margin-bottom:32px;line-height:2;">
       Your wallet has been verified.<br>
       <span style="color:var(--neon-green);">Full access activated.</span><br>
-      Transaction confirmed on Avalanche C-Chain.
+      Transaction confirmed on Base.
     </div>
     <div id="successAddr" style="
       border:1px solid rgba(35,209,139,0.15);
@@ -1363,21 +1366,21 @@
     [BUST] INITIATED
   </div>
 
-  <div class="hero-eyebrow">// MULTI-CHAIN SECURITY TOOLING v2.5</div>
+  <div class="hero-eyebrow">// BASE MAINNET SECURITY TOOLING v2.5</div>
 
   <h1 class="hero-title">
     <span class="line1">RUGBUSTER</span>
-    <span class="line2">PATROL</span>
+    <span class="line2">BASE</span>
   </h1>
 
   <p class="hero-sub">
-    Multi-chain token intelligence across Avalanche, BNB Chain, Base, Solana, and TRON,
-    with live scanners, private evidence collectors, and builder APIs for <strong>wallets,
-    launchpads, dashboards & future security layers</strong>.
+    Base token intelligence with a live scanner, Basescan-aware collector,
+    private evidence collector, and builder API for <strong>wallets, launchpads,
+    dashboards & future L1 security layers</strong>.
   </p>
 
   <div class="hero-buttons">
-    <a href="#scanner" class="btn-primary">Scan Token</a>
+    <a href="#scanner" class="btn-primary">Scan Base Token</a>
     <a href="#api" class="btn-secondary">View Builder API</a>
   </div>
 </div>
@@ -1385,12 +1388,12 @@
 <!-- STATS -->
 <div class="stats-bar z1">
   <div class="stat-item">
-    <span class="stat-number">6.4K+</span>
-    <span class="stat-label">Multi-Chain Scan Records</span>
+    <span class="stat-number" id="baseScanCount">SYNC</span>
+    <span class="stat-label">Base Scan Records</span>
   </div>
   <div class="stat-item">
     <span class="stat-number">LIVE</span>
-    <span class="stat-label">Mainnet Registry</span>
+    <span class="stat-label">Base Worker Online</span>
   </div>
   <div class="stat-item">
     <span class="stat-number">V2</span>
@@ -1406,23 +1409,23 @@
 <section id="features" class="z1">
   <div class="section-label">// core protocol</div>
   <h2 class="section-title">Your AI Security<br><span>Strike Force</span></h2>
-  <p class="section-desc">A practical multi-chain security stack: live scanners, collector evidence, on-chain proofs where deployed, alerts, portfolio checks, and builder API access.</p>
+  <p class="section-desc">A practical Base security stack: live scanner, collector evidence, alerts, portfolio checks, builder API access, and a registry path ready for deployment.</p>
 
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">🔍</div>
       <div class="feature-title">Contract Autopsy</div>
-      <p class="feature-desc">Token checks combine contract metadata, holder concentration, deployer signals, liquidity evidence, and market structure across supported chains.</p>
+      <p class="feature-desc">Base token checks combine contract metadata, holder concentration, deployer signals, liquidity evidence, and market structure.</p>
     </div>
     <div class="feature-card pink">
       <div class="feature-icon">⚡</div>
       <div class="feature-title">Launch Sniper Intel</div>
-      <p class="feature-desc">Chain collectors continuously build private evidence corpora for safer scoring, dashboards, and future model training.</p>
+      <p class="feature-desc">Base collector workers continuously build a private evidence corpus for safer scoring, dashboards, and future model training.</p>
     </div>
     <div class="feature-card green">
       <div class="feature-icon">🛡️</div>
       <div class="feature-title">Wallet Firewall</div>
-      <p class="feature-desc">Reviewer-authorized publishing writes verified reports to chain registries where deployed, using reviewer-controlled wallets.</p>
+      <p class="feature-desc">Reviewer-authorized publishing is wired for the Base registry contract once deployment is funded and verified.</p>
     </div>
     <div class="feature-card green">
       <div class="feature-icon">📡</div>
@@ -1436,8 +1439,8 @@
     </div>
     <div class="feature-card pink">
       <div class="feature-icon">🔔</div>
-      <div class="feature-title">Telegram Alerts</div>
-      <p class="feature-desc">Instant push notifications to your Telegram when threats detected. Configure thresholds, chains, wallets — full control.</p>
+      <div class="feature-title">Live Base Feed</div>
+      <p class="feature-desc">The Base dashboard reads fresh scanner records from the shared database, so routine low-risk scans stay on-site instead of spamming chat channels.</p>
     </div>
   </div>
 </section>
@@ -1448,14 +1451,14 @@
     <div>
       <div class="section-label">// live threat scanner</div>
       <h2 class="section-title">Scan Any<br><span>Token Now</span></h2>
-      <p class="section-desc" style="margin-bottom:32px;">Use the chain tabs for BNB, Base, Solana, and TRON. This panel scans Avalanche/Apex 0x tokens with live chain and market signals.</p>
+      <p class="section-desc" style="margin-bottom:32px;">Paste any Base token address. Our engine analyzes live chain and market signals in real-time.</p>
 
       <!-- INPUT -->
       <div style="margin-bottom:16px;">
         <div style="
           display:flex;
-          border:1px solid rgba(232,65,66,0.3);
-          background:rgba(232,65,66,0.03);
+          border:1px solid rgba(47,128,255,0.3);
+          background:rgba(47,128,255,0.03);
           overflow:hidden;
         ">
           <span style="
@@ -1463,13 +1466,13 @@
             font-size:13px;
             color:var(--neon-cyan);
             padding:14px 16px;
-            border-right:1px solid rgba(232,65,66,0.2);
+            border-right:1px solid rgba(47,128,255,0.2);
             white-space:nowrap;
           ">RB&gt;</span>
           <input
             id="scanInput"
             type="text"
-            placeholder="Paste token address (Apex / Avalanche)..."
+            placeholder="Paste token address (Base)..."
             style="
               flex:1;
               background:transparent;
@@ -1489,52 +1492,13 @@
           <button onclick="runScan()" class="btn-primary" style="font-size:11px;padding:13px 32px;border:none;cursor:crosshair;">
             ⚡ SCAN TOKEN
           </button>
-          <button id="authorizeReviewerBtn" onclick="authorizeReviewerWallet()" style="
-            font-family:'Share Tech Mono',monospace;
-            font-size:11px;
-            letter-spacing:2px;
-            padding:12px 20px;
-            background:transparent;
-            border:1px solid rgba(232,65,66,0.22);
-            color:rgba(232,65,66,0.58);
-            cursor:crosshair;
-            transition:all 0.2s;
-          " onmouseover="if(!this.disabled){this.style.color='var(--neon-cyan)'}" onmouseout="if(!this.disabled){this.style.color='rgba(232,65,66,0.58)'}">
-            AUTHORIZE REVIEWER
-          </button>
-          <button id="publishBtn" onclick="publishCurrentReport()" style="
-            font-family:'Share Tech Mono',monospace;
-            font-size:11px;
-            letter-spacing:2px;
-            padding:12px 20px;
-            background:transparent;
-            border:1px solid rgba(255,255,255,0.22);
-            color:rgba(255,255,255,0.58);
-            cursor:crosshair;
-            transition:all 0.2s;
-          " onmouseover="if(!this.disabled){this.style.color='var(--neon-pink)'}" onmouseout="if(!this.disabled){this.style.color='rgba(255,255,255,0.58)'}" disabled>
-            PUBLISH REPORT
-          </button>
-          <button id="sendAlertBtn" onclick="sendTelegramAlert()" style="
-            font-family:'Share Tech Mono',monospace;
-            font-size:11px;
-            letter-spacing:2px;
-            padding:12px 20px;
-            background:transparent;
-            border:1px solid rgba(35,209,139,0.22);
-            color:rgba(35,209,139,0.55);
-            cursor:crosshair;
-            transition:all 0.2s;
-          " onmouseover="if(!this.disabled){this.style.color='var(--neon-green)'}" onmouseout="if(!this.disabled){this.style.color='rgba(35,209,139,0.55)'}" disabled>
-            SEND ALERT
-          </button>
           <button onclick="loadExample('apex')" style="
             font-family:'Share Tech Mono',monospace;
             font-size:11px;
             letter-spacing:2px;
             padding:12px 20px;
           background:transparent;
-          border:1px solid rgba(232,65,66,0.2);
+          border:1px solid rgba(47,128,255,0.2);
           color:var(--text-muted);
           cursor:crosshair;
           transition:all 0.2s;
@@ -1549,8 +1513,8 @@
         <div style="display:flex;align-items:center;gap:16px;">
           <img id="tokenImage" src="" alt="token" style="
             width:56px;height:56px;
-            border:1px solid rgba(232,65,66,0.3);
-            background:rgba(232,65,66,0.05);
+            border:1px solid rgba(47,128,255,0.3);
+            background:rgba(47,128,255,0.05);
             object-fit:cover;
             clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
           "/>
@@ -1564,7 +1528,7 @@
         <!-- SCOREBOARD -->
         <div id="scoreBoard" style="display:none;margin-top:32px;">
           <div style="display:grid;grid-template-columns:1fr;gap:18px;">
-            <div style="border:1px solid rgba(232,65,66,0.12);padding:16px 16px 14px;background:rgba(232,65,66,0.02);">
+            <div style="border:1px solid rgba(47,128,255,0.12);padding:16px 16px 14px;background:rgba(47,128,255,0.02);">
               <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px;">RUG SCORE // ON-CHAIN FACTS</div>
               <div style="display:flex;align-items:center;gap:16px;">
                 <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;">
@@ -1574,7 +1538,7 @@
               </div>
               <div id="rugScoreLabel" style="font-family:'Share Tech Mono',monospace;font-size:12px;margin-top:8px;letter-spacing:2px;"></div>
             </div>
-            <div style="border:1px solid rgba(255,255,255,0.12);padding:16px 16px 14px;background:rgba(255,255,255,0.02);">
+            <div style="border:1px solid rgba(47,128,255,0.12);padding:16px 16px 14px;background:rgba(47,128,255,0.02);">
               <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:3px;margin-bottom:10px;">SPECULATION SCORE // MARKET DATA</div>
               <div style="display:flex;align-items:center;gap:16px;">
                 <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;">
@@ -1599,9 +1563,9 @@
       </div>
       <div class="terminal-body" id="terminalBody" style="min-height:320px;max-height:420px;overflow-y:auto;">
         <div><span class="t-prompt">RB&gt;</span> <span class="t-out">System ready. Awaiting target address...</span></div>
-        <div><span class="t-out">// Paste an Apex or Avalanche 0x address and hit SCAN</span></div>
-        <div><span class="t-out">// Multi-chain RugBuster platform · this panel uses Avalanche live market data</span></div>
-        <div><span class="t-pink">// ENGINE: RUGBUSTER APEX v1.0 — ONLINE</span></div>
+        <div><span class="t-out">// Paste a Base 0x address and hit SCAN</span></div>
+        <div><span class="t-out">// Powered by RugBuster API + Base live market data</span></div>
+        <div><span class="t-pink">// ENGINE: RUGBUSTER BASE v1.0 — ONLINE</span></div>
         <div>&nbsp;</div>
         <div><span class="t-prompt">RB&gt;</span> <span class="cursor"></span></div>
       </div>
@@ -1621,7 +1585,7 @@
       <div class="cia-node">
         <div class="cia-node-label">Target Token</div>
         <div class="cia-node-main" id="ciaTargetName">Awaiting target</div>
-        <div class="cia-node-sub" id="ciaTargetAddress">Paste an Avalanche address and start scan.</div>
+        <div class="cia-node-sub" id="ciaTargetAddress">Paste a Base address and start scan.</div>
       </div>
 
       <div class="cia-module-stack" id="ciaModuleStack">
@@ -1681,7 +1645,7 @@
     </div>
 
     <div id="recentScanList" style="display:grid;grid-template-columns:1fr;gap:8px;">
-      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;border:1px solid rgba(232,65,66,0.08);background:rgba(232,65,66,0.03);padding:14px 16px;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;border:1px solid rgba(47,128,255,0.08);background:rgba(47,128,255,0.03);padding:14px 16px;">
         Awaiting recent scanner output.
       </div>
     </div>
@@ -1693,18 +1657,18 @@
         <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;">// my portfolio scan</div>
         <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-top:6px;">Wallet Threat Surface</div>
       </div>
-      <div id="portfolioState" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">CONNECT AN AVALANCHE WALLET TO START</div>
+      <div id="portfolioState" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:2px;">CONNECT A BASE WALLET TO START</div>
     </div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px;">
-      <button id="portfolioConnectBtn" onclick="connectApexWallet()" class="btn-secondary" style="font-size:11px;padding:12px 24px;">CONNECT AVALANCHE WALLET</button>
+      <button id="portfolioConnectBtn" onclick="connectBaseWallet()" class="btn-secondary" style="font-size:11px;padding:12px 24px;">CONNECT BASE WALLET</button>
       <button id="portfolioRefreshBtn" onclick="scanPortfolio()" style="
         font-family:'Share Tech Mono',monospace;
         font-size:11px;
         letter-spacing:2px;
         padding:12px 20px;
         background:transparent;
-        border:1px solid rgba(232,65,66,0.2);
+        border:1px solid rgba(47,128,255,0.2);
         color:var(--text-muted);
         cursor:crosshair;
         transition:all 0.2s;
@@ -1715,16 +1679,16 @@
     <div id="portfolioSummary" style="display:none;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:1px;"></div>
 
     <div id="portfolioList" style="display:none;"></div>
-    <div id="portfolioEmpty" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.9;border:1px solid rgba(232,65,66,0.08);background:rgba(232,65,66,0.03);padding:18px 20px;">
-      Connect an Avalanche wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
+    <div id="portfolioEmpty" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.9;border:1px solid rgba(47,128,255,0.08);background:rgba(47,128,255,0.03);padding:18px 20px;">
+      Connect a Base wallet and we will pull your token balances, score each asset with the Rug Engine, and flag suspicious positions without guessing market data.
     </div>
   </div>
 
   <div class="monitor-panel z1" id="api">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
       <div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-green);letter-spacing:3px;">// builder tooling</div>
-        <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-top:6px;">RugBuster Builder API</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-green);letter-spacing:3px;">// base builder tooling</div>
+        <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-top:6px;">Base Builder API</div>
       </div>
       <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-cyan);letter-spacing:2px;">CACHE SCORE ONLINE</div>
     </div>
@@ -1733,7 +1697,7 @@
       <div class="monitor-card">
         <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">Public Score Lookup</div>
         <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.8;word-break:break-all;">
-          GET https://web-production-376bf.up.railway.app/score?address=0x...
+          GET https://base-api-production-6887.up.railway.app/score?address=0x...
         </div>
       </div>
 
@@ -1745,14 +1709,14 @@
       </div>
     </div>
 
-    <div style="margin-top:18px;border:1px solid rgba(232,65,66,0.12);background:rgba(232,65,66,0.03);padding:18px 20px;">
-      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;margin-bottom:12px;">// live cache score demo</div>
+    <div style="margin-top:18px;border:1px solid rgba(47,128,255,0.12);background:rgba(47,128,255,0.03);padding:18px 20px;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-pink);letter-spacing:3px;margin-bottom:12px;">// cache + live score demo</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-        <input id="apiScoreInput" value="0x2ce7788de3a177f8be43df6376a8513ef9182032" placeholder="0x token address" style="
+        <input id="apiScoreInput" value="0x34f573187f1249a589a68aa2daf1f25e834c4444" placeholder="0x token address" style="
           flex:1;
           min-width:260px;
           background:rgba(5,8,17,0.8);
-          border:1px solid rgba(232,65,66,0.22);
+          border:1px solid rgba(47,128,255,0.22);
           color:var(--text-primary);
           padding:13px 14px;
           font-family:'Share Tech Mono',monospace;
@@ -1768,17 +1732,18 @@
     </div>
 
     <div style="margin-top:14px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.9;">
-      The API exposes compact chain risk intelligence from private collector corpora without publishing raw evidence.
+      The API exposes compact Base risk intelligence from the private collector corpus without publishing raw evidence.
       Current classifier: <span style="color:var(--neon-cyan);">weighted_v2</span>.
-      Registry proof remains on-chain at
-      <a href="https://snowtrace.io/address/0x5F30276B3A5079E088Ec3072884286de5a868355" target="_blank" rel="noopener" style="color:var(--neon-pink);text-decoration:none;">0x5F30276B3A5079E088Ec3072884286de5a868355</a>.
+      Scanner contract is deployed on Base at
+      <a href="https://basescan.org/address/0x5F30276B3A5079E088Ec3072884286de5a868355" target="_blank" rel="noopener" style="color:var(--neon-pink);text-decoration:none;">0x5F30276B3A5079E088Ec3072884286de5a868355</a>.
+      Basescan source verification is pending a Basescan API key.
     </div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;">
-      <a href="https://rugbuster-api-production.up.railway.app" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">Open API</a>
-      <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/AVALANCHE_API.md" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">API Docs</a>
-      <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/L1_SECURITY_ROADMAP.md" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">L1 Roadmap</a>
-      <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/RETRO9000_UPDATE_2026-06-03.md" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">Retro9000 Update</a>
+      <a href="https://base-api-production-6887.up.railway.app/" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">Open API</a>
+      <a href="https://github.com/rugbusteraipatrol/RugBuster-Base/blob/main/docs/BASE_API.md" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">API Docs</a>
+      <a href="https://github.com/rugbusteraipatrol/RugBuster-Base/blob/main/docs/MAINNET_RUNBOOK.md" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">Roadmap</a>
+      <a href="https://github.com/rugbusteraipatrol/RugBuster-Base/blob/main/docs/BASESCAN_VERIFY.md" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">Basescan Verify</a>
     </div>
   </div>
 </div>
@@ -1795,12 +1760,12 @@
   padding:24px;
 ">
   <div style="
-    border:1px solid rgba(232,65,66,0.44);
+    border:1px solid rgba(47,128,255,0.44);
     background:linear-gradient(180deg, rgba(10,15,30,0.98), rgba(5,8,17,0.98));
     padding:28px;
     max-width:640px;
     width:100%;
-    box-shadow:0 0 70px rgba(232,65,66,0.18), inset 0 0 30px rgba(232,65,66,0.04);
+    box-shadow:0 0 70px rgba(47,128,255,0.18), inset 0 0 30px rgba(47,128,255,0.04);
     position:relative;
   ">
     <button onclick="closeFinalScanModal()" aria-label="Close final scan" style="
@@ -1809,7 +1774,7 @@
       right:14px;
       width:34px;
       height:34px;
-      border:1px solid rgba(232,65,66,0.26);
+      border:1px solid rgba(47,128,255,0.26);
       background:transparent;
       color:var(--neon-cyan);
       cursor:crosshair;
@@ -1820,29 +1785,9 @@
     <div id="finalScanTitle" style="font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:8px;line-height:1.35;"></div>
     <div id="finalScanAddress" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-muted);word-break:break-all;margin-bottom:20px;"></div>
     <div id="finalScanGrid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px;"></div>
-    <div id="finalScanAi" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--neon-cyan);line-height:1.7;border:1px solid rgba(232,65,66,0.12);background:rgba(232,65,66,0.035);padding:14px 16px;margin-bottom:20px;"></div>
+    <div id="finalScanAi" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--neon-cyan);line-height:1.7;border:1px solid rgba(47,128,255,0.12);background:rgba(47,128,255,0.035);padding:14px 16px;margin-bottom:20px;"></div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;">
       <button onclick="closeFinalScanModal()" class="btn-secondary" style="font-size:11px;padding:12px 22px;">CLOSE</button>
-      <button onclick="closeFinalScanModal(); sendTelegramAlert();" id="finalScanAlertBtn" style="
-        font-family:'Share Tech Mono',monospace;
-        font-size:11px;
-        letter-spacing:2px;
-        padding:12px 20px;
-        background:transparent;
-        border:1px solid rgba(35,209,139,0.36);
-        color:var(--neon-green);
-        cursor:crosshair;
-      ">SEND ALERT</button>
-      <button onclick="closeFinalScanModal(); publishCurrentReport();" id="finalScanPublishBtn" style="
-        font-family:'Share Tech Mono',monospace;
-        font-size:11px;
-        letter-spacing:2px;
-        padding:12px 20px;
-        background:transparent;
-        border:1px solid rgba(255,255,255,0.36);
-        color:var(--neon-pink);
-        cursor:crosshair;
-      ">PUBLISH REPORT</button>
     </div>
   </div>
 </div>
@@ -1917,9 +1862,10 @@
 <section id="pricing" class="z1">
   <div class="section-label">// access tiers</div>
   <h2 class="section-title">Choose Your<br><span>Arsenal</span></h2>
-  <p class="section-desc">Free while in beta. No card, no catch — just connect and scan.</p>
+  <p class="section-desc">Free while in beta. No card, no catch -- just connect and scan.</p>
 
   <div class="pricing-grid">
+    <!-- FREE -->
     <div class="pricing-card">
       <div class="price-tier">Scout</div>
       <div class="price-amount">FREE</div>
@@ -1929,15 +1875,16 @@
         <li>Token scanner + risk score</li>
         <li>AI verdict (DeepSeek)</li>
         <li>Telegram alerts</li>
-        <li>AVAX · BNB · BASE · SOL · TRON</li>
+        <li>AVAX - BNB - BASE - SOL - TRON</li>
       </ul>
-      <a href="#scanner" class="btn-secondary" style="display:block;text-align:center;padding:14px 24px;font-size:11px;clip-path:none;border-radius:0;">Activate Free</a>
+      <a href="#" onclick="openPayment('Scout','0',event)" class="btn-secondary" style="display:block;text-align:center;padding:14px 24px;font-size:11px;clip-path:none;border-radius:0;">Activate Free</a>
     </div>
 
+    <!-- PRO -->
     <div class="pricing-card featured">
       <div class="featured-badge">Most Popular</div>
       <div class="price-tier">Operator</div>
-      <div class="price-amount">FREE</div>
+      <div class="price-amount" style="color:var(--neon-pink);text-shadow:0 0 30px rgba(47,128,255,0.5);">FREE</div>
       <div class="price-period">// beta access</div>
       <hr class="price-divider">
       <ul class="price-features">
@@ -1946,11 +1893,12 @@
         <li>Real-time alerts</li>
         <li>New launch monitoring where chain feeds are live</li>
         <li>Portfolio scan on supported wallet flows</li>
-        <li class="off">Wallet firewall — soon</li>
+        <li class="off">Wallet firewall - soon</li>
       </ul>
-      <a href="#scanner" class="btn-primary" style="display:block;text-align:center;padding:14px 24px;font-size:11px;clip-path:none;background:var(--neon-pink);box-shadow:0 0 30px rgba(255,0,200,0.4);">Activate Free</a>
+      <a href="#" onclick="openPayment('Operator','0',event)" class="btn-primary" style="display:block;text-align:center;padding:14px 24px;font-size:11px;clip-path:none;background:#fff;color:#050507;box-shadow:0 0 30px rgba(47,128,255,0.4);">Activate Free</a>
     </div>
 
+    <!-- ELITE -->
     <div class="pricing-card">
       <div class="price-tier">Ghost</div>
       <div class="price-amount">FREE</div>
@@ -1959,34 +1907,34 @@
       <ul class="price-features">
         <li>Everything in Operator</li>
         <li>Builder API access where endpoints are live</li>
-        <li class="off">Custom alert rules — soon</li>
-        <li class="off">Portfolio tracking — soon</li>
-        <li class="off">Discord bot — soon</li>
-        <li class="off">White-label reports — soon</li>
+        <li class="off">Custom alert rules - soon</li>
+        <li class="off">Portfolio tracking - soon</li>
+        <li class="off">Discord bot - soon</li>
+        <li class="off">White-label reports - soon</li>
       </ul>
-      <a href="#scanner" class="btn-secondary" style="display:block;text-align:center;padding:14px 24px;font-size:11px;clip-path:none;border-radius:0;">Activate Free</a>
+      <a href="#" onclick="openPayment('Ghost','0',event)" class="btn-secondary" style="display:block;text-align:center;padding:14px 24px;font-size:11px;clip-path:none;border-radius:0;">Activate Free</a>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
 <div class="cta-section z1">
-  <h2 class="cta-title">BUILD ON<br><span>MULTI-CHAIN INTEL.</span></h2>
-  <p class="cta-sub">Use RugBuster for token risk lookups, reviewer attestations, and Sentinel-ready monitoring across supported chains.</p>
+  <h2 class="cta-title">BUILD ON<br><span>BASE INTEL.</span></h2>
+  <p class="cta-sub">Use RugBuster Base for token risk lookups, reviewer attestations, and Sentinel-ready monitoring.</p>
   <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
     <a href="#api" class="btn-primary">Test Builder API</a>
-    <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/L1_SECURITY_ROADMAP.md" target="_blank" rel="noopener" class="btn-secondary">View L1 Roadmap</a>
+    <a href="https://github.com/rugbusteraipatrol/RugBuster-Base/blob/main/docs/MAINNET_RUNBOOK.md" target="_blank" rel="noopener" class="btn-secondary">View Roadmap</a>
   </div>
 </div>
 
 <!-- FOOTER -->
 <footer class="z1">
-  <span class="footer-copy">© 2026 RUGBUSTER // ALL SYSTEMS OPERATIONAL // <span style="color:var(--neon-pink);">MULTI-CHAIN SECURITY FEED</span></span>
+  <span class="footer-copy">(c) 2026 RUGBUSTER // ALL SYSTEMS OPERATIONAL // <span style="color:var(--neon-pink);">MULTI-CHAIN SECURITY FEED</span></span>
   <ul class="footer-links">
-    <li><a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/AVALANCHE_API.md" target="_blank" rel="noopener">Docs</a></li>
+    <li><a href="https://github.com/rugbusteraipatrol/RugBuster-Base/blob/main/docs/BASE_API.md" target="_blank" rel="noopener">Docs</a></li>
     <li><a href="#api">API</a></li>
-    <li><a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/RETRO9000_UPDATE_2026-06-03.md" target="_blank" rel="noopener">Retro9000</a></li>
-    <li><a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/L1_SECURITY_ROADMAP.md" target="_blank" rel="noopener">Roadmap</a></li>
+    <li><a href="https://github.com/rugbusteraipatrol/RugBuster-Base/blob/main/docs/BASESCAN_VERIFY.md" target="_blank" rel="noopener">Verify</a></li>
+    <li><a href="https://github.com/rugbusteraipatrol/RugBuster-Base/blob/main/docs/MAINNET_RUNBOOK.md" target="_blank" rel="noopener">Roadmap</a></li>
   </ul>
 </footer>
 
@@ -2002,11 +1950,11 @@
     'function setReviewer(address reviewer, bool authorized) external',
     'function updateScore(address token, uint8 score, bytes32 metadataHash) external'
   ];
-  const AVAX_PRICE = 10; // approximate USD per AVAX for demo pricing
+  const ETH_PRICE = 3000; // approximate USD per ETH for checkout display
   let walletConnected = false;
   let walletAddress = null;
   let connectedProvider = null;
-  let selectedCurrency = 'AVAX';
+  let selectedCurrency = 'ETH';
   let currentPlan = null;
   let currentPrice = 0;
   let lastScannedAddress = null;
@@ -2030,17 +1978,17 @@
       btn.onclick = disconnectWallet;
 
       if (scanInput && !scanInput.value) {
-        scanInput.placeholder = `Avalanche wallet connected: ${short} — paste token address to scan`;
+        scanInput.placeholder = `Base wallet connected: ${short} — paste token address to scan`;
       }
     } else {
-      btnText.textContent = 'Connect Avalanche Wallet';
+      btnText.textContent = 'Connect Base Wallet';
       btn.style.background = 'transparent';
       btn.style.boxShadow = 'none';
-      btn.style.borderColor = 'rgba(232,65,66,0.3)';
+      btn.style.borderColor = 'rgba(47,128,255,0.3)';
       btn.onclick = connectWallet;
 
       if (scanInput && !scanInput.value) {
-        scanInput.placeholder = 'Paste token address (Apex / Avalanche)...';
+        scanInput.placeholder = 'Paste token address (Base)...';
       }
     }
   }
@@ -2100,27 +2048,27 @@
     document.getElementById('walletModal').style.display = 'none';
   }
 
-  async function ensureAvalancheChain() {
+  async function ensureBaseChain() {
     if (!window.ethereum) throw new Error('No EVM wallet detected');
-    const avalancheChainId = '0xa86a';
+    const baseChainId = '0x2105';
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     let chainId = await window.ethereum.request({ method: 'eth_chainId' });
-    if (chainId === avalancheChainId) return;
+    if (chainId === baseChainId) return;
     try {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: avalancheChainId }]
+        params: [{ chainId: baseChainId }]
       });
     } catch (switchError) {
       if (switchError.code === 4902) {
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [{
-            chainId: avalancheChainId,
-            chainName: 'Avalanche C-Chain',
-            nativeCurrency: { name: 'Avalanche', symbol: 'AVAX', decimals: 18 },
-            rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
-            blockExplorerUrls: ['https://snowtrace.io']
+            chainId: baseChainId,
+            chainName: 'Base Mainnet',
+            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+            rpcUrls: ['https://mainnet.base.org'],
+            blockExplorerUrls: ['https://basescan.org']
           }]
         });
       } else {
@@ -2130,10 +2078,10 @@
 
     for (let attempt = 0; attempt < 10; attempt += 1) {
       chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      if (chainId === avalancheChainId) return;
+      if (chainId === baseChainId) return;
       await sleep(250);
     }
-    throw new Error('Wallet did not switch to Avalanche C-Chain');
+    throw new Error('Wallet did not switch to Base mainnet');
   }
 
   async function connectMetaMask() {
@@ -2143,7 +2091,7 @@
           <div style="font-size:48px;margin-bottom:16px;">🦊</div>
           <div style="font-family:'Orbitron',monospace;font-size:16px;color:var(--text-primary);margin-bottom:12px;">MetaMask Not Found</div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-muted);margin-bottom:24px;line-height:2;">
-            Install MetaMask or another EVM wallet to continue.<br>This Apex flow uses Avalanche C-Chain wallets.
+            Install MetaMask or another EVM wallet to continue.<br>This BASE flow uses Base mainnet wallets.
           </div>
           <a href="https://metamask.io/download/" target="_blank" class="btn-primary" style="font-size:11px;padding:13px 32px;text-decoration:none;display:inline-block;">
             Install MetaMask →
@@ -2154,7 +2102,7 @@
 
     try {
       installWalletListeners();
-      await ensureAvalancheChain();
+      await ensureBaseChain();
 
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       walletAddress = accounts[0];
@@ -2199,10 +2147,10 @@
       document.getElementById('payBtn').style.background = 'var(--neon-pink)';
       document.getElementById('paySOL').style.display = 'block';
       document.getElementById('payUSDC').style.display = 'block';
-      const avaxAmt = (currentPrice / AVAX_PRICE).toFixed(3);
-      document.getElementById('solAmount').textContent = `≈ ${avaxAmt} AVAX`;
+      const ethAmt = (currentPrice / ETH_PRICE).toFixed(4);
+      document.getElementById('solAmount').textContent = `≈ ${ethAmt} ETH`;
       document.getElementById('usdcAmount').textContent = `${currentPrice} USDC`;
-      selectCurrency('AVAX');
+      selectCurrency('ETH');
     }
 
     if (walletConnected && walletAddress) {
@@ -2226,14 +2174,14 @@
     selectedCurrency = cur;
     const solEl = document.getElementById('paySOL');
     const usdcEl = document.getElementById('payUSDC');
-    if (cur === 'AVAX') {
-      solEl.style.borderColor = 'rgba(232,65,66,0.6)';
-      solEl.style.background = 'rgba(232,65,66,0.08)';
+    if (cur === 'ETH') {
+      solEl.style.borderColor = 'rgba(47,128,255,0.6)';
+      solEl.style.background = 'rgba(47,128,255,0.08)';
       usdcEl.style.borderColor = 'rgba(255,255,255,0.08)';
       usdcEl.style.background = 'transparent';
     } else {
-      usdcEl.style.borderColor = 'rgba(232,65,66,0.6)';
-      usdcEl.style.background = 'rgba(232,65,66,0.08)';
+      usdcEl.style.borderColor = 'rgba(47,128,255,0.6)';
+      usdcEl.style.background = 'rgba(47,128,255,0.08)';
       solEl.style.borderColor = 'rgba(255,255,255,0.08)';
       solEl.style.background = 'transparent';
     }
@@ -2290,13 +2238,14 @@
 
   const RUGCHECK_API = 'https://api.rugcheck.xyz/v1';
   const DEXSCREENER_API = 'https://api.dexscreener.com/latest/dex/tokens';
-  const RUGBUSTER_API = (window.RUGBUSTER_API || 'https://web-production-376bf.up.railway.app').replace(/\/$/, '');
-  const RUGBUSTER_BUILDER_API = (window.RUGBUSTER_BUILDER_API || 'https://web-production-376bf.up.railway.app').replace(/\/$/, '');
+  const DEFAULT_BASE_API = 'https://base-api-production-6887.up.railway.app';
+  const RUGBUSTER_API = (window.RUGBUSTER_BASE_API || window.RUGBUSTER_API || DEFAULT_BASE_API).replace(/\/$/, '');
+  const RUGBUSTER_BUILDER_API = (window.RUGBUSTER_BASE_BUILDER_API || window.RUGBUSTER_BUILDER_API || DEFAULT_BASE_API).replace(/\/$/, '');
 
   // Glitch effect on stat numbers
   document.querySelectorAll('.stat-number').forEach(el => {
-    const original = el.textContent;
     el.addEventListener('mouseenter', () => {
+      const original = el.dataset.statOriginal || el.textContent;
       let i = 0;
       const chars = '0123456789ABCDEF$%#@!';
       const interval = setInterval(() => {
@@ -2323,7 +2272,7 @@
 
   function loadExample(type) {
     const examples = {
-      apex: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
+      apex: '0xBB4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
     };
     document.getElementById('scanInput').value = examples[type] || examples.apex;
   }
@@ -2340,7 +2289,7 @@
     }).format(num);
   }
 
-  function isApexAddress(address) {
+  function isBaseAddress(address) {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
   }
 
@@ -2350,32 +2299,56 @@
     if (!input || !result) return;
 
     const address = input.value.trim();
-    if (!isApexAddress(address)) {
-      result.innerHTML = `<span style="color:#ffcc00;">WARN</span> // Enter a valid Avalanche 0x token address.`;
+    if (!isBaseAddress(address)) {
+      result.innerHTML = `<span style="color:#ffcc00;">WARN</span> // Enter a valid Base 0x token address.`;
       return;
     }
 
-    result.innerHTML = `<span style="color:var(--neon-cyan);">QUERYING</span> // ${RUGBUSTER_BUILDER_API}/score`;
+    if (!RUGBUSTER_BUILDER_API) {
+      result.innerHTML = `<span style="color:var(--neon-orange);">PENDING</span> // Base backend API is not deployed yet. Use live scanner fallback above.`;
+      return;
+    }
+
+    result.innerHTML = `<span style="color:var(--neon-cyan);">QUERYING</span> // checking cache, then live scan if needed`;
 
     try {
       const res = await fetch(`${RUGBUSTER_BUILDER_API}/score?address=${encodeURIComponent(address)}`);
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.error || `HTTP ${res.status}`);
+      let rendered;
+
+      if (res.ok && data.ok !== false) {
+        const label = String(data.label || 'UNKNOWN').toUpperCase();
+        const labelColor = label === 'DANGER' ? '#ff3d3d' : label === 'WARN' ? '#ffcc00' : label === 'GOOD' ? 'var(--neon-green)' : 'var(--text-muted)';
+        const token = [data.token_name, data.token_symbol ? `(${data.token_symbol})` : ''].filter(Boolean).join(' ') || shortAddress(address);
+        const flags = Array.isArray(data.risk_flags) && data.risk_flags.length
+          ? data.risk_flags.map(flag => `<div>&gt; ${escapeHtml(flag)}</div>`).join('')
+          : '<div>&gt; Cached score returned without detailed flags.</div>';
+
+        rendered = `
+          <div><span style="color:${labelColor};">${label}</span> // ${escapeHtml(token)}</div>
+          <div>source=${escapeHtml(data.source || 'cache')} classifier=${escapeHtml(data.classifier_version || data.classifier || 'unknown')} chain=${escapeHtml(data.chain || 'BASE')}</div>
+          ${flags}
+        `;
+      } else {
+        result.innerHTML = `<span style="color:var(--neon-orange);">CACHE MISS</span> // no cached score yet, running live BASE scan...`;
+        const live = await fetchBaseScanFromApi(address);
+        const label = String(live.rugStatus || 'UNKNOWN').toUpperCase();
+        const labelColor = ['DANGER', 'HIGH'].includes(label) ? '#ff3d3d' : ['WARN', 'ELEVATED'].includes(label) ? '#ffcc00' : ['GOOD', 'LOW'].includes(label) ? 'var(--neon-green)' : 'var(--text-muted)';
+        const flags = flattenReasons(live.rugReasons).length
+          ? flattenReasons(live.rugReasons).map(flag => `<div>&gt; ${escapeHtml(flag)}</div>`).join('')
+          : '<div>&gt; Live scan returned without major risk flags.</div>';
+        const speculation = live.speculationStatus && live.speculationStatus !== 'UNKNOWN'
+          ? ` spec=${escapeHtml(live.speculationStatus)}`
+          : ' spec=UNKNOWN';
+
+        rendered = `
+          <div><span style="color:${labelColor};">${escapeHtml(label)}</span> // ${escapeHtml(live.tokenName || shortAddress(address))}</div>
+          <div>source=live_scan classifier=weighted_v2 chain=BASE${speculation}</div>
+          ${flags}
+        `;
       }
 
-      const label = String(data.label || 'UNKNOWN').toUpperCase();
-      const labelColor = label === 'DANGER' ? '#ff3d3d' : label === 'WARN' ? '#ffcc00' : label === 'GOOD' ? 'var(--neon-green)' : 'var(--text-muted)';
-      const token = [data.token_name, data.token_symbol ? `(${data.token_symbol})` : ''].filter(Boolean).join(' ') || shortAddress(address);
-      const flags = Array.isArray(data.risk_flags) && data.risk_flags.length
-        ? data.risk_flags.map(flag => `<div>&gt; ${String(flag)}</div>`).join('')
-        : '<div>&gt; No risk flags returned for this cached score.</div>';
-
-      result.innerHTML = `
-        <div><span style="color:${labelColor};">${label}</span> // ${token}</div>
-        <div>source=${data.source || 'unknown'} classifier=${data.classifier_version || data.classifier || 'unknown'} chain=${data.chain || 'AVAX'}</div>
-        ${flags}
-      `;
+      result.innerHTML = rendered;
     } catch (err) {
       result.innerHTML = `<span style="color:#ff3d3d;">ERROR</span> // ${err.message || 'Builder API unavailable'}`;
     }
@@ -2414,7 +2387,7 @@
       state.textContent = 'AWAITING DATA';
       state.style.color = 'var(--text-muted)';
       list.innerHTML = `
-        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;border:1px solid rgba(232,65,66,0.08);background:rgba(232,65,66,0.03);padding:14px 16px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);line-height:1.8;border:1px solid rgba(47,128,255,0.08);background:rgba(47,128,255,0.03);padding:14px 16px;">
           Awaiting recent scanner output.
         </div>`;
       return;
@@ -2427,8 +2400,8 @@
       const symbol = item.token_symbol || item.token_name || shortAddress(item.address || '');
       const name = item.token_name && item.token_symbol ? item.token_name : '';
       const flag = item.flag || 'analysis complete';
-      const href = item.explorer_url || `https://snowtrace.io/address/${item.address}`;
-      const chain = String(item.chain || 'avax').toUpperCase();
+      const href = item.explorer_url || `https://basescan.org/address/${item.address}`;
+      const chain = String(item.chain || 'base').toUpperCase();
       return `
         <a href="${escapeHtml(href)}" target="_blank" rel="noopener" style="
           display:grid;
@@ -2437,8 +2410,8 @@
           align-items:center;
           min-height:38px;
           padding:9px 12px;
-          border:1px solid rgba(232,65,66,0.10);
-          background:rgba(232,65,66,0.025);
+          border:1px solid rgba(47,128,255,0.10);
+          background:rgba(47,128,255,0.025);
           text-decoration:none;
           overflow:hidden;
         ">
@@ -2453,11 +2426,32 @@
     }).join('');
   }
 
+  function formatScanCount(count) {
+    const value = Number(count);
+    if (!Number.isFinite(value) || value < 0) return 'SYNC';
+    if (value >= 1000) return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}K+`;
+    return String(value);
+  }
+
+  function updateBaseScanCount(count) {
+    const el = document.getElementById('baseScanCount');
+    if (!el) return;
+    const text = formatScanCount(count);
+    el.textContent = text;
+    el.dataset.statOriginal = text;
+  }
+
   async function loadRecentScans() {
+    if (!RUGBUSTER_API) {
+      renderRecentScans([]);
+      document.getElementById('recentScanState').textContent = 'BASE FEED PENDING';
+      return;
+    }
     try {
-      const res = await fetch(`${RUGBUSTER_API}/api/recent-scans?limit=10&t=${Date.now()}`, { cache: 'no-store' });
+      const res = await fetch(`${RUGBUSTER_API}/api/recent-scans?chain=base&limit=10&t=${Date.now()}`, { cache: 'no-store' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      updateBaseScanCount(data.count);
       renderRecentScans(data.items || []);
     } catch (err) {
       const state = document.getElementById('recentScanState');
@@ -2498,14 +2492,17 @@
     if (!window.ethereum || !window.ethers) {
       throw new Error('MetaMask or another EVM wallet is required');
     }
-    await ensureAvalancheChain();
+    await ensureBaseChain();
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     const provider = new window.ethers.BrowserProvider(window.ethereum, 'any');
     const network = await provider.getNetwork();
-    if (network.chainId !== 43114n) {
-      throw new Error('Wallet provider is not on Avalanche C-Chain yet');
+    if (network.chainId !== 8453n) {
+      throw new Error('Wallet provider is not on Base mainnet yet');
     }
     const signer = await provider.getSigner();
+    if (!REGISTRY_ADDRESS) {
+      throw new Error('Base scanner contract is not deployed yet');
+    }
     const contract = new window.ethers.Contract(REGISTRY_ADDRESS, REGISTRY_ABI, signer);
     return { provider, signer, contract };
   }
@@ -2529,7 +2526,7 @@
         throw new Error('Connect your owner MetaMask wallet first');
       }
 
-      const reviewerInput = window.prompt('Enter the Avalanche C-Chain wallet address to authorize for direct publish:');
+      const reviewerInput = window.prompt('Enter the Base mainnet wallet address to authorize for direct publish:');
       if (!reviewerInput) {
         throw new Error('Authorization canceled');
       }
@@ -2552,12 +2549,12 @@
       await termLineDelay(`<span class="t-success">✓ Reviewer wallet authorized for direct publish.</span>`, 220);
       await termLineDelay(`<span class="t-out">// TX: ${tx.hash}</span>`, 120);
       await termLineDelay(`<span class="t-out">// Gas used: ${receipt.gasUsed.toString()}</span>`, 120);
-      await termLineDelay(`<span class="t-out">// ${shortAddress(reviewerAddress)} can now publish reports from its own AVAX balance.</span>`, 120);
+      await termLineDelay(`<span class="t-out">// ${shortAddress(reviewerAddress)} can now publish reports from its own ETH gas balance.</span>`, 120);
       setAuthorizeReviewerButtonState(true, 'AUTHORIZED');
       setTimeout(() => setAuthorizeReviewerButtonState(true, 'AUTHORIZE REVIEWER'), 2600);
     } catch (err) {
       await termLineDelay(`<span class="t-danger">✗ REVIEWER AUTH FAILED: ${err.message}</span>`, 220);
-      await termLineDelay(`<span class="t-out">// Connect the owner wallet and confirm the target Avalanche address.</span>`, 120);
+      await termLineDelay(`<span class="t-out">// Connect the owner wallet and confirm the target Base address.</span>`, 120);
       setAuthorizeReviewerButtonState(true, 'AUTHORIZE REVIEWER');
     }
 
@@ -2596,6 +2593,7 @@
 
   function setAlertButtonState(enabled, text = 'SEND ALERT') {
     const btn = document.getElementById('sendAlertBtn');
+    if (!btn) return;
     btn.disabled = !enabled;
     btn.textContent = text;
     btn.style.opacity = enabled ? '1' : '0.6';
@@ -2605,11 +2603,12 @@
 
   function setPublishButtonState(enabled, text = 'PUBLISH REPORT') {
     const btn = document.getElementById('publishBtn');
+    if (!btn) return;
     btn.disabled = !enabled;
     btn.textContent = text;
     btn.style.opacity = enabled ? '1' : '0.6';
-    btn.style.borderColor = enabled ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.22)';
-    btn.style.color = enabled ? 'var(--neon-pink)' : 'rgba(255,255,255,0.58)';
+    btn.style.borderColor = enabled ? 'rgba(47,128,255,0.45)' : 'rgba(47,128,255,0.22)';
+    btn.style.color = enabled ? 'var(--neon-pink)' : 'rgba(47,128,255,0.58)';
   }
 
   function setAuthorizeReviewerButtonState(enabled, text = 'AUTHORIZE REVIEWER') {
@@ -2618,8 +2617,8 @@
     btn.disabled = !enabled;
     btn.textContent = text;
     btn.style.opacity = enabled ? '1' : '0.6';
-    btn.style.borderColor = enabled ? 'rgba(232,65,66,0.45)' : 'rgba(232,65,66,0.22)';
-    btn.style.color = enabled ? 'var(--neon-cyan)' : 'rgba(232,65,66,0.58)';
+    btn.style.borderColor = enabled ? 'rgba(47,128,255,0.45)' : 'rgba(47,128,255,0.22)';
+    btn.style.color = enabled ? 'var(--neon-cyan)' : 'rgba(47,128,255,0.58)';
   }
 
   function scorePresentation(status) {
@@ -2679,14 +2678,14 @@
     return 'LOOKS CLEAN';
   }
 
-  async function connectApexWallet() {
+  async function connectBaseWallet() {
     if (!window.ethereum) {
       document.getElementById('portfolioState').textContent = 'NO EVM WALLET DETECTED';
       return;
     }
 
     try {
-      await ensureAvalancheChain();
+      await ensureBaseChain();
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       if (!accounts || !accounts.length) {
         throw new Error('Wallet connection returned no accounts');
@@ -2706,6 +2705,9 @@
   }
 
   async function fetchPortfolioScanFromApi(address) {
+    if (!RUGBUSTER_API) {
+      throw new Error('Base backend API is not deployed yet');
+    }
     const res = await fetch(`${RUGBUSTER_API}/api/portfolio`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2753,7 +2755,7 @@
       `;
       empty.innerHTML = `
         <div style="font-family:'Orbitron',monospace;font-size:18px;color:var(--text-primary);margin-bottom:8px;">Wallet is clean, but empty.</div>
-        <div style="margin-bottom:8px;">No Avalanche ERC-20 holdings were detected in this address.</div>
+        <div style="margin-bottom:8px;">No Base ERC-20 holdings were detected in this address.</div>
         <div style="color:var(--neon-cyan);">That is a valid result — not a scanner error.</div>
       `;
       return;
@@ -2775,7 +2777,7 @@
     list.innerHTML = entries.map(({ token, report }) => `
       <div class="portfolio-row ${portfolioRowClass(report)}">
         <div style="display:flex;align-items:center;gap:12px;">
-          ${report.image_url ? `<img src="${report.image_url}" alt="" style="width:34px;height:34px;border:1px solid rgba(232,65,66,0.2);background:rgba(232,65,66,0.04);object-fit:cover;">` : `<div style="width:34px;height:34px;border:1px solid rgba(232,65,66,0.15);background:rgba(232,65,66,0.04);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:11px;color:var(--neon-cyan);">${(report.symbol || '?').slice(0,3)}</div>`}
+          ${report.image_url ? `<img src="${report.image_url}" alt="" style="width:34px;height:34px;border:1px solid rgba(47,128,255,0.2);background:rgba(47,128,255,0.04);object-fit:cover;">` : `<div style="width:34px;height:34px;border:1px solid rgba(47,128,255,0.15);background:rgba(47,128,255,0.04);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:11px;color:var(--neon-cyan);">${(report.symbol || '?').slice(0,3)}</div>`}
           <div>
             <div style="font-family:'Orbitron',monospace;font-size:13px;color:var(--text-primary);">${report.token_name || token.name}</div>
             <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--neon-cyan);letter-spacing:2px;">${report.symbol || token.symbol}</div>
@@ -2804,7 +2806,7 @@
 
   async function scanPortfolio() {
     if (!apexPortfolioAddress) {
-      document.getElementById('portfolioState').textContent = 'CONNECT AN AVALANCHE WALLET FIRST';
+      document.getElementById('portfolioState').textContent = 'CONNECT A BASE WALLET FIRST';
       return;
     }
 
@@ -2892,7 +2894,7 @@
     };
   }
 
-  function normalizeApexApiReport(report) {
+  function normalizeBaseApiReport(report) {
     const sourceMap = {
       dexscreener: 'RugBuster API (DexScreener + on-chain)',
       onchain_pair_lookup: 'RugBuster API (factory pair lookup)',
@@ -2913,7 +2915,7 @@
       tokenName: `${report.token_name || 'Unknown Token'}${report.symbol ? ` (${report.symbol})` : ''}`,
       tokenImage: report.image_url || null,
       dexId: String(report.dex_id || 'unknown').toUpperCase(),
-      pairLabel: report.symbol ? `${report.symbol} / AVAX` : 'TOKEN / AVAX',
+      pairLabel: report.symbol ? `${report.symbol} / WETH` : 'TOKEN / WETH',
       liquidityUsd: toNumberOrNull(report.liquidity_usd),
       fdv: toNumberOrNull(report.fdv),
       marketCap: toNumberOrNull(report.fdv),
@@ -2949,10 +2951,10 @@
     const rugStatus = isDanger ? 'DANGER' : isWarn ? 'WARN' : isGood ? 'GOOD' : 'UNKNOWN';
 
     return {
-      tokenName: `${score.token_name || 'Cached Avalanche Token'}${score.token_symbol ? ` (${score.token_symbol})` : ''}`,
+      tokenName: `${score.token_name || 'Cached Base Token'}${score.token_symbol ? ` (${score.token_symbol})` : ''}`,
       tokenImage: null,
       dexId: 'RUGBUSTER CACHE',
-      pairLabel: 'AVALANCHE / CACHED SCORE',
+      pairLabel: 'BASE / CACHED SCORE',
       liquidityUsd: null,
       fdv: null,
       marketCap: null,
@@ -3018,7 +3020,7 @@
       tokenName: report.tokenName,
       ts: Math.floor(Date.now() / 1000),
       source: report.source,
-      network: 'Avalanche C-Chain Mainnet'
+      network: 'Base Mainnet'
     };
     return [
       {
@@ -3082,7 +3084,10 @@
     ];
   }
 
-  async function fetchApexScanFromApi(address) {
+  async function fetchBaseScanFromApi(address) {
+    if (!RUGBUSTER_API) {
+      throw new Error('Base backend API is not deployed yet');
+    }
     const res = await fetch(`${RUGBUSTER_API}/api/scan`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -3092,10 +3097,13 @@
     if (!res.ok || !data.ok || !data.report) {
       throw new Error(data.error || `HTTP ${res.status} — RugBuster API unavailable`);
     }
-      return normalizeApexApiReport(data.report);
+      return normalizeBaseApiReport(data.report);
     }
 
-  async function fetchApexScoreFromBuilderApi(address) {
+  async function fetchBaseScoreFromBuilderApi(address) {
+    if (!RUGBUSTER_BUILDER_API) {
+      throw new Error('Base builder API is not deployed yet');
+    }
     const res = await fetch(`${RUGBUSTER_BUILDER_API}/score?address=${encodeURIComponent(address)}`);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -3140,17 +3148,17 @@
       return data;
     }
 
-  async function fetchApexScanFromDex(address) {
+  async function fetchBaseScanFromDex(address) {
     const res = await fetch(`${DEXSCREENER_API}/${encodeURIComponent(address)}`);
     if (!res.ok) throw new Error(`HTTP ${res.status} — token not found or unsupported`);
 
     const data = await res.json();
-    const avalanchePairs = (data.pairs || []).filter(pair => (pair.chainId || '').toLowerCase() === 'avalanche');
-    if (!avalanchePairs.length) {
-      throw new Error('Token not found on Avalanche liquidity venues');
+    const basePairs = (data.pairs || []).filter(pair => (pair.chainId || '').toLowerCase() === 'base');
+    if (!basePairs.length) {
+      throw new Error('Token not found on Base liquidity venues');
     }
 
-    const bestPair = avalanchePairs.sort((a, b) => {
+    const bestPair = basePairs.sort((a, b) => {
       const liqA = Number(a.liquidity?.usd || 0);
       const liqB = Number(b.liquidity?.usd || 0);
       return liqB - liqA;
@@ -3297,16 +3305,16 @@
       };
     }
 
-  async function fetchApexScan(address) {
+  async function fetchBaseScan(address) {
     try {
-      return await fetchApexScanFromApi(address);
+      return await fetchBaseScanFromApi(address);
     } catch (apiErr) {
       console.warn('RugBuster scan API unavailable, trying Builder API cache:', apiErr);
       try {
-        return await fetchApexScoreFromBuilderApi(address);
+        return await fetchBaseScoreFromBuilderApi(address);
       } catch (scoreErr) {
         console.warn('RugBuster Builder API unavailable, falling back to DexScreener:', scoreErr);
-        return await fetchApexScanFromDex(address);
+        return await fetchBaseScanFromDex(address);
       }
     }
   }
@@ -3335,7 +3343,7 @@
   function resetCiaFlow() {
     setCiaStatus('IDLE');
     document.getElementById('ciaTargetName').textContent = 'Awaiting target';
-    document.getElementById('ciaTargetAddress').textContent = 'Paste an Avalanche address and start scan.';
+    document.getElementById('ciaTargetAddress').textContent = 'Paste a Base address and start scan.';
     document.getElementById('ciaFinalVerdict').textContent = 'Not analyzed';
     document.getElementById('ciaFinalScore').textContent = 'Rug and speculation scores will appear here.';
     const finalNode = document.getElementById('ciaFinalNode');
@@ -3400,7 +3408,7 @@
 
   function renderFinalScanMetric(label, value, color) {
     return `
-      <div style="border:1px solid rgba(232,65,66,0.14);background:rgba(232,65,66,0.035);padding:14px 16px;min-height:78px;">
+      <div style="border:1px solid rgba(47,128,255,0.14);background:rgba(47,128,255,0.035);padding:14px 16px;min-height:78px;">
         <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px;">${escapeHtml(label)}</div>
         <div style="font-family:'Orbitron',monospace;font-size:18px;color:${color};line-height:1.35;">${escapeHtml(value)}</div>
       </div>
@@ -3447,31 +3455,31 @@
     lastScanData = null;
 
     const short = shortAddress(address);
-    const isAPEX = isApexAddress(address);
+    const isBASE = isBaseAddress(address);
 
-    if (!isAPEX) {
+    if (!isBASE) {
       termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-danger">Unsupported address format</span>`);
-      termLine(`<span class="t-out">// Use an Apex / Avalanche 0x token address.</span>`);
+      termLine(`<span class="t-out">// Use a Base 0x token address.</span>`);
       termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
       setCiaStatus('UNSUPPORTED', 'danger');
       return;
     }
 
-    const chain = 'APEX/AVALANCHE';
+    const chain = 'BASE';
     setCiaTarget(address);
     setCiaStatus('SCANNING', 'scanning');
 
     termLine(`<span class="t-prompt">RB&gt;</span> <span class="t-cmd">scan ${short} --chain ${chain} --deep --ai</span>`);
     await termLineDelay(`<span class="t-out">Initializing threat engine...</span>`, 300);
-    await termLineDelay(`<span class="t-out">Connecting to Avalanche live market feeds...</span>`, 500);
-    await termLineDelay(`<span class="t-out">Fetching Apex token pairs and liquidity...</span>`, 700);
+    await termLineDelay(`<span class="t-out">Connecting to Base live market feeds...</span>`, 500);
+    await termLineDelay(`<span class="t-out">Fetching Base token pairs and liquidity...</span>`, 700);
 
     let apexData;
     try {
-      apexData = await fetchApexScan(address);
+      apexData = await fetchBaseScan(address);
     } catch (err) {
       await termLineDelay(`<span class="t-danger">✗ SCAN FAILED: ${err.message}</span>`, 400);
-      await termLineDelay(`<span class="t-out">// Ensure this is an Avalanche token address with live liquidity.</span>`, 200);
+      await termLineDelay(`<span class="t-out">// Ensure this is a Base token address with live liquidity.</span>`, 200);
       termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
       setCiaStatus('SCAN FAILED', 'danger');
       return;
@@ -3479,7 +3487,7 @@
 
       setCiaTarget(address, apexData);
       await runCiaFlowStage('funding_origin', apexData.source || 'RugBuster live source');
-      await runCiaFlowStage('deploy_latency', apexData.dexId || 'Avalanche token route');
+      await runCiaFlowStage('deploy_latency', apexData.dexId || 'Base token route');
       await runCiaFlowStage('tx_entropy', apexData.buys24h === null || apexData.sells24h === null ? '24h flow unknown' : `${apexData.buys24h} buys / ${apexData.sells24h} sells`);
       await runCiaFlowStage('wash_pattern', apexData.speculationStatus === 'LOW' ? 'no hard market anomaly' : `${apexData.speculationStatus} market review`, apexData.speculationStatus === 'LOW' ? 'complete' : 'warn');
       await runCiaFlowStage('holder_cluster', apexData.rugStatus === 'LOW' ? 'hard facts clean' : `${apexData.rugStatus} on-chain facts`, apexData.rugStatus === 'HIGH' ? 'danger' : apexData.rugStatus === 'LOW' ? 'complete' : 'warn');
@@ -3496,7 +3504,7 @@
         ...apexData.speculationReasons.neutral.map(reason => `· ${reason}`)
       ];
 
-      await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">APEX / AVALANCHE</span>`, 200);
+      await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">BASE</span>`, 200);
       await termLineDelay(`<span class="t-cyan">✓ Token:</span>    <span class="t-cmd">${apexData.tokenName}</span>`, 220);
       await termLineDelay(`<span class="t-cyan">✓ Address:</span>  <span class="t-out">${short}</span>`, 180);
       await termLineDelay(`<span class="t-cyan">✓ Primary DEX:</span> <span class="t-cmd">${apexData.dexId}</span>`, 180);
@@ -3568,7 +3576,7 @@
       }
 
       await termLineDelay(`<span class="t-out">&nbsp;</span>`, 80);
-      await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by ${apexData.source || 'RugBuster Avalanche data'}</span>`, 200);
+      await termLineDelay(`<span class="t-success">✓ Scan complete · Powered by ${apexData.source || 'RugBuster Base data'}</span>`, 200);
     if (apexData.pairUrl) {
       await termLineDelay(`<span class="t-out">// Pair URL: ${apexData.pairUrl}</span>`, 120);
     }
@@ -3633,7 +3641,7 @@
 
     try {
       if (!walletConnected || connectedProvider !== 'evm' || !window.ethereum) {
-        throw new Error('Connect an Avalanche wallet before publishing');
+        throw new Error('Connect a Base wallet before publishing');
       }
 
       const { signer, contract } = await getRegistryContractWithSigner();
@@ -3673,7 +3681,7 @@
       setTimeout(() => setPublishButtonState(true, 'PUBLISH REPORT'), 2600);
     } catch (err) {
       await termLineDelay(`<span class="t-danger">✗ REGISTRY PUBLISH FAILED: ${err.message}</span>`, 220);
-      await termLineDelay(`<span class="t-out">// Connect Avalanche C-Chain, authorize this reviewer wallet, and keep enough AVAX for gas.</span>`, 120);
+      await termLineDelay(`<span class="t-out">// Connect Base mainnet, authorize this reviewer wallet, and keep enough ETH for gas.</span>`, 120);
       setPublishButtonState(true, 'PUBLISH REPORT');
     }
 
@@ -3697,122 +3705,6 @@
   });
 </script>
 
-
-<script>
-/* RugBuster Pre-sign Firewall (EVM) — prototip
-   Omota window.ethereum, presreće opasne tx/potpise pre nego sto wallet otvori.
-   Fail-open: ako analiza pukne, tx ide normalno (ne lomi wallet). */
-(function () {
-  if (window.__rbFirewall) return;
-  window.__rbFirewall = true;
-
-  var SEL = {
-    approve: "0x095ea7b3",            // approve(address,uint256)
-    setApprovalForAll: "0xa22cb465",  // setApprovalForAll(address,bool)
-    increaseAllowance: "0x39509351"   // increaseAllowance(address,uint256)
-  };
-
-  // Poznati drainer/scam spender-i (lowercase). Prototip lista — dopuniti kasnije / iz backenda.
-  var DENYLIST = new Set([]);
-
-  function short(a) { return a ? a.slice(0, 6) + "…" + a.slice(-4) : "?"; }
-  function big(h) { try { return BigInt("0x" + h.replace(/^0x/, "")); } catch (e) { return 0n; } }
-
-  function decodeTx(tx) {
-    var data = ((tx && (tx.data || tx.input)) || "").toLowerCase();
-    var to = ((tx && tx.to) || "").toLowerCase();
-    var reasons = [], level = "ok";
-    if (data.length >= 10) {
-      var sel = data.slice(0, 10);
-      if (sel === SEL.approve) {
-        var spender = "0x" + data.slice(34, 74);
-        var amountHex = data.slice(74, 138);
-        var amt = big(amountHex);
-        var unlimited = amt > (2n ** 200n);
-        reasons.push((unlimited ? "Unlimited" : "Token") + " spending approval → " + short(spender));
-        level = unlimited ? "danger" : "warn";
-        if (DENYLIST.has(spender)) { reasons.push("Spender is on known-drainer list"); level = "danger"; }
-      } else if (sel === SEL.setApprovalForAll) {
-        var operator = "0x" + data.slice(34, 74);
-        var approved = data.slice(74).replace(/0/g, "") !== "";
-        if (approved) {
-          reasons.push("Grants control of ALL your NFTs in a collection → " + short(operator));
-          level = "danger";
-          if (DENYLIST.has(operator)) reasons.push("Operator is on known-drainer list");
-        }
-      } else if (sel === SEL.increaseAllowance) {
-        reasons.push("Increases token spending allowance");
-        level = "warn";
-      }
-    }
-    if (to && DENYLIST.has(to)) { reasons.push("Destination is on known-drainer list"); level = "danger"; }
-    return { level: level, reasons: reasons };
-  }
-
-  function decodeTypedData(params) {
-    try {
-      var raw = params && (typeof params[1] === "string" ? params[1] : (typeof params[0] === "string" ? params[0] : null));
-      var json = raw ? JSON.parse(raw) : (params && params[1]) || (params && params[0]);
-      var pt = (json && json.primaryType) || "";
-      if (/permit/i.test(pt)) {
-        return { level: "danger", reasons: ["Off-chain " + pt + " signature — lets a spender move your tokens with no on-chain approve (gasless drain vector)"] };
-      }
-    } catch (e) {}
-    return null;
-  }
-
-  function ask(info) {
-    return new Promise(function (resolve) {
-      var color = info.level === "danger" ? "#ff3b5c" : "#f3ba2f";
-      var ov = document.createElement("div");
-      ov.style.cssText = "position:fixed;inset:0;z-index:2147483647;background:rgba(2,4,10,.82);display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace";
-      ov.innerHTML =
-        '<div style="max-width:430px;width:90%;background:#0a0e17;border:1px solid ' + color + ';box-shadow:0 0 40px ' + color + '55;padding:26px 24px">' +
-          '<div style="font-size:12px;letter-spacing:3px;color:' + color + ';margin-bottom:8px">⚠ RUGBUSTER FIREWALL</div>' +
-          '<div style="font-size:18px;font-weight:bold;color:#fff;margin-bottom:14px">' + (info.level === "danger" ? "Dangerous transaction" : "Review this transaction") + '</div>' +
-          '<div style="font-size:12px;line-height:1.8;color:#cdd3dc;margin-bottom:20px">' + info.reasons.map(function (r) { return "• " + r; }).join("<br>") + '</div>' +
-          '<div style="display:flex;gap:12px">' +
-            '<button id="rbCancel" style="flex:1;padding:12px;background:' + color + ';color:#0a0e17;border:none;font-family:inherit;font-weight:bold;letter-spacing:1px;cursor:pointer;clip-path:polygon(6% 0,100% 0,94% 100%,0 100%)">CANCEL — stay safe</button>' +
-            '<button id="rbProceed" style="flex:1;padding:12px;background:#1b2230;color:#9aa4b2;border:none;font-family:inherit;cursor:pointer;clip-path:polygon(6% 0,100% 0,94% 100%,0 100%)">Proceed anyway</button>' +
-          '</div>' +
-        '</div>';
-      document.body.appendChild(ov);
-      ov.querySelector("#rbCancel").onclick = function () { ov.remove(); resolve(false); };
-      ov.querySelector("#rbProceed").onclick = function () { ov.remove(); resolve(true); };
-    });
-  }
-
-  function wrap(provider) {
-    if (!provider || provider.__rbWrapped) return;
-    var orig = provider.request && provider.request.bind(provider);
-    if (!orig) return;
-    provider.request = async function (args) {
-      try {
-        var m = args && args.method, info = null;
-        if (m === "eth_sendTransaction" && args.params && args.params[0]) info = decodeTx(args.params[0]);
-        else if ((m === "eth_signTypedData_v4" || m === "eth_signTypedData") && args.params) info = decodeTypedData(args.params);
-        if (info && info.level !== "ok" && info.reasons.length) {
-          var proceed = await ask(info);
-          if (!proceed) { var e = new Error("Blocked by RugBuster Firewall"); e.code = 4001; throw e; }
-        }
-      } catch (err) { if (err && err.code === 4001) throw err; }
-      return orig(args);
-    };
-    provider.__rbWrapped = true;
-  }
-
-  function tryWrap() { if (window.ethereum) wrap(window.ethereum); }
-  tryWrap();
-  window.addEventListener("ethereum#initialized", tryWrap, { once: true });
-  var n = 0, iv = setInterval(function () {
-    tryWrap();
-    if (++n > 20 || (window.ethereum && window.ethereum.__rbWrapped)) clearInterval(iv);
-  }, 300);
-
-  // demo/test hook: window.__rbTest({to:'0x..', data:'0x095ea7b3...'})
-  window.__rbTest = function (sample) { return ask(decodeTx(sample)); };
-})();
-
-</script>
 </body>
 </html>
+
