@@ -125,7 +125,85 @@ python api/server.py
 Endpoints:
 
 - `GET /health`
+- `GET /v1/preflight`
+- `GET /v1/usage`
 - `POST /api/scan`
+
+## Pre-Flight Check API
+
+`GET /v1/preflight` is a low-latency safety gate for AI agents, trading bots,
+wallet automations, and Discord/Telegram integrations. It checks the existing
+RugBuster score cache immediately before a bot signs a transaction and returns
+one of three machine-readable verdicts:
+
+- `ALLOW` when risk is below 40
+- `WARN` when risk is 40-70 or the token is not cached yet
+- `BLOCK` when risk is above 70 or a critical signal is present
+
+Example:
+
+```bash
+curl "https://rugbuster-api-production.up.railway.app/v1/preflight?target=0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7&chain=avax&action=buy" \
+  -H "X-API-Key: rb_live_your_key"
+```
+
+Response shape:
+
+```json
+{
+  "verdict": "WARN",
+  "risk": 50,
+  "reasons": ["unknown_token_scanning"],
+  "chain": "avax",
+  "target_type": "token",
+  "cache": false,
+  "latency_ms": 12,
+  "engine": "rugbuster_v2"
+}
+```
+
+Machine reason codes:
+
+- `creator_rugged_before`
+- `fake_lp_lock`
+- `sniped_at_launch`
+- `fresh_funding`
+- `high_rugcheck_score`
+- `high_risk_score`
+- `holder_concentration`
+- `honeypot_detected`
+- `backdoor_detected`
+- `mint_authority_enabled`
+- `blacklist_function`
+- `upgradeable_proxy`
+- `wash_trading`
+- `bot_activity`
+- `thin_liquidity`
+- `unknown_token_scanning`
+- `engine_unavailable`
+- `invalid_target`
+- `daily_ip_limit_exceeded`
+- `monthly_limit_exceeded`
+- `api_key_inactive`
+- `no_major_risk_signals`
+
+Critical codes `creator_rugged_before`, `honeypot_detected`, and
+`backdoor_detected` force `BLOCK` even if the numeric risk is lower.
+
+API key support:
+
+- Header: `X-API-Key`
+- Postgres table: `api_keys (key, name, tier, created_at, active)`
+- Usage table: `api_usage (key, endpoint, target, verdict, latency_ms, timestamp)`
+- Tier limits: `free=1000/month`, `builder=50000/month`, `pro=500000/month`
+- No key: allowed for demos, limited to 100 calls/day per IP in memory
+
+Usage endpoint:
+
+```bash
+curl "https://rugbuster-api-production.up.railway.app/v1/usage" \
+  -H "X-API-Key: rb_live_your_key"
+```
 
 Example request:
 

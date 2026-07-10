@@ -2,15 +2,23 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import requests
 from flask import Flask, jsonify, request
 from web3 import Web3
+
+try:
+    import psycopg2
+except ImportError:  # pragma: no cover - optional when DATABASE_URL is absent
+    psycopg2 = None
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "chains" / "avalanche"))
@@ -23,7 +31,9 @@ from network_config import NETWORKS, load_env, resolve_network, resolve_rpc  # n
 load_env()
 
 DEXSCREENER_API = "https://api.dexscreener.com/latest/dex/tokens"
+RUGCHECK_API = "https://api.rugcheck.xyz/v1/tokens"
 GLACIER_API = "https://glacier-api.avax.network"
+RUGBUSTER_SCORE_API_BASE = os.getenv("RUGBUSTER_SCORE_API_BASE", "https://rugbuster-api-production.up.railway.app").rstrip("/")
 STABLE_QUOTES = {
     "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E": 1.0,  # USDC
     "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7": 1.0,  # USDT.e
@@ -87,10 +97,25 @@ app = Flask(__name__)
 SCAN_CACHE_TTL_SECONDS = 180
 SCAN_CACHE: dict[str, dict[str, Any]] = {}
 PORTFOLIO_SCAN_WORKERS = 3
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+PREFLIGHT_ENGINE = "rugbuster_v2"
+PREFLIGHT_FREE_DAILY_LIMIT = int(os.getenv("PREFLIGHT_FREE_DAILY_LIMIT", "100"))
+PREFLIGHT_TIER_LIMITS = {
+    "free": 1_000,
+    "builder": 50_000,
+    "pro": 500_000,
+}
+ANON_USAGE: dict[str, dict[str, int | str]] = {}
+DB_READY = False
+EVM_ADDRESS_RE = re.compile(r"^0x[a-fA-F0-9]{40}$")
+SOLANA_ADDRESS_RE = re.compile(r"^[1-9A-HJ-NP-Za-km-z]{32,44}$")
 
 
 def cache_key(address: str) -> str:
-    return Web3.to_checksum_address(address)
+    address = str(address or "").strip()
+    if Web3.is_address(address):
+        return Web3.to_checksum_address(address)
+    return address
 
 
 def get_cached_report(address: str) -> dict[str, Any] | None:
@@ -107,9 +132,429 @@ def put_cached_report(address: str, report: dict[str, Any]) -> None:
     SCAN_CACHE[cache_key(address)] = {"ts": time.time(), "report": report}
 
 
+def preflight_cache_key(chain: str, target: str) -> str:
+    return f"{chain}:{cache_key(target)}"
+
+
+def get_preflight_cached_report(chain: str, target: str) -> dict[str, Any] | None:
+    entry = SCAN_CACHE.get(preflight_cache_key(chain, target))
+    if entry:
+        if time.time() - entry["ts"] <= SCAN_CACHE_TTL_SECONDS:
+            return entry["report"]
+        SCAN_CACHE.pop(preflight_cache_key(chain, target), None)
+    if chain == "avax":
+        return get_cached_report(target)
+    return None
+
+
+def put_preflight_cached_report(chain: str, target: str, report: dict[str, Any]) -> None:
+    SCAN_CACHE[preflight_cache_key(chain, target)] = {"ts": time.time(), "report": report}
+    if chain == "avax":
+        put_cached_report(target, report)
+
+
+def utc_month() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m")
+
+
+def utc_day() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def get_db_connection():
+    if not DATABASE_URL or psycopg2 is None:
+        return None
+    return psycopg2.connect(DATABASE_URL)
+
+
+def ensure_preflight_tables() -> None:
+    global DB_READY
+    if DB_READY or not DATABASE_URL or psycopg2 is None:
+        return
+    try:
+        with psycopg2.connect(DATABASE_URL) as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS api_keys (
+                        key TEXT PRIMARY KEY,
+                        name TEXT NOT NULL DEFAULT 'unnamed',
+                        tier TEXT NOT NULL DEFAULT 'free',
+                        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                        active BOOLEAN NOT NULL DEFAULT TRUE
+                    )
+                    """
+                )
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS api_usage (
+                        id BIGSERIAL PRIMARY KEY,
+                        key TEXT,
+                        endpoint TEXT NOT NULL,
+                        target TEXT,
+                        verdict TEXT,
+                        latency_ms INTEGER,
+                        timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                    )
+                    """
+                )
+                cur.execute("CREATE INDEX IF NOT EXISTS api_usage_key_ts_idx ON api_usage (key, timestamp)")
+        DB_READY = True
+    except Exception:
+        DB_READY = False
+
+
+def detect_chain(target: str, explicit_chain: str | None = None) -> str:
+    chain = (explicit_chain or "").strip().lower()
+    if chain in {"solana", "bnb", "bsc", "avax", "avalanche"}:
+        return "bnb" if chain == "bsc" else "avax" if chain == "avalanche" else chain
+    if EVM_ADDRESS_RE.match(target):
+        return "avax"
+    if SOLANA_ADDRESS_RE.match(target):
+        return "solana"
+    return "unknown"
+
+
+def target_type_for(target: str) -> str:
+    return "token" if EVM_ADDRESS_RE.match(target) or SOLANA_ADDRESS_RE.match(target) else "unknown"
+
+
+def normalize_target(target: str, chain: str) -> str:
+    if chain in {"avax", "bnb"} and Web3.is_address(target):
+        return Web3.to_checksum_address(target)
+    return target.strip()
+
+
+def report_risk_percent(report: dict[str, Any]) -> int | None:
+    for key in ("risk_percent", "rugbuster_avax_score", "rug_score"):
+        value = report.get(key)
+        if value is not None:
+            return max(0, min(100, int(float(value))))
+    label = str(report.get("label") or "").upper()
+    if label == "DANGER":
+        return 90
+    if label == "WARN":
+        return 55
+    if label == "GOOD":
+        return 20
+    return None
+
+
+def machine_reason(text: str) -> str:
+    lowered = text.lower()
+    if "no hard" in lowered or "no major" in lowered or "clean" in lowered:
+        return "no_major_risk_signals"
+    if "creator history" in lowered or "deployer history" in lowered or "rugged" in lowered or "rug rate" in lowered:
+        return "creator_rugged_before"
+    if "fake lp" in lowered or "fake liquidity" in lowered:
+        return "fake_lp_lock"
+    if "sniped" in lowered:
+        return "sniped_at_launch"
+    if "fresh funding" in lowered or "all fresh" in lowered:
+        return "fresh_funding"
+    if "rugcheck" in lowered:
+        return "high_rugcheck_score"
+    if "holder concentration" in lowered or "concentration" in lowered or "top5" in lowered:
+        return "holder_concentration"
+    if "honeypot" in lowered:
+        return "honeypot_detected"
+    if "backdoor" in lowered or "drain" in lowered or "withdraw" in lowered:
+        return "backdoor_detected"
+    if "mint" in lowered:
+        return "mint_authority_enabled"
+    if "blacklist" in lowered:
+        return "blacklist_function"
+    if "proxy" in lowered or "upgradeable" in lowered:
+        return "upgradeable_proxy"
+    if "wash" in lowered:
+        return "wash_trading"
+    if "bot" in lowered:
+        return "bot_activity"
+    if "liquidity" in lowered or "fdv" in lowered:
+        return "thin_liquidity"
+    return re.sub(r"[^a-z0-9]+", "_", lowered).strip("_")[:64] or "risk_signal"
+
+
+def preflight_reasons_from_report(report: dict[str, Any]) -> list[str]:
+    raw_reasons: list[str] = []
+    for key in ("rugbuster_avax_reasons", "risk_flags", "rug_reasons", "speculation_reasons", "cia_flags"):
+        value = report.get(key) or []
+        if isinstance(value, str):
+            raw_reasons.append(value)
+        else:
+            raw_reasons.extend([str(item) for item in value if item])
+    output = report.get("output")
+    if output:
+        raw_reasons.append(str(output))
+    codes = []
+    for reason in raw_reasons:
+        code = machine_reason(reason)
+        if code not in codes:
+            codes.append(code)
+    risk = report_risk_percent(report)
+    if risk is not None and risk >= 70 and "high_rugcheck_score" not in codes:
+        codes.append("high_risk_score")
+    return codes[:8]
+
+
+def has_critical_block_reason(reasons: list[str]) -> bool:
+    critical = {"creator_rugged_before", "honeypot_detected", "backdoor_detected"}
+    return any(reason in critical for reason in reasons)
+
+
+def verdict_from_risk(risk: int | None, reasons: list[str]) -> str:
+    if has_critical_block_reason(reasons):
+        return "BLOCK"
+    if risk is None:
+        return "WARN"
+    if risk < 40:
+        return "ALLOW"
+    if risk <= 70:
+        return "WARN"
+    return "BLOCK"
+
+
+def get_api_key_record(api_key: str | None) -> dict[str, Any] | None:
+    if not api_key:
+        return None
+    ensure_preflight_tables()
+    conn = get_db_connection()
+    if conn is None:
+        return {"key": api_key, "name": "local", "tier": "free", "active": True}
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT key, name, tier, active FROM api_keys WHERE key = %s", (api_key,))
+                row = cur.fetchone()
+        if not row:
+            return None
+        return {"key": row[0], "name": row[1], "tier": row[2], "active": row[3]}
+    finally:
+        conn.close()
+
+
+def check_preflight_limit(api_key_record: dict[str, Any] | None, ip: str) -> tuple[bool, str | None]:
+    ensure_preflight_tables()
+    conn = get_db_connection()
+    if api_key_record:
+        if not api_key_record.get("active"):
+            return False, "api_key_inactive"
+        tier = str(api_key_record.get("tier") or "free").lower()
+        limit = PREFLIGHT_TIER_LIMITS.get(tier, PREFLIGHT_TIER_LIMITS["free"])
+        if conn is None:
+            return True, None
+        try:
+            with conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT COUNT(*) FROM api_usage
+                        WHERE key = %s AND endpoint = '/v1/preflight'
+                        AND timestamp >= date_trunc('month', NOW())
+                        """,
+                        (api_key_record["key"],),
+                    )
+                    used = int(cur.fetchone()[0])
+            return (used < limit, None if used < limit else "monthly_limit_exceeded")
+        finally:
+            conn.close()
+
+    today = utc_day()
+    entry = ANON_USAGE.setdefault(ip, {"date": today, "count": 0})
+    if entry["date"] != today:
+        entry["date"] = today
+        entry["count"] = 0
+    if int(entry["count"]) >= PREFLIGHT_FREE_DAILY_LIMIT:
+        return False, "daily_ip_limit_exceeded"
+    entry["count"] = int(entry["count"]) + 1
+    return True, None
+
+
+def log_preflight_usage(api_key: str | None, endpoint: str, target: str, verdict: str, latency_ms: int) -> None:
+    ensure_preflight_tables()
+    conn = get_db_connection()
+    if conn is None:
+        return
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO api_usage (key, endpoint, target, verdict, latency_ms)
+                    VALUES (%s, %s, %s, %s, %s)
+                    """,
+                    (api_key, endpoint, target, verdict, latency_ms),
+                )
+    except Exception:
+        pass
+    finally:
+        conn.close()
+
+
+def normalize_remote_score(data: dict[str, Any], target: str, chain: str) -> dict[str, Any] | None:
+    if not data or data.get("ok") is False:
+        return None
+    report = data.get("report") if isinstance(data.get("report"), dict) else data
+    risk = report_risk_percent(report)
+    if risk is None:
+        label = str(report.get("label") or report.get("verdict") or "").upper()
+        risk = {"DANGER": 90, "BLOCK": 90, "WARN": 55, "ALLOW": 20, "GOOD": 20}.get(label)
+    if risk is None:
+        return None
+    return {
+        "address": report.get("address") or report.get("contract_address") or target,
+        "chain": report.get("chain") or chain,
+        "label": report.get("label") or report.get("verdict"),
+        "risk_percent": risk,
+        "rug_score": report.get("rug_score") or risk,
+        "rug_reasons": report.get("rug_reasons") or report.get("risk_flags") or report.get("reasons") or [],
+        "risk_flags": report.get("risk_flags") or report.get("reasons") or [],
+        "token_name": report.get("token_name"),
+        "symbol": report.get("symbol") or report.get("token_symbol"),
+        "source": report.get("source") or "remote_score",
+    }
+
+
+def fetch_remote_score(target: str, chain: str) -> dict[str, Any] | None:
+    if not RUGBUSTER_SCORE_API_BASE:
+        return None
+    candidates = [
+        {"address": target, "chain": chain},
+        {"target": target, "chain": chain},
+        {"address": target},
+    ]
+    for params in candidates:
+        try:
+            response = requests.get(
+                f"{RUGBUSTER_SCORE_API_BASE}/score",
+                params=params,
+                timeout=8,
+            )
+            if not response.ok:
+                continue
+            normalized = normalize_remote_score(response.json(), target, chain)
+            if normalized:
+                return normalized
+        except Exception:
+            continue
+    return None
+
+
+def normalize_avax_scan_record(full_record: dict[str, Any], target: str) -> dict[str, Any]:
+    risk_flags: list[str] = []
+
+    input_text = str(full_record.get("input") or "")
+    match = re.search(r"Risk Flags:\s*(.+)", input_text)
+    if match:
+        line = match.group(1).split("\n", 1)[0].strip()
+        if line and line.lower() != "none":
+            risk_flags.extend(flag.strip() for flag in line.split(",") if flag.strip())
+
+    # v6_has_backdoor also fires on standard OZ Ownable functions (owner/renounceOwnership),
+    # which are common and benign on their own. Only treat it as a real backdoor signal
+    # when it comes with mint or blacklist power, matching how the collector's own
+    # backdoor_risk_score weighs it (Ownable-only tokens score 0; mint-capable ones score >0).
+    if full_record.get("v6_has_mint"):
+        risk_flags.append("Mint function grants owner ability to inflate supply")
+    if full_record.get("v6_has_blacklist"):
+        risk_flags.append("Blacklist function can freeze holder wallets")
+    if full_record.get("v6_concentration_risk") == "CRITICAL" and not any("concentration" in f.lower() for f in risk_flags):
+        risk_flags.append("Holder concentration CRITICAL")
+    rug_rate = full_record.get("creator_rug_rate")
+    if isinstance(rug_rate, (int, float)) and rug_rate > 0:
+        risk_flags.append(f"Deployer rug rate {rug_rate * 100:.0f}%")
+    if full_record.get("v6_is_fast_rug"):
+        risk_flags.append("Fast rug pattern detected")
+
+    output = full_record.get("output")
+    if output and not risk_flags:
+        risk_flags.append(str(output))
+
+    return {
+        "address": target,
+        "chain": "avax",
+        "label": full_record.get("label"),
+        "risk_percent": full_record.get("risk_percent"),
+        "rugbuster_avax_score": full_record.get("rugbuster_avax_score"),
+        "rug_score": full_record.get("rug_score"),
+        "risk_flags": risk_flags,
+        "token_name": full_record.get("token_name"),
+        "symbol": full_record.get("token_symbol"),
+        "source": "avax_scans_db",
+    }
+
+
+def fetch_avax_db_score(target: str) -> dict[str, Any] | None:
+    if not Web3.is_address(target):
+        return None
+    conn = get_db_connection()
+    if conn is None:
+        return None
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT full_record FROM avax_scans
+                    WHERE lower(contract_address) = lower(%s)
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                    """,
+                    (target,),
+                )
+                row = cur.fetchone()
+        if not row or not row[0]:
+            return None
+        return normalize_avax_scan_record(row[0], target)
+    except Exception:
+        return None
+    finally:
+        conn.close()
+
+
+def background_preflight_scan(target: str, chain: str) -> None:
+    if chain == "avax":
+        db_report = fetch_avax_db_score(target)
+        if db_report:
+            put_preflight_cached_report(chain, target, db_report)
+            return
+    remote_report = fetch_remote_score(target, chain)
+    if remote_report:
+        put_preflight_cached_report(chain, target, remote_report)
+        return
+    if chain != "avax" or not Web3.is_address(target):
+        return
+    try:
+        report = scan_token(target)
+        put_preflight_cached_report(chain, target, report)
+    except Exception:
+        return
+
+
+def build_preflight_response(
+    verdict: str,
+    risk: int | None,
+    reasons: list[str],
+    chain: str,
+    target: str,
+    cache: bool,
+    started_at: float,
+) -> dict[str, Any]:
+    return {
+        "verdict": verdict,
+        "risk": int(risk if risk is not None else 50),
+        "reasons": reasons[:8],
+        "chain": chain,
+        "target_type": target_type_for(target),
+        "cache": cache,
+        "latency_ms": max(0, int((time.perf_counter() - started_at) * 1000)),
+        "engine": PREFLIGHT_ENGINE,
+    }
+
+
 def cors(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-API-Key"
     response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
     return response
 
@@ -123,6 +568,131 @@ def add_cors_headers(response):
 def health():
     network = resolve_network()
     return jsonify({"ok": True, "network": network, "label": NETWORKS[network]["label"]})
+
+
+@app.route("/v1/preflight", methods=["GET", "OPTIONS"])
+def v1_preflight():
+    if request.method == "OPTIONS":
+        return cors(app.response_class(status=204))
+
+    started_at = time.perf_counter()
+    target = str(request.args.get("target") or "").strip()
+    action = str(request.args.get("action") or "buy").strip().lower()
+    chain = detect_chain(target, request.args.get("chain"))
+    target = normalize_target(target, chain)
+    api_key = request.headers.get("X-API-Key")
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr or "unknown").split(",", 1)[0].strip()
+    api_key_record = get_api_key_record(api_key)
+
+    def finish(payload: dict[str, Any]):
+        log_preflight_usage(api_key if api_key_record else None, "/v1/preflight", target, payload["verdict"], payload["latency_ms"])
+        return jsonify(payload), 200
+
+    try:
+        allowed, limit_reason = check_preflight_limit(api_key_record, ip)
+        if not allowed:
+            return finish(
+                build_preflight_response(
+                    "WARN",
+                    50,
+                    [limit_reason or "rate_limited"],
+                    chain,
+                    target,
+                    False,
+                    started_at,
+                )
+            )
+
+        if action not in {"buy", "transfer", "approve", "swap"}:
+            action = "buy"
+        if not target or chain == "unknown":
+            return finish(
+                build_preflight_response(
+                    "WARN",
+                    50,
+                    ["invalid_target"],
+                    chain,
+                    target,
+                    False,
+                    started_at,
+                )
+            )
+
+        report = None
+        cache_hit = False
+        if chain in {"avax", "bnb", "solana"}:
+            report = get_preflight_cached_report(chain, target)
+            cache_hit = report is not None
+
+        if report is None and chain == "avax":
+            report = fetch_avax_db_score(target)
+            if report is not None:
+                put_preflight_cached_report(chain, target, report)
+
+        if report is None:
+            threading.Thread(target=background_preflight_scan, args=(target, chain), daemon=True).start()
+            return finish(
+                build_preflight_response(
+                    "WARN",
+                    50,
+                    ["unknown_token_scanning"],
+                    chain,
+                    target,
+                    False,
+                    started_at,
+                )
+            )
+
+        risk = report_risk_percent(report)
+        reasons = preflight_reasons_from_report(report)
+        if not reasons:
+            reasons = ["no_major_risk_signals"]
+        verdict = verdict_from_risk(risk, reasons)
+        return finish(build_preflight_response(verdict, risk, reasons, chain, target, cache_hit, started_at))
+    except Exception:
+        payload = build_preflight_response(
+            "WARN",
+            50,
+            ["engine_unavailable"],
+            chain,
+            target,
+            False,
+            started_at,
+        )
+        log_preflight_usage(api_key if api_key_record else None, "/v1/preflight", target, payload["verdict"], payload["latency_ms"])
+        return jsonify(payload), 200
+
+
+@app.route("/v1/usage", methods=["GET", "OPTIONS"])
+def v1_usage():
+    if request.method == "OPTIONS":
+        return cors(app.response_class(status=204))
+
+    api_key = request.headers.get("X-API-Key")
+    api_key_record = get_api_key_record(api_key)
+    if not api_key or not api_key_record:
+        return jsonify({"ok": False, "error": "valid X-API-Key required"}), 401
+    ensure_preflight_tables()
+    conn = get_db_connection()
+    tier = str(api_key_record.get("tier") or "free").lower()
+    limit = PREFLIGHT_TIER_LIMITS.get(tier, PREFLIGHT_TIER_LIMITS["free"])
+    if conn is None:
+        return jsonify({"ok": True, "key": api_key_record["name"], "tier": tier, "used": 0, "limit": limit, "period": utc_month()})
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT COUNT(*) FROM api_usage
+                    WHERE key = %s AND endpoint = '/v1/preflight'
+                    AND timestamp >= date_trunc('month', NOW())
+                    """,
+                    (api_key,),
+                )
+                used = int(cur.fetchone()[0])
+        return jsonify({"ok": True, "key": api_key_record["name"], "tier": tier, "used": used, "limit": limit, "period": utc_month()})
+    finally:
+        conn.close()
 
 
 @app.route("/api/scan", methods=["POST", "OPTIONS"])
@@ -143,6 +713,7 @@ def api_scan():
         report = payload.get("report")
         if not report:
             return jsonify({"ok": False, "error": "Solana requests require a report payload"}), 400
+        report = enrich_solana_report(report, address)
 
         telegram_result = None
         if notify:
@@ -246,6 +817,75 @@ def call_optional(contract, fn_name: str) -> Any | None:
         return getattr(contract.functions, fn_name)().call()
     except Exception:
         return None
+
+
+def is_blank_token_value(value: Any) -> bool:
+    text = str(value or "").strip()
+    return not text or text.lower() in {"unknown", "unknown token", "token", "solana token", "???", "sol"}
+
+
+def fetch_solana_token_metadata(address: str) -> dict[str, Any]:
+    metadata: dict[str, Any] = {}
+    try:
+        response = requests.get(f"{RUGCHECK_API}/{address}/report", timeout=12)
+        if response.ok:
+            data = response.json()
+            token_meta = data.get("tokenMeta") or data.get("fileMeta") or {}
+            if token_meta.get("name"):
+                metadata["token_name"] = token_meta["name"]
+            if token_meta.get("symbol"):
+                metadata["symbol"] = token_meta["symbol"]
+            if token_meta.get("image"):
+                metadata["image_url"] = token_meta["image"]
+    except Exception:
+        pass
+
+    if metadata.get("token_name") and metadata.get("symbol") and metadata.get("image_url"):
+        return metadata
+
+    try:
+        response = requests.get(f"{DEXSCREENER_API}/{address}", timeout=12)
+        if response.ok:
+            data = response.json()
+            pairs = [pair for pair in (data.get("pairs") or []) if (pair.get("chainId") or "").lower() == "solana"]
+            if pairs:
+                best_pair = sorted(
+                    pairs,
+                    key=lambda pair: float(pair.get("liquidity", {}).get("usd") or 0),
+                    reverse=True,
+                )[0]
+                normalized = address.lower()
+                token_side = next(
+                    (
+                        token
+                        for token in (best_pair.get("baseToken"), best_pair.get("quoteToken"))
+                        if (token or {}).get("address", "").lower() == normalized
+                    ),
+                    best_pair.get("baseToken") or {},
+                )
+                metadata.setdefault("token_name", token_side.get("name"))
+                metadata.setdefault("symbol", token_side.get("symbol"))
+                metadata.setdefault("image_url", (best_pair.get("info") or {}).get("imageUrl"))
+    except Exception:
+        pass
+
+    return {key: value for key, value in metadata.items() if value}
+
+
+def enrich_solana_report(report: dict[str, Any], address: str) -> dict[str, Any]:
+    enriched = dict(report)
+    enriched.setdefault("address", address)
+    metadata = fetch_solana_token_metadata(address)
+
+    if metadata.get("token_name") and is_blank_token_value(enriched.get("token_name")):
+        enriched["token_name"] = metadata["token_name"]
+    if metadata.get("symbol") and is_blank_token_value(enriched.get("symbol")):
+        enriched["symbol"] = metadata["symbol"]
+    image_url = enriched.get("image_url") or enriched.get("image") or enriched.get("token_image")
+    if not image_url and metadata.get("image_url"):
+        enriched["image_url"] = metadata["image_url"]
+
+    return enriched
 
 
 def get_web3() -> Web3:
@@ -633,6 +1273,7 @@ def notify_report(report: dict[str, Any], publish_result: dict[str, Any] | None)
         chat_id=chat_id,
         message="\n".join(lines),
         parse_mode="HTML",
+        photo_url=report.get("image_url") or report.get("image") or report.get("token_image"),
     )
     return {"ok": True, "response": result.get("ok", False)}
 
@@ -679,6 +1320,7 @@ def notify_solana_report(report: dict[str, Any]) -> dict[str, Any]:
         chat_id=chat_id,
         message="\n".join(lines),
         parse_mode="HTML",
+        photo_url=report.get("image_url") or report.get("image") or report.get("token_image"),
     )
     return {"ok": True, "response": result.get("ok", False)}
 
