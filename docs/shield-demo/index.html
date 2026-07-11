@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Live Avalanche token preflight checks from RugBuster.">
+  <title>RugBuster Shield Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root { --red:#e84142; --green:#23d18b; --amber:#ffb020; --ink:#070708; --panel:#121316; --line:rgba(232,65,66,.18); --text:#f8fafc; --muted:#a5a8b3; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--text); background:var(--ink); font-family:Rajdhani,Arial,sans-serif; font-size:18px; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background-image:linear-gradient(rgba(232,65,66,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(232,65,66,.045) 1px,transparent 1px); background-size:56px 56px; }
+    a { color:inherit; }
+    nav { display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:76px; padding:16px clamp(20px,5vw,72px); border-bottom:1px solid var(--line); background:rgba(7,7,8,.92); }
+    .brand { color:var(--red); font-family:Orbitron,monospace; font-size:20px; font-weight:900; letter-spacing:2px; text-decoration:none; }
+    .brand span { color:var(--text); }
+    .back { color:var(--muted); font-family:"Share Tech Mono",monospace; font-size:12px; letter-spacing:1.5px; text-decoration:none; text-transform:uppercase; }
+    .back:hover { color:var(--red); }
+    main { width:min(940px,calc(100% - 40px)); margin:0 auto; padding:clamp(58px,9vw,106px) 0 72px; }
+    .eyebrow { color:var(--green); font:12px "Share Tech Mono",monospace; letter-spacing:3px; text-transform:uppercase; }
+    h1 { max-width:680px; margin:15px 0 14px; font-family:Orbitron,monospace; font-size:clamp(34px,5vw,58px); font-weight:900; letter-spacing:0; line-height:1.08; }
+    .intro { max-width:610px; margin:0; color:var(--muted); font-size:20px; line-height:1.45; }
+    .tool { margin-top:42px; padding:clamp(24px,4vw,42px); border:1px solid var(--line); background:rgba(18,19,22,.92); }
+    label, .section-label { display:block; margin-bottom:10px; color:var(--text); font:12px "Share Tech Mono",monospace; letter-spacing:1.6px; text-transform:uppercase; }
+    .input-row { display:grid; grid-template-columns:minmax(0,1fr) 132px; gap:10px; }
+    input { width:100%; min-width:0; height:52px; border:1px solid #34363d; border-radius:0; padding:0 16px; background:#0a0b0d; color:var(--text); font:16px "Share Tech Mono",monospace; outline:none; }
+    input:focus { border-color:var(--red); box-shadow:0 0 0 3px rgba(232,65,66,.16); }
+    button { min-height:52px; border:1px solid var(--red); border-radius:0; background:var(--red); color:#fff; cursor:pointer; font:700 14px "Share Tech Mono",monospace; letter-spacing:1px; text-transform:uppercase; }
+    button:hover:not(:disabled) { background:#ff5a5b; }
+    button:focus-visible, a:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+    button:disabled { cursor:wait; opacity:.62; }
+    .examples { margin-top:25px; }
+    .examples-list { display:flex; flex-wrap:wrap; gap:8px; }
+    .example { min-height:34px; border-color:#35383f; padding:7px 11px; background:transparent; color:var(--muted); font-size:11px; }
+    .example:hover { border-color:var(--text); background:#1b1c20; color:var(--text); }
+    .result { display:none; margin-top:34px; border-top:1px solid #34363d; padding-top:26px; }
+    .result.visible { display:block; }
+    .result-head { display:flex; align-items:center; justify-content:space-between; gap:18px; }
+    .verdict { display:inline-flex; align-items:center; min-height:40px; padding:0 13px; border:1px solid currentColor; font:700 18px "Share Tech Mono",monospace; letter-spacing:1.5px; }
+    .allow { color:var(--green); } .warn { color:var(--amber); } .block { color:var(--red); }
+    .latency { color:var(--muted); font:12px "Share Tech Mono",monospace; letter-spacing:1px; }
+    .risk { display:grid; grid-template-columns:100px 1fr; align-items:center; gap:16px; margin-top:25px; }
+    .risk strong { font:700 42px Orbitron,monospace; letter-spacing:0; }
+    .meter { height:8px; overflow:hidden; background:#292b30; }
+    .meter > span { display:block; width:0; height:100%; background:currentColor; transition:width .3s ease; }
+    .reasons { margin:23px 0 0; padding:0; list-style:none; }
+    .reasons li { position:relative; margin:8px 0; padding-left:19px; color:var(--muted); font-family:"Share Tech Mono",monospace; font-size:13px; line-height:1.45; }
+    .reasons li::before { content:"/"; position:absolute; left:0; color:var(--red); }
+    .detail { margin-top:20px; color:var(--muted); font:11px "Share Tech Mono",monospace; line-height:1.6; overflow-wrap:anywhere; }
+    .status { min-height:24px; margin:16px 0 0; color:var(--muted); font:12px "Share Tech Mono",monospace; }
+    .error { color:var(--red); }
+    footer { width:min(940px,calc(100% - 40px)); margin:0 auto; padding:0 0 32px; color:var(--muted); font:12px "Share Tech Mono",monospace; }
+    @media (max-width:600px) { nav { min-height:64px; } .brand { font-size:16px; } .back { font-size:10px; } main { width:min(100% - 28px,940px); padding-top:54px; } .intro { font-size:18px; } .tool { padding:22px 18px; } .input-row { grid-template-columns:1fr; } .risk { grid-template-columns:1fr; gap:4px; } footer { width:min(100% - 28px,940px); } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="brand" href="/">RUG<span>BUSTER</span></a>
+    <a class="back" href="/avalanche/">Avalanche scanner</a>
+  </nav>
+  <main>
+    <p class="eyebrow">Live Avalanche C-Chain check</p>
+    <h1>Preflight Shield</h1>
+    <p class="intro">Check an Avalanche token before you trade. Results come directly from the live RugBuster preflight engine.</p>
+
+    <section class="tool" aria-label="Avalanche token check">
+      <label for="tokenAddress">Token contract address</label>
+      <div class="input-row">
+        <input id="tokenAddress" type="text" autocomplete="off" spellcheck="false" placeholder="0x..." aria-describedby="status">
+        <button id="checkButton" type="button">Check</button>
+      </div>
+      <p class="status" id="status" aria-live="polite">Avalanche C-Chain only.</p>
+
+      <div class="examples">
+        <span class="section-label">Examples</span>
+        <div class="examples-list">
+          <button class="example" type="button" data-address="0x34a528da3b2ea5c6ad1796eba756445d1299a577">Try known danger</button>
+          <button class="example" type="button" data-address="0x751ceba0aaeb09dcf6b69d1a93fd561b2633a6ca">Try known warning</button>
+          <button class="example" type="button" data-address="0x48d64aef167ccc764b11d4ee6e657665c05eaec5">Try known good</button>
+          <button class="example" type="button" data-address="0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7">Try WAVAX</button>
+        </div>
+      </div>
+
+      <div class="result" id="result" aria-live="polite">
+        <div class="result-head">
+          <span class="verdict" id="verdict">CHECKING</span>
+          <span class="latency" id="latency"></span>
+        </div>
+        <div class="risk" id="riskPanel">
+          <strong id="riskValue">--</strong>
+          <div class="meter" aria-label="Risk score"><span id="meterFill"></span></div>
+        </div>
+        <ul class="reasons" id="reasons"></ul>
+        <p class="detail" id="detail"></p>
+      </div>
+    </section>
+  </main>
+  <footer>RUGBUSTER // LIVE PREFLIGHT ENGINE // AVALANCHE</footer>
+
+  <script>
+    const API_BASE = 'https://rugbuster-api-production.up.railway.app';
+    const input = document.getElementById('tokenAddress');
+    const checkButton = document.getElementById('checkButton');
+    const status = document.getElementById('status');
+    const result = document.getElementById('result');
+    const verdict = document.getElementById('verdict');
+    const latency = document.getElementById('latency');
+    const riskValue = document.getElementById('riskValue');
+    const meterFill = document.getElementById('meterFill');
+    const reasons = document.getElementById('reasons');
+    const detail = document.getElementById('detail');
+
+    function prettyReason(reason) {
+      return String(reason || '').replaceAll('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
+    }
+    function verdictClass(value) {
+      return value === 'ALLOW' ? 'allow' : value === 'BLOCK' ? 'block' : 'warn';
+    }
+    function render(data) {
+      const risk = Math.max(0, Math.min(100, Number(data.risk) || 0));
+      const stateClass = verdictClass(data.verdict);
+      result.classList.add('visible');
+      verdict.textContent = data.verdict || 'WARN';
+      verdict.className = `verdict ${stateClass}`;
+      latency.textContent = `${data.latency_ms ?? '--'} ms live response`;
+      riskValue.textContent = `${risk}%`;
+      riskValue.className = stateClass;
+      document.getElementById('riskPanel').className = `risk ${stateClass}`;
+      meterFill.style.width = `${risk}%`;
+      reasons.replaceChildren(...(data.reasons || ['no_major_risk_signals']).map(reason => {
+        const item = document.createElement('li'); item.textContent = prettyReason(reason); return item;
+      }));
+      detail.textContent = `Engine: ${data.engine || 'rugbuster_v2'} // Cache: ${data.cache ? 'warm' : 'live'} // Target: ${data.target_type || 'token'}`;
+    }
+    async function check(address = input.value.trim()) {
+      if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
+        status.className = 'status error';
+        status.textContent = 'Enter a valid Avalanche C-Chain token address.';
+        return;
+      }
+      input.value = address;
+      checkButton.disabled = true;
+      checkButton.textContent = 'Checking';
+      status.className = 'status';
+      status.textContent = 'Calling the live RugBuster preflight engine...';
+      try {
+        const query = new URLSearchParams({ target: address, chain: 'avax', action: 'buy' });
+        const response = await fetch(`${API_BASE}/v1/preflight?${query}`);
+        if (!response.ok) throw new Error(`Request failed (${response.status})`);
+        const data = await response.json();
+        render(data);
+        status.textContent = data.reasons?.includes('unknown_token_scanning') ? 'This token is being assessed. Check again shortly for a completed result.' : 'Live result received.';
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = `Live check unavailable: ${error.message}`;
+      } finally {
+        checkButton.disabled = false;
+        checkButton.textContent = 'Check';
+      }
+    }
+    checkButton.addEventListener('click', () => check());
+    input.addEventListener('keydown', event => { if (event.key === 'Enter') check(); });
+    document.querySelectorAll('.example').forEach(button => button.addEventListener('click', () => check(button.dataset.address)));
+  </script>
+</body>
+</html>
