@@ -60,6 +60,8 @@
     .reasons li { position:relative; margin:8px 0; padding-left:19px; color:var(--muted); font-family:"Share Tech Mono",monospace; font-size:13px; line-height:1.45; }
     .reasons li::before { content:"/"; position:absolute; left:0; color:var(--red); }
     .detail { margin-top:20px; color:var(--muted); font:11px "Share Tech Mono",monospace; line-height:1.6; overflow-wrap:anywhere; }
+    .result-disclaimer { margin:20px 0 0; color:var(--muted); font:10px/1.6 "Share Tech Mono",monospace; }
+    .result-disclaimer a { color:var(--green); text-underline-offset:3px; }
     .status { min-height:24px; margin:16px 0 0; color:var(--muted); font:12px "Share Tech Mono",monospace; }
     .error { color:var(--red); }
     footer { width:min(940px,calc(100% - 40px)); margin:0 auto; padding:0 0 32px; color:var(--muted); font:12px "Share Tech Mono",monospace; }
@@ -115,6 +117,7 @@
         </div>
         <ul class="reasons" id="reasons"></ul>
         <p class="detail" id="detail"></p>
+        <p class="result-disclaimer">Informational only - not financial, legal, or investment advice. <a href="/terms/">Read the full disclaimer.</a></p>
       </div>
     </section>
   </main>
@@ -223,5 +226,6 @@
     input.addEventListener('keydown', event => { if (event.key === 'Enter') check(); });
     document.querySelectorAll('.example').forEach(button => button.addEventListener('click', () => check(button.dataset.address)));
   </script>
+  <script src="/assets/rugbuster-legal-footer.js"></script>
 </body>
 </html>
