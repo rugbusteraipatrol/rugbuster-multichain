@@ -1039,6 +1039,12 @@
     }
   }
 
+  function trackScanStarted(chain) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'scan_started', { chain, scan_surface: 'rugbuster_web' });
+    }
+  }
+
   async function runScan(addressOverride) {
     const input = document.getElementById("scanInput");
     const apiInput = document.getElementById("apiScoreInput");
@@ -1055,6 +1061,7 @@
       return;
     }
 
+    trackScanStarted('tron');
     const btn = document.getElementById("scanButton");
     btn.disabled = true;
     btn.textContent = "Scanning";

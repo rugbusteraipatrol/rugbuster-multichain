@@ -2926,6 +2926,12 @@ html{scrollbar-gutter:stable}
     wrap.style.display  = 'block';
   }
 
+  function trackScanStarted(chain) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'scan_started', { chain, scan_surface: 'rugbuster_web' });
+    }
+  }
+
   async function runScan() {
     const address = document.getElementById('scanInput').value.trim();
     if (!address) {
@@ -2951,6 +2957,7 @@ html{scrollbar-gutter:stable}
       document.getElementById('ciaStatus').className = 'cia-status active';
       return;
     }
+    trackScanStarted('solana');
     await termLineDelay(`<span class="t-out">Initializing threat engine...</span>`, 300);
     await termLineDelay(`<span class="t-out">Connecting to RugCheck API...</span>`, 500);
     await termLineDelay(`<span class="t-out">Fetching full token report...</span>`, 700);

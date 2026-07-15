@@ -218,6 +218,11 @@
       }));
       detail.textContent = `Engine: ${data.engine || 'rugbuster_v2'} // Cache: ${data.cache ? 'warm' : 'live'} // Target: ${data.target_type || 'token'}`;
     }
+    function trackScanStarted(chain) {
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'scan_started', { chain, scan_surface: 'rugbuster_shield' });
+      }
+    }
     async function check(address = input.value.trim()) {
       if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
         status.className = 'status error';
@@ -225,6 +230,7 @@
         return;
       }
       input.value = address;
+      trackScanStarted('avalanche');
       checkButton.disabled = true;
       checkButton.textContent = 'Checking';
       status.className = 'status';

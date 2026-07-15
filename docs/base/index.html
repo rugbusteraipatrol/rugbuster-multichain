@@ -3454,6 +3454,12 @@
     if (modal) modal.style.display = 'none';
   }
 
+  function trackScanStarted(chain) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'scan_started', { chain, scan_surface: 'rugbuster_web' });
+    }
+  }
+
   async function runScan() {
     const address = document.getElementById('scanInput').value.trim();
     if (!address) {
@@ -3482,6 +3488,7 @@
       return;
     }
 
+    trackScanStarted('base');
     const chain = 'BASE';
     setCiaTarget(address);
     setCiaStatus('SCANNING', 'scanning');
