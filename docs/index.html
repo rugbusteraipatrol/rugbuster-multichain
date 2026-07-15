@@ -11,24 +11,36 @@
   gtag('config', 'G-NECVZ0GPTS');
 </script>
 <meta name="google-site-verification" content="j2GC3gS52WJS5Vm4LmVzYU0UeRQDJx6Bx8O855gS-io">
-<title>RugBuster — Multi-Chain Crypto Fraud Detection</title>
-<meta name="description" content="RugBuster monitors token risk across Avalanche, BNB Chain, Base, Solana, and TRON with live scanners, CIA behavioral modules, alerts, and builder APIs.">
+<title>Crypto Rug Pull & Scam Checker - Multi-Chain Token Scanner | RugBuster</title>
+<meta name="description" content="Check crypto tokens for rug pull and scam signals across Avalanche, BNB Chain, Base, Solana, and TRON with RugBuster's multi-chain security scanner.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="RugBuster">
 <meta property="og:url" content="https://rugbuster.io/">
-<meta property="og:title" content="RugBuster — Multi-Chain Crypto Fraud Detection">
-<meta property="og:description" content="Live token intelligence for Avalanche, BNB Chain, Base, Solana, and TRON. Scan tokens, inspect CIA behavioral risk, and monitor new launches.">
+<meta property="og:title" content="Crypto Rug Pull & Scam Checker | RugBuster">
+<meta property="og:description" content="Check token risk signals across Avalanche, BNB Chain, Base, Solana, and TRON before you trade.">
 <meta property="og:image" content="https://rugbuster.io/assets/rugbuster-og-v5.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RugBuster — Multi-Chain Crypto Fraud Detection">
-<meta name="twitter:description" content="Multi-chain token risk scanning across Avalanche, BNB Chain, Base, Solana, and TRON.">
+<meta name="twitter:title" content="Crypto Rug Pull & Scam Checker | RugBuster">
+<meta name="twitter:description" content="Check token risk signals across Avalanche, BNB Chain, Base, Solana, and TRON before you trade.">
 <meta name="twitter:image" content="https://rugbuster.io/assets/rugbuster-og-v5.png">
 <meta name="theme-color" content="#070708">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "RugBuster",
+  "url": "https://rugbuster.io/",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Web",
+  "description": "Multi-chain token risk scanner for Avalanche, BNB Chain, Base, Solana, and TRON.",
+  "featureList": "Token risk checks, behavioral signal analysis, contract risk checks, live scan feeds"
+}
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 <style>
@@ -1046,6 +1058,23 @@
     font-weight: 300;
   }
 
+  .faq-section {
+    max-width: 1240px;
+    margin: 0 auto 110px;
+    padding: 48px clamp(22px, 4vw, 48px);
+    border: 1px solid rgba(232,65,66,0.22);
+    background: rgba(18,19,22,0.9);
+  }
+
+  .faq-intro { max-width: 760px; margin: 10px 0 28px; color: var(--text-muted); }
+  .faq-list { display: grid; gap: 10px; }
+  .faq-item { border: 1px solid rgba(232,65,66,0.18); background: rgba(7,7,8,0.7); }
+  .faq-item summary { padding: 18px 20px; cursor: pointer; color: var(--text-primary); font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700; list-style: none; }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after { content: '+'; float: right; color: var(--neon-cyan); font-size: 20px; line-height: 12px; }
+  .faq-item[open] summary::after { content: '-'; }
+  .faq-item p { max-width: 920px; padding: 0 20px 19px; color: var(--text-muted); line-height: 1.65; }
+
   /* FOOTER */
   footer {
     padding: 40px 48px;
@@ -2037,9 +2066,35 @@
   <p class="cta-sub">Use RugBuster for token risk lookups, reviewer attestations, and Sentinel-ready monitoring across supported chains.</p>
   <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
     <a href="#api" class="btn-primary">Test Builder API</a>
+    <a href="/shield-demo/" class="btn-secondary">Try Avalanche Shield</a>
     <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/L1_SECURITY_ROADMAP.md" target="_blank" rel="noopener" class="btn-secondary">View Registry Roadmap</a>
   </div>
 </div>
+
+<!-- FAQ -->
+<section id="faq" class="faq-section z1" aria-labelledby="faq-title">
+  <div class="section-label">// token safety questions</div>
+  <h2 id="faq-title" class="section-title">Crypto Scam<br><span>Checker FAQ</span></h2>
+  <p class="faq-intro">RugBuster is an informational research tool. Scan results summarize available signals at the time of the check; they are not financial advice or a guarantee of safety.</p>
+  <div class="faq-list">
+    <details class="faq-item">
+      <summary>How do I check if a crypto token is a scam?</summary>
+      <p>Start with the token contract or mint address, then review liquidity, holder concentration, deployer history, contract permissions, and transaction activity. RugBuster brings available signals together in one scan, but you should still verify the project independently before trading.</p>
+    </details>
+    <details class="faq-item">
+      <summary>What is a rug pull?</summary>
+      <p>A rug pull is a token or project failure where insiders remove liquidity, sell concentrated holdings, abuse contract permissions, or otherwise leave holders unable to trade safely. Not every price drop is a rug pull, so the surrounding on-chain evidence matters.</p>
+    </details>
+    <details class="faq-item">
+      <summary>How does RugBuster detect rug pull signals?</summary>
+      <p>Where data is available, RugBuster examines behavioral and contract signals such as funding origin, deployment timing, transaction entropy, wash-pattern indicators, holder concentration or clustering, and risky contract signatures. Some signals are chain-specific or may be unavailable for a particular token.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Which blockchains does RugBuster support?</summary>
+      <p>RugBuster provides token risk tooling for Avalanche, BNB Chain, Base, Solana, and TRON. Feature depth can differ by chain because explorers, token standards, and available security data differ.</p>
+    </details>
+  </div>
+</section>
 
 <!-- FOOTER -->
 <footer class="z1">
