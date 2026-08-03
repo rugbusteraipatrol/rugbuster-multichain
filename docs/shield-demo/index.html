@@ -239,10 +239,14 @@
       return flag === true ? 'danger' : flag === 'warn' ? 'warn' : 'good';
     }
     async function fetchFullScore(address) {
-      const response = await fetch(`${AVAX_SCORE_API}/score?address=${encodeURIComponent(address)}`);
+      const response = await fetch(`${AVAX_SCORE_API}/api/scan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address })
+      });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || data.ok === false) throw new Error(data.error || `Score request failed (${response.status})`);
-      return data;
+      return data.report || data;
     }
     function scorePercent(report) {
       const score = report.risk_percent ?? report.rugbuster_avax_score ?? Math.max(Number(report.rug_score || 0), Number(report.speculation_score || 0));
