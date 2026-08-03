@@ -368,8 +368,8 @@
       reasons.replaceChildren(...(data.reasons || ['no_major_risk_signals']).map(reason => {
         const item = document.createElement('li'); item.textContent = prettyReason(reason); return item;
       }));
-      detail.textContent = `Engine: ${data.engine || 'rugbuster_v2'} // Deep: ${fullScore?.risk_engine || 'pending'} // Cache: ${data.cache ? 'warm' : 'live'} // Target: ${data.target_type || 'token'}`;
-      renderDeep(fullScore);
+      detail.textContent = `Engine: ${data.engine || 'rugbuster_v2'} // Deep: ${fullScore?.risk_engine || 'loading'} // Cache: ${data.cache ? 'warm' : 'live'} // Target: ${data.target_type || 'token'}`;
+      if (fullScore) renderDeep(fullScore);
     }
     function trackScanStarted(chain) {
       if (typeof window.gtag === 'function') {
@@ -390,20 +390,27 @@
       status.textContent = 'Calling the live RugBuster preflight engine...';
       try {
         const query = new URLSearchParams({ target: address, chain: 'avax', action: 'buy' });
-        const [response, dexToken, fullScore] = await Promise.all([
-          fetch(`${API_BASE}/v1/preflight?${query}`),
-          fetchDexToken(address),
-          fetchFullScore(address).catch(error => ({ deep_error: error.message }))
-        ]);
+        const fullScorePromise = fetchFullScore(address).catch(error => ({ deep_error: error.message }));
+        const [response, dexToken] = await Promise.all([fetch(`${API_BASE}/v1/preflight?${query}`), fetchDexToken(address)]);
         if (!response.ok) throw new Error(`Request failed (${response.status})`);
         const data = await response.json();
-        const fullReport = fullScore && !fullScore.deep_error ? fullScore : null;
+        renderToken(dexToken, address);
+        render(data, null);
+        status.textContent = data.reasons?.includes('unknown_token_scanning')
+          ? 'This token is being assessed. Loading deep analysis below.'
+          : 'Live result received. Loading deep analysis...';
+
+        const fullScore = await fullScorePromise;
+        if (fullScore?.deep_error) {
+          status.textContent = `Live result received. Deep analysis unavailable: ${fullScore.deep_error}`;
+          return;
+        }
         renderToken({
-          name: fullReport?.token_name || dexToken?.name,
-          symbol: fullReport?.token_symbol || fullReport?.symbol || dexToken?.symbol,
-          image: fullReport?.image_url || dexToken?.image
+          name: fullScore?.token_name || dexToken?.name,
+          symbol: fullScore?.token_symbol || fullScore?.symbol || dexToken?.symbol,
+          image: fullScore?.image_url || dexToken?.image
         }, address);
-        render(data, fullReport);
+        render(data, fullScore);
         status.textContent = fullScore?.deep_error
           ? `Live result received. Deep analysis unavailable: ${fullScore.deep_error}`
           : data.reasons?.includes('unknown_token_scanning')
