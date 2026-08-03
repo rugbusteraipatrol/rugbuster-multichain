@@ -188,7 +188,6 @@
   <footer>RUGBUSTER // LIVE PREFLIGHT ENGINE // AVALANCHE</footer>
 
   <script>
-    const API_BASE = 'https://rugbuster-api-production.up.railway.app';
     const AVAX_SCORE_API = 'https://web-production-376bf.up.railway.app';
     const input = document.getElementById('tokenAddress');
     const checkButton = document.getElementById('checkButton');
@@ -218,7 +217,8 @@
       return String(reason || '').replaceAll('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
     }
     function verdictClass(value) {
-      return value === 'ALLOW' ? 'allow' : value === 'BLOCK' ? 'block' : 'warn';
+      const verdict = String(value || '').toUpperCase();
+      return verdict === 'ALLOW' || verdict === 'GOOD' ? 'allow' : verdict === 'BLOCK' || verdict === 'DANGER' ? 'block' : 'warn';
     }
     function initials(value) {
       return String(value || 'TK').trim().split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase().slice(0, 2) || 'TK';
@@ -243,6 +243,28 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok || data.ok === false) throw new Error(data.error || `Score request failed (${response.status})`);
       return data;
+    }
+    function scorePercent(report) {
+      const score = report.risk_percent ?? report.rugbuster_avax_score ?? Math.max(Number(report.rug_score || 0), Number(report.speculation_score || 0));
+      return Math.max(0, Math.min(100, Number(score) || 0));
+    }
+    function scanSummaryFromScore(report, latencyMs) {
+      const label = String(report.label || 'UNKNOWN').toUpperCase();
+      const reasons = Array.isArray(report.risk_flags) && report.risk_flags.length
+        ? report.risk_flags
+        : [
+            ...(report.rug_reasons || []),
+            ...(report.speculation_reasons || [])
+          ].slice(0, 6);
+      return {
+        verdict: label,
+        risk: scorePercent(report),
+        latency_ms: latencyMs,
+        reasons: reasons.length ? reasons : ['no_major_risk_signals'],
+        engine: report.risk_engine || 'rugbuster_private_scoring_engine',
+        cache: String(report.source || '').includes('cache'),
+        target_type: 'token'
+      };
     }
     function buildFallbackVerdict(report) {
       const rug = `${report.rug_status || 'UNKNOWN'}${report.rug_score == null ? '' : ` (${report.rug_score})`}`;
@@ -368,7 +390,7 @@
       reasons.replaceChildren(...(data.reasons || ['no_major_risk_signals']).map(reason => {
         const item = document.createElement('li'); item.textContent = prettyReason(reason); return item;
       }));
-      detail.textContent = `Engine: ${data.engine || 'rugbuster_v2'} // Deep: ${fullScore?.risk_engine || 'loading'} // Cache: ${data.cache ? 'warm' : 'live'} // Target: ${data.target_type || 'token'}`;
+      detail.textContent = `Engine: ${data.engine || 'rugbuster_private_scoring_engine'} // Cache: ${data.cache ? 'warm' : 'live'} // Target: ${data.target_type || 'token'}`;
       if (fullScore) renderDeep(fullScore);
     }
     function trackScanStarted(chain) {
@@ -387,35 +409,20 @@
       checkButton.disabled = true;
       checkButton.textContent = 'Checking';
       status.className = 'status';
-      status.textContent = 'Calling the live RugBuster preflight engine...';
+      status.textContent = 'Calling the live RugBuster scoring engine...';
       try {
-        const query = new URLSearchParams({ target: address, chain: 'avax', action: 'buy' });
-        const fullScorePromise = fetchFullScore(address).catch(error => ({ deep_error: error.message }));
-        const [response, dexToken] = await Promise.all([fetch(`${API_BASE}/v1/preflight?${query}`), fetchDexToken(address)]);
-        if (!response.ok) throw new Error(`Request failed (${response.status})`);
-        const data = await response.json();
-        renderToken(dexToken, address);
-        render(data, null);
-        status.textContent = data.reasons?.includes('unknown_token_scanning')
-          ? 'This token is being assessed. Loading deep analysis below.'
-          : 'Live result received. Loading deep analysis...';
-
-        const fullScore = await fullScorePromise;
-        if (fullScore?.deep_error) {
-          status.textContent = `Live result received. Deep analysis unavailable: ${fullScore.deep_error}`;
-          return;
-        }
+        const startedAt = performance.now();
+        const [fullScore, dexToken] = await Promise.all([fetchFullScore(address), fetchDexToken(address)]);
+        const data = scanSummaryFromScore(fullScore, Math.round(performance.now() - startedAt));
         renderToken({
           name: fullScore?.token_name || dexToken?.name,
           symbol: fullScore?.token_symbol || fullScore?.symbol || dexToken?.symbol,
           image: fullScore?.image_url || dexToken?.image
         }, address);
         render(data, fullScore);
-        status.textContent = fullScore?.deep_error
-          ? `Live result received. Deep analysis unavailable: ${fullScore.deep_error}`
-          : data.reasons?.includes('unknown_token_scanning')
-            ? 'This token is being assessed. Deep analysis is shown below when available.'
-            : 'Live result received with deep analysis.';
+        status.textContent = data.verdict === 'UNKNOWN' || data.verdict === 'INSUFFICIENT_DATA'
+          ? 'Live result received. Data is insufficient for a confident verdict.'
+          : 'Live result received with deep analysis.';
       } catch (error) {
         status.className = 'status error';
         status.textContent = `Live check unavailable: ${error.message}`;
