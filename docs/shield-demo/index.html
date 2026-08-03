@@ -83,11 +83,29 @@
     .reasons li { position:relative; margin:8px 0; padding-left:19px; color:var(--muted); font-family:"Share Tech Mono",monospace; font-size:13px; line-height:1.45; }
     .reasons li::before { content:"/"; position:absolute; left:0; color:var(--red); }
     .detail { margin-top:20px; color:var(--muted); font:11px "Share Tech Mono",monospace; line-height:1.6; overflow-wrap:anywhere; }
+    .deep-analysis { display:none; margin-top:26px; padding-top:24px; border-top:1px solid #34363d; }
+    .deep-analysis.visible { display:block; }
+    .deep-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:16px; }
+    .deep-title { margin:0; color:var(--text); font:700 13px "Share Tech Mono",monospace; letter-spacing:1.8px; text-transform:uppercase; }
+    .pair-link { color:var(--green); font:11px "Share Tech Mono",monospace; letter-spacing:1px; text-transform:uppercase; text-underline-offset:3px; overflow-wrap:anywhere; }
+    .score-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .score-card, .ai-card, .cia-card { border:1px solid rgba(232,65,66,.14); background:rgba(10,11,13,.58); padding:14px; }
+    .score-card span, .ai-card span, .cia-card span { display:block; margin-bottom:8px; color:var(--muted); font:10px "Share Tech Mono",monospace; letter-spacing:1.6px; text-transform:uppercase; }
+    .score-card strong { display:block; color:var(--text); font:700 25px Orbitron,monospace; line-height:1; }
+    .score-card p, .ai-card p, .cia-card p { margin:8px 0 0; color:var(--muted); font:12px/1.5 "Share Tech Mono",monospace; overflow-wrap:anywhere; }
+    .ai-card { margin-top:10px; border-color:rgba(35,209,139,.22); }
+    .ai-card p { color:var(--text); font-size:13px; }
+    .cia-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin-top:10px; }
+    .cia-card { min-height:118px; }
+    .cia-card.good { border-color:rgba(35,209,139,.28); }
+    .cia-card.warn { border-color:rgba(255,176,32,.32); }
+    .cia-card.danger { border-color:rgba(232,65,66,.38); }
     .result-disclaimer { margin:20px 0 0; color:var(--muted); font:10px/1.6 "Share Tech Mono",monospace; }
     .result-disclaimer a { color:var(--green); text-underline-offset:3px; }
     .status { min-height:24px; margin:16px 0 0; color:var(--muted); font:12px "Share Tech Mono",monospace; }
     .error { color:var(--red); }
     footer { width:min(940px,calc(100% - 40px)); margin:0 auto; padding:0 0 32px; color:var(--muted); font:12px "Share Tech Mono",monospace; }
+    @media (max-width:760px) { .score-grid, .cia-grid { grid-template-columns:1fr; } .deep-head { display:block; } .pair-link { display:inline-block; margin-top:8px; } }
     @media (max-width:600px) { nav { min-height:64px; } .brand { font-size:16px; } .back { font-size:10px; } main { width:min(100% - 28px,940px); padding-top:54px; } .intro { font-size:18px; } .tool { padding:22px 18px; } .input-row { grid-template-columns:1fr; } .risk { grid-template-columns:1fr; gap:4px; } footer { width:min(100% - 28px,940px); } }
   </style>
 </head>
@@ -140,6 +158,29 @@
         </div>
         <ul class="reasons" id="reasons"></ul>
         <p class="detail" id="detail"></p>
+        <div class="deep-analysis" id="deepAnalysis">
+          <div class="deep-head">
+            <p class="deep-title">Deep Analysis</p>
+            <a class="pair-link" id="pairUrl" href="#" target="_blank" rel="noopener">Pair URL</a>
+          </div>
+          <div class="score-grid">
+            <div class="score-card">
+              <span>Rug Score</span>
+              <strong id="rugScore">UNKNOWN</strong>
+              <p id="rugScoreReasons">Awaiting on-chain facts.</p>
+            </div>
+            <div class="score-card">
+              <span>Speculation Score</span>
+              <strong id="speculationScore">UNKNOWN</strong>
+              <p id="speculationScoreReasons">Awaiting live market data.</p>
+            </div>
+          </div>
+          <div class="ai-card">
+            <span>Syndicate AI Verdict</span>
+            <p id="aiVerdict">Awaiting AI readout.</p>
+          </div>
+          <div class="cia-grid" id="ciaGrid" aria-label="CIA module trace"></div>
+        </div>
         <p class="result-disclaimer">Informational only - not financial, legal, or investment advice. <a href="/terms/">Read the full disclaimer.</a></p>
       </div>
     </section>
@@ -148,6 +189,7 @@
 
   <script>
     const API_BASE = 'https://rugbuster-api-production.up.railway.app';
+    const AVAX_SCORE_API = 'https://web-production-376bf.up.railway.app';
     const input = document.getElementById('tokenAddress');
     const checkButton = document.getElementById('checkButton');
     const status = document.getElementById('status');
@@ -163,6 +205,14 @@
     const tokenFallback = document.getElementById('tokenFallback');
     const tokenName = document.getElementById('tokenName');
     const tokenSymbol = document.getElementById('tokenSymbol');
+    const deepAnalysis = document.getElementById('deepAnalysis');
+    const pairUrl = document.getElementById('pairUrl');
+    const rugScore = document.getElementById('rugScore');
+    const rugScoreReasons = document.getElementById('rugScoreReasons');
+    const speculationScore = document.getElementById('speculationScore');
+    const speculationScoreReasons = document.getElementById('speculationScoreReasons');
+    const aiVerdict = document.getElementById('aiVerdict');
+    const ciaGrid = document.getElementById('ciaGrid');
 
     function prettyReason(reason) {
       return String(reason || '').replaceAll('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
@@ -172,6 +222,108 @@
     }
     function initials(value) {
       return String(value || 'TK').trim().split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase().slice(0, 2) || 'TK';
+    }
+    function shortAddress(address) {
+      return address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'unknown';
+    }
+    function formatUsd(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return 'UNKNOWN';
+      return new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:number >= 1000 ? 0 : 2 }).format(number);
+    }
+    function firstReasons(list, fallback) {
+      const items = Array.isArray(list) ? list.filter(Boolean).slice(0, 3) : [];
+      return items.length ? items.join(' / ') : fallback;
+    }
+    function moduleState(flag) {
+      return flag === true ? 'danger' : flag === 'warn' ? 'warn' : 'good';
+    }
+    async function fetchFullScore(address) {
+      const response = await fetch(`${AVAX_SCORE_API}/score?address=${encodeURIComponent(address)}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.ok === false) throw new Error(data.error || `Score request failed (${response.status})`);
+      return data;
+    }
+    function buildFallbackVerdict(report) {
+      const rug = `${report.rug_status || 'UNKNOWN'}${report.rug_score == null ? '' : ` (${report.rug_score})`}`;
+      const spec = `${report.speculation_status || 'UNKNOWN'}${report.speculation_score == null ? '' : ` (${report.speculation_score})`}`;
+      const driver = (report.risk_flags || report.rug_reasons || report.speculation_reasons || [])[0] || 'No dominant hard-risk driver surfaced in the available modules';
+      return `RugBuster verdict: rug risk ${rug}, market liquidity risk ${spec}. Main driver: ${driver}.`;
+    }
+    function ciaModules(report) {
+      const cia = report.cia || {};
+      const funding = cia.funding || {};
+      const latencyModule = cia.latency || {};
+      const entropy = cia.entropy || {};
+      const wash = cia.wash || {};
+      const cluster = cia.cluster || {};
+      return [
+        {
+          title: 'Funding Origin',
+          state: moduleState(Boolean(funding.all_fresh)),
+          detail: funding.hop_count == null
+            ? `Deployer ${shortAddress(report.deployer || '')}; balance ${report.deployer_balance_avax ?? 'UNKNOWN'} AVAX`
+            : `Master wallet traced ${funding.hop_count} hops; all fresh: ${Boolean(funding.all_fresh)}`
+        },
+        {
+          title: 'Deploy Latency',
+          state: moduleState(Boolean(latencyModule.is_sniped)),
+          detail: latencyModule.latency_ms == null
+            ? `Token age ${report.token_age_days ?? 'UNKNOWN'} days`
+            : `${latencyModule.latency_ms}ms first-buy latency; sniped: ${Boolean(latencyModule.is_sniped)}`
+        },
+        {
+          title: 'TX Entropy',
+          state: moduleState(Boolean(entropy.is_bot_pattern)),
+          detail: entropy.entropy_score == null
+            ? `${report.buys24h ?? 'UNKNOWN'} buys / ${report.sells24h ?? 'UNKNOWN'} sells in 24h`
+            : `Entropy ${entropy.entropy_score}; bot pattern: ${Boolean(entropy.is_bot_pattern)}`
+        },
+        {
+          title: 'Wash Pattern',
+          state: moduleState(Boolean(wash.wash_detected)),
+          detail: wash.dev_sell_latency_s == null
+            ? firstReasons(report.speculation_reasons, 'No wash pattern surfaced in public modules')
+            : `Wash: ${Boolean(wash.wash_detected)}; dev sold in ${wash.dev_sell_latency_s}s`
+        },
+        {
+          title: 'Holder Cluster',
+          state: moduleState(cluster.is_bot_farm || (Number(report.v6_top5_concentration_pct) >= 95 ? 'warn' : false)),
+          detail: cluster.total_checked == null
+            ? `Holders ${report.holders_count ?? 'UNKNOWN'}; top5 ${report.v6_top5_concentration_pct ?? 'UNKNOWN'}%`
+            : `Avg age ${cluster.avg_age_days ?? 'UNKNOWN'}d; new wallets ${cluster.new_wallets_count ?? 0}/${cluster.total_checked ?? 0}; bot farm: ${Boolean(cluster.is_bot_farm)}`
+        }
+      ];
+    }
+    function renderDeep(report) {
+      if (!report) {
+        deepAnalysis.classList.remove('visible');
+        return;
+      }
+      deepAnalysis.classList.add('visible');
+      rugScore.textContent = report.rug_score == null ? 'UNKNOWN' : `${report.rug_score} / ${report.rug_status || 'UNKNOWN'}`;
+      rugScoreReasons.textContent = firstReasons(report.rug_reasons || report.rug_risk?.reasons, 'No hard-fact rug flags detected.');
+      speculationScore.textContent = report.speculation_score == null ? 'UNKNOWN' : `${report.speculation_score} / ${report.speculation_status || 'UNKNOWN'}`;
+      speculationScoreReasons.textContent = firstReasons(report.speculation_reasons || report.market_liquidity_risk?.reasons, 'No market-structure speculation flags detected.');
+      aiVerdict.textContent = report.ai_verdict || report.syndicate_ai_verdict || buildFallbackVerdict(report);
+      if (report.pair_url) {
+        pairUrl.hidden = false;
+        pairUrl.href = report.pair_url;
+        pairUrl.textContent = `Pair URL: ${report.dex_id || 'DEX'}`;
+      } else {
+        pairUrl.hidden = true;
+        pairUrl.removeAttribute('href');
+      }
+      ciaGrid.replaceChildren(...ciaModules(report).map(module => {
+        const card = document.createElement('div');
+        card.className = `cia-card ${module.state}`;
+        const title = document.createElement('span');
+        title.textContent = module.title;
+        const detailText = document.createElement('p');
+        detailText.textContent = module.detail;
+        card.append(title, detailText);
+        return card;
+      }));
     }
     async function fetchDexToken(address) {
       try {
@@ -202,7 +354,7 @@
         tokenImage.alt = `${name} logo`;
       }
     }
-    function render(data) {
+    function render(data, fullScore) {
       const risk = Math.max(0, Math.min(100, Number(data.risk) || 0));
       const stateClass = verdictClass(data.verdict);
       result.classList.add('visible');
@@ -216,7 +368,8 @@
       reasons.replaceChildren(...(data.reasons || ['no_major_risk_signals']).map(reason => {
         const item = document.createElement('li'); item.textContent = prettyReason(reason); return item;
       }));
-      detail.textContent = `Engine: ${data.engine || 'rugbuster_v2'} // Cache: ${data.cache ? 'warm' : 'live'} // Target: ${data.target_type || 'token'}`;
+      detail.textContent = `Engine: ${data.engine || 'rugbuster_v2'} // Deep: ${fullScore?.risk_engine || 'pending'} // Cache: ${data.cache ? 'warm' : 'live'} // Target: ${data.target_type || 'token'}`;
+      renderDeep(fullScore);
     }
     function trackScanStarted(chain) {
       if (typeof window.gtag === 'function') {
@@ -237,12 +390,25 @@
       status.textContent = 'Calling the live RugBuster preflight engine...';
       try {
         const query = new URLSearchParams({ target: address, chain: 'avax', action: 'buy' });
-        const [response, dexToken] = await Promise.all([fetch(`${API_BASE}/v1/preflight?${query}`), fetchDexToken(address)]);
+        const [response, dexToken, fullScore] = await Promise.all([
+          fetch(`${API_BASE}/v1/preflight?${query}`),
+          fetchDexToken(address),
+          fetchFullScore(address).catch(error => ({ deep_error: error.message }))
+        ]);
         if (!response.ok) throw new Error(`Request failed (${response.status})`);
         const data = await response.json();
-        renderToken(dexToken, address);
-        render(data);
-        status.textContent = data.reasons?.includes('unknown_token_scanning') ? 'This token is being assessed. Check again shortly for a completed result.' : 'Live result received.';
+        const fullReport = fullScore && !fullScore.deep_error ? fullScore : null;
+        renderToken({
+          name: fullReport?.token_name || dexToken?.name,
+          symbol: fullReport?.token_symbol || fullReport?.symbol || dexToken?.symbol,
+          image: fullReport?.image_url || dexToken?.image
+        }, address);
+        render(data, fullReport);
+        status.textContent = fullScore?.deep_error
+          ? `Live result received. Deep analysis unavailable: ${fullScore.deep_error}`
+          : data.reasons?.includes('unknown_token_scanning')
+            ? 'This token is being assessed. Deep analysis is shown below when available.'
+            : 'Live result received with deep analysis.';
       } catch (error) {
         status.className = 'status error';
         status.textContent = `Live check unavailable: ${error.message}`;
