@@ -1838,7 +1838,11 @@ html{scrollbar-gutter:stable}
     </div>
   </div>
 
-  <div class="scan-feed z1" id="recentSolanaScans">
+  <!-- Hidden until a Solana-backed recent-scans source exists. The configured
+       endpoint 404s, and the only live feed is AVAX-only (avax_scans table,
+       snowtrace links), so surfacing it here would label Avalanche tokens as
+       Solana. Re-enable via SOLANA_FEED_ENABLED below. -->
+  <div class="scan-feed z1" id="recentSolanaScans" style="display:none">
     <div class="scan-feed-head">
       <div>
         <div class="scan-feed-kicker">// live scan feed</div>
@@ -2312,6 +2316,10 @@ html{scrollbar-gutter:stable}
 
   const RUGCHECK_API = 'https://api.rugcheck.xyz/v1';
   const SOLANA_SCORE_API = 'https://rugbuster-score-staging-production.up.railway.app';
+  // Off until a real Solana feed exists. The URL below returns 404, and the
+  // only endpoint that answers ignores `chain` entirely and serves AVAX rows.
+  // Flip to true only together with a Solana-backed SOLANA_FEED_API.
+  const SOLANA_FEED_ENABLED = false;
   const SOLANA_FEED_API = 'https://rugbuster-api-production.up.railway.app/api/recent-scans?chain=solana&limit=10';
   let remoteRecentScans = [];
 
@@ -2572,6 +2580,7 @@ html{scrollbar-gutter:stable}
   }
 
   async function fetchRemoteRecentScans() {
+    if (!SOLANA_FEED_ENABLED) return;
     try {
       const response = await fetch(SOLANA_FEED_API, {cache: 'no-store'});
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -2587,6 +2596,7 @@ html{scrollbar-gutter:stable}
   }
 
   function renderRecentScans() {
+    if (!SOLANA_FEED_ENABLED) return;
     const rows = document.getElementById('scanFeedRows');
     if (!rows) return;
     const seen = new Set();
@@ -2635,9 +2645,11 @@ html{scrollbar-gutter:stable}
     document.getElementById('finalScanModal').style.display = 'none';
   }
 
-  renderRecentScans();
-  fetchRemoteRecentScans();
-  setInterval(fetchRemoteRecentScans, 60000);
+  if (SOLANA_FEED_ENABLED) {
+    renderRecentScans();
+    fetchRemoteRecentScans();
+    setInterval(fetchRemoteRecentScans, 60000);
+  }
 
   function setRiskMeter(score) {
     const meter = document.getElementById('riskMeter');
