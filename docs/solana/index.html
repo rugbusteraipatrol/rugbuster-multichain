@@ -2315,7 +2315,12 @@ html{scrollbar-gutter:stable}
   });
 
   const RUGCHECK_API = 'https://api.rugcheck.xyz/v1';
-  const SOLANA_SCORE_API = 'https://rugbuster-score-staging-production.up.railway.app';
+  // Was rugbuster-score-staging-production (a different repo, app_multichain.py,
+  // cache-only, no live fallback -- root cause of the site/bot divergence this
+  // was pointed at rugbuster-solana-api-production instead: same repo whose
+  // derive_score() this session fixed, and it already has its own live
+  // RugCheck fallback for cache misses (score_live_rugcheck_report).
+  const SOLANA_SCORE_API = 'https://rugbuster-solana-api-production.up.railway.app';
   // Off until a real Solana feed exists. The URL below returns 404, and the
   // only endpoint that answers ignores `chain` entirely and serves AVAX rows.
   // Flip to true only together with a Solana-backed SOLANA_FEED_API.
@@ -3041,15 +3046,26 @@ html{scrollbar-gutter:stable}
     });
 
     // ── Risk classification ─────────────────────────────────────────────
-    const BLUE_CHIPS = ['JUP','BONK','WIF','SOL','USDC','USDT','RAY','ORCA'];
-    const symUpper   = (tokenMeta.symbol || '').toUpperCase();
-    const isKnownSafe = BLUE_CHIPS.some(x => symUpper.includes(x));
-
-    const rugcheckScore = Number.isFinite(Number(data.score)) ? Number(data.score) : (rugcheckOk ? 1 : -1);
-    let risk = rugcheckScoreToRiskPercent(rugcheckScore);
-    if (isKnownSafe) risk = Math.min(risk, 12);
-    if (hasCreatorRugHistory(rugcheckRiskNames)) risk = Math.max(risk, 85);
-    risk = Math.max(0, Math.min(98, Math.round(risk)));
+    // The number and verdict shown to the user come from one shared backend
+    // (rugbuster-solana-api's /score, cache-first with a live RugCheck
+    // fallback baked in) instead of a second, independently-hand-rolled
+    // formula here -- this is the fix for the site/Telegram-bot divergence
+    // (same token used to show 5%/LOW on the site and 45%/MEDIUM on the
+    // bot from the exact same RugCheck data; now both call this).
+    let risk = 50;
+    let apiRiskFlags = [];
+    try {
+      const scoreRes = await fetch(`${SOLANA_SCORE_API}/score?chain=solana&address=${encodeURIComponent(address)}`, { cache: 'no-store' });
+      const scoreData = await scoreRes.json().catch(() => ({}));
+      if (scoreRes.ok && scoreData.ok !== false && Number.isFinite(Number(scoreData.risk_score))) {
+        risk = Math.max(0, Math.min(98, Math.round(Number(scoreData.risk_score))));
+        apiRiskFlags = Array.isArray(scoreData.risk_flags) ? scoreData.risk_flags : [];
+      } else {
+        await termLineDelay(`<span class="t-warn">⚡ RugBuster score API unavailable — showing RugCheck evidence only, no verdict</span>`, 400);
+      }
+    } catch (err) {
+      await termLineDelay(`<span class="t-warn">⚡ RugBuster score API unreachable — showing RugCheck evidence only, no verdict</span>`, 400);
+    }
 
     const allFlags = [...dangerFlags, ...warnFlags];
 
@@ -3085,7 +3101,8 @@ html{scrollbar-gutter:stable}
     await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">SOLANA</span>`, 200);
     await termLineDelay(`<span class="t-cyan">✓ Token:</span>    <span class="t-cmd">${escapeHtml(tokenName)}</span>`, 250);
     await termLineDelay(`<span class="t-cyan">✓ Address:</span>  <span class="t-out">${short}</span>`, 200);
-    await termLineDelay(`<span class="t-cyan">✓ RugCheck:</span> <span class="t-out">score ${rugcheckScore >= 0 ? rugcheckScore : 'unknown'} · calibrated risk ${risk}% (${riskLabel})</span>`, 200);
+    const rawRugcheckScore = Number.isFinite(Number(data.score)) ? Number(data.score) : null;
+    await termLineDelay(`<span class="t-cyan">✓ RugCheck:</span> <span class="t-out">score ${rawRugcheckScore ?? 'unknown'} · calibrated risk ${risk}% (${riskLabel})</span>`, 200);
     const mintDisplay   = !rugcheckOk ? ['t-out','— Unknown'] : mintAuth && mintAuth !== SYSTEM_ADDR ? ['t-danger','🚨 Active'] : ['t-success','✅ Disabled'];
     const freezeDisplay = !rugcheckOk ? ['t-out','— Unknown'] : freezeAuth && freezeAuth !== SYSTEM_ADDR ? ['t-danger','🚨 Active'] : ['t-success','✅ Disabled'];
     await termLineDelay(`<span class="t-cyan">✓ Mint Auth:</span>   <span class="${mintDisplay[0]}">${mintDisplay[1]}</span>`, 200);
@@ -3144,7 +3161,7 @@ html{scrollbar-gutter:stable}
       symbol: tokenMeta.symbol || 'SOL',
       address,
       risk,
-      rugcheck_score: rugcheckScore,
+      rugcheck_score: rawRugcheckScore,
       label: riskLabel,
       summary: feedSummary.replace(/[✗⚡✓🚨✅]/g, '').trim()
     });
