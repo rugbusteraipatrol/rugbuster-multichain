@@ -1180,7 +1180,8 @@
   }
 </style>
 
-<link rel="stylesheet" href="/assets/responsive-nav.css?v=20260903-3">
+<link rel="stylesheet" href="/assets/responsive-nav.css?v=20260903-4">
+<script defer src="/assets/responsive-nav.js?v=20260903"></script>
 </head>
 <body>
 
@@ -1189,12 +1190,15 @@
 <!-- NAV -->
 <nav class="z1">
   <a href="#" class="logo">RUG<span>BUSTER</span></a>
-  <div class="rb-chain-switch" aria-label="RugBuster chain sites">
+  <div class="rb-chain-menu">
+    <button class="rb-chain-trigger" type="button" aria-expanded="false" aria-label="Choose network">AVAX</button>
+    <div class="rb-chain-switch" aria-label="RugBuster chain sites">
     <a class="rb-cs rb-cs-avax active" href="https://rugbuster.io/">AVAX</a>
     <a class="rb-cs rb-cs-bnb" href="https://rugbuster.io/bnb/">BNB</a>
     <a class="rb-cs rb-cs-base" href="https://rugbuster.io/base/">BASE</a>
     <a class="rb-cs rb-cs-sol" href="https://rugbuster.io/solana/">SOL</a>
     <a class="rb-cs rb-cs-tron" href="https://rugbuster.io/tron/">TRON</a>
+    </div>
   </div>
   <ul>
     <li><a href="#features">Protocol</a></li>
