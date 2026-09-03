@@ -1,0 +1,164 @@
+/* Shared responsive navigation for every RugBuster chain surface. */
+nav ul {
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+nav ul > li {
+  flex: 0 0 auto;
+}
+
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  white-space: nowrap;
+}
+
+#walletBtn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 1800px) {
+  nav {
+    gap: 14px;
+    padding-inline: 24px;
+  }
+
+  .rb-chain-switch {
+    gap: 10px;
+    margin-left: 10px;
+  }
+
+  .rb-cs {
+    width: 74px;
+    flex-basis: 74px;
+  }
+
+  nav ul {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1500px) {
+  nav ul {
+    display: flex !important;
+  }
+
+  nav ul > li {
+    display: none;
+  }
+
+  nav ul > li:has(.nav-cta),
+  nav ul > li:has(#walletBtn) {
+    display: block;
+  }
+}
+
+@media (max-width: 1180px) {
+  nav {
+    padding-inline: 18px;
+  }
+
+  .logo {
+    font-size: 19px;
+    letter-spacing: 2px;
+  }
+
+  .rb-chain-switch {
+    gap: 7px;
+  }
+
+  .rb-cs {
+    width: 62px;
+    flex-basis: 62px;
+  }
+
+  nav ul {
+    gap: 10px;
+  }
+
+  .nav-cta {
+    padding-inline: 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  nav {
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .rb-chain-switch {
+    gap: 6px;
+    margin: 0 auto 0 4px;
+  }
+
+  .rb-cs {
+    width: 54px;
+    flex-basis: 54px;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  nav ul {
+    display: flex !important;
+    gap: 8px;
+  }
+
+  .nav-cta {
+    min-height: 36px;
+    padding-inline: 10px;
+  }
+
+  #walletBtn {
+    padding: 8px 10px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .logo {
+    font-size: 17px;
+    letter-spacing: 1px;
+  }
+
+  .rb-chain-switch .rb-cs:not(.active) {
+    display: none;
+  }
+
+  .rb-chain-switch {
+    margin-left: 2px;
+  }
+
+  #walletBtnText {
+    display: none;
+  }
+
+  #walletBtn {
+    min-width: 38px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 460px) {
+  nav {
+    padding-inline: 10px;
+  }
+
+  .logo {
+    font-size: 15px;
+  }
+
+  .rb-cs {
+    width: 48px;
+    flex-basis: 48px;
+  }
+
+  .nav-cta {
+    padding-inline: 8px;
+    font-size: 11px;
+  }
+}
