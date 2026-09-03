@@ -1,7 +1,18 @@
 /* Shared responsive navigation for every RugBuster chain surface. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
 nav ul {
   align-items: center;
   flex: 0 0 auto;
+  min-width: 0;
+}
+
+.logo,
+.rb-chain-switch {
   min-width: 0;
 }
 
@@ -64,8 +75,11 @@ nav ul > li {
   }
 
   .logo {
+    flex: 0 1 auto;
+    min-width: 0 !important;
     font-size: 19px;
     letter-spacing: 2px;
+    white-space: nowrap;
   }
 
   .rb-chain-switch {
@@ -121,16 +135,25 @@ nav ul > li {
 
 @media (max-width: 720px) {
   .logo {
+    min-width: 0 !important;
     font-size: 17px;
     letter-spacing: 1px;
   }
 
   .rb-chain-switch .rb-cs:not(.active) {
-    display: none;
+    display: none !important;
   }
 
   .rb-chain-switch {
-    margin-left: 2px;
+    display: flex !important;
+    flex: 0 0 54px !important;
+    width: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
+    gap: 0 !important;
+    margin: 0 auto 0 2px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
   }
 
   #walletBtnText {
@@ -141,15 +164,56 @@ nav ul > li {
     min-width: 38px;
     justify-content: center;
   }
+
+  footer .footer-copy,
+  footer .footer-links {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  footer .footer-copy {
+    overflow-wrap: anywhere;
+  }
+
+  footer .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 20px;
+  }
+
+  .api-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    min-width: 0;
+  }
+
+  .api-card {
+    min-width: 0;
+  }
+
+  .api-card p {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 }
 
 @media (max-width: 460px) {
   nav {
+    gap: 6px;
     padding-inline: 10px;
   }
 
   .logo {
+    flex-shrink: 1;
     font-size: 15px;
+    letter-spacing: 0;
+  }
+
+  .rb-chain-switch {
+    flex-basis: 48px !important;
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
   }
 
   .rb-cs {
@@ -160,5 +224,17 @@ nav ul > li {
   .nav-cta {
     padding-inline: 8px;
     font-size: 11px;
+  }
+
+  nav ul {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-title {
+    max-width: 100%;
+    font-size: 48px;
+    letter-spacing: 0;
   }
 }
