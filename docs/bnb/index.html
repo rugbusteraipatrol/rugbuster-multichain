@@ -3622,7 +3622,11 @@ html{scrollbar-gutter:stable}
       }
 
       try {
-        const aiVerdict = apexData.aiVerdict || await fetchBuilderAiVerdict(address, apexData);
+        // No RugBuster API serves /explain, so this call only ever produced a
+        // CORS error in the console. An AI verdict is shown when the scan
+        // response itself carries one; otherwise the deterministic score stands.
+        const aiVerdict = apexData.aiVerdict || '';
+        if (!aiVerdict) throw new Error('no AI verdict in the scan response');
         if (aiVerdict) {
           apexData.aiVerdict = aiVerdict;
           setCiaModuleState('syndicate_ai', 'complete', aiVerdict.slice(0, 46));
