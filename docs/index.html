@@ -1871,7 +1871,7 @@
     </div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px;">
-      <a href="https://rugbuster-api-production.up.railway.app" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">Open API</a>
+      <a href="https://web-production-376bf.up.railway.app" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">Open API</a>
       <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/AVALANCHE_API.md" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">API Docs</a>
       <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/L1_SECURITY_ROADMAP.md" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">L1 Roadmap</a>
       <a href="https://github.com/rugbusteraipatrol/RugBuster-Avalanche/blob/main/docs/RETRO9000_UPDATE_2026-06-03.md" target="_blank" rel="noopener" class="btn-secondary" style="font-size:11px;padding:12px 24px;">Retro9000 Update</a>
@@ -3106,7 +3106,8 @@
       speculationReasons,
       hasLiquidityEvidence: Boolean(report.has_liquidity_evidence),
       source: sourceMap[report.source] || `RugBuster API (${report.source || 'live market + on-chain'})`,
-      aiVerdict: report.ai_verdict || ''
+      aiVerdict: report.ai_verdict || '',
+      blockingGaps: Array.isArray(report.blocking_data_gaps) ? report.blocking_data_gaps : []
     };
   }
 
@@ -3152,7 +3153,8 @@
         neutral: [`Classifier: ${score.classifier_version || 'weighted_v2'}`]
       },
       hasLiquidityEvidence: false,
-      source: `RugBuster Builder API (${score.source || 'cache'})`
+      source: `RugBuster Builder API (${score.source || 'cache'})`,
+      blockingGaps: Array.isArray(score.blocking_data_gaps) ? score.blocking_data_gaps : []
     };
   }
 
@@ -3549,10 +3551,29 @@
     setCiaModuleState(module, finalState, detailText);
   }
 
+  // The API withholds a clean verdict when a check the verdict rests on did
+  // not finish -- on BNB and Base, a contract function that could grant a power
+  // but was matched by selector and not read. This page builds its readout from
+  // the rug and speculation statuses, which stay LOW in that case, so it showed
+  // LOW RISK beside an API answer of INSUFFICIENT_DATA. A gap withholds only
+  // the clean reading; HIGH and ELEVATED findings are shown as they are.
+  function blockingGapNote(report) {
+    const gaps = (report && Array.isArray(report.blockingGaps)) ? report.blockingGaps : [];
+    if (!gaps.length) return '';
+    if (gaps.includes('contract_capability')) {
+      return 'A function in this contract could give its controller power over holders, and whether it does was not established. No clean verdict is given. This is a gap in our check, not a finding against the token.';
+    }
+    if (gaps.includes('contract_backdoor')) {
+      return "The contract's functions could not be read, so no clean verdict is given. This is a gap in our check, not a finding against the token.";
+    }
+    return `Not checked: ${gaps.map(gap => String(gap).replace(/_/g, ' ')).join(', ')}. No clean verdict is given. This is a gap in our check, not a finding against the token.`;
+  }
+
   function finalScanLevel(report) {
     if (!report) return 'complete';
     if (report.rugStatus === 'HIGH' || report.speculationStatus === 'HIGH') return 'danger';
     if (report.rugStatus === 'ELEVATED' || report.speculationStatus === 'ELEVATED') return 'warn';
+    if (blockingGapNote(report)) return 'warn';
     return 'complete';
   }
 
@@ -3561,6 +3582,7 @@
     if (report.speculationStatus === 'HIGH') return 'HIGH SPECULATION';
     if (report.speculationStatus === 'ELEVATED') return 'LOW RUG RISK / SHALLOW MARKET';
     if (report.rugStatus === 'UNKNOWN' || report.speculationStatus === 'UNKNOWN') return 'INCOMPLETE EVIDENCE';
+    if (blockingGapNote(report)) return 'INSUFFICIENT DATA';
     return 'LOW RISK';
   }
 
@@ -3595,7 +3617,8 @@
       renderFinalScanMetric('LIQUIDITY', formatUsd(report.liquidityUsd), 'var(--neon-cyan)'),
       renderFinalScanMetric('24H VOLUME', formatUsd(report.volume24h), 'var(--neon-pink)')
     ].join('');
-    document.getElementById('finalScanAi').textContent = report.aiVerdict || 'Syndicate AI verdict unavailable; deterministic score remains active.';
+    const gapNote = blockingGapNote(report);
+    document.getElementById('finalScanAi').textContent = (gapNote ? `${gapNote} ` : '') + (report.aiVerdict || 'Syndicate AI verdict unavailable; deterministic score remains active.');
     modal.style.display = 'flex';
   }
 
@@ -3746,6 +3769,10 @@
       } else {
         await termLineDelay(`<span class="t-success">  ✓ RUG STATUS   : ${apexData.rugStatus}</span>`, 230);
         await termLineDelay(`<span class="t-success">  ✓ SPECULATION  : ${apexData.speculationStatus}</span>`, 200);
+        if (blockingGapNote(apexData)) {
+          await termLineDelay(`<span class="t-warn">  · RESULT       : INSUFFICIENT DATA — NO CLEAN VERDICT</span>`, 200);
+          await termLineDelay(`<span class="t-out">  // ${escapeHtml(blockingGapNote(apexData))}</span>`, 180);
+        }
       }
 
       try {
@@ -3771,6 +3798,13 @@
 
     setScoreMeter('rugScore', apexData.rugScore, apexData.rugStatus, '· UNKNOWN — ON-CHAIN FACTS ARE INCOMPLETE');
     setScoreMeter('specScore', apexData.speculationScore, apexData.speculationStatus, '· UNKNOWN — NO LIVE LIQUIDITY EVIDENCE');
+    if (blockingGapNote(apexData)) {
+      const rugLabel = document.getElementById('rugScoreLabel');
+      if (rugLabel) {
+        rugLabel.textContent = '· INSUFFICIENT DATA — A CHECK DID NOT FINISH, NO CLEAN VERDICT';
+        rugLabel.style.color = 'var(--neon-orange)';
+      }
+    }
     showTokenImage(apexData.tokenImage, apexData.tokenName, address);
     lastScannedAddress = address;
     lastScanData = apexData;
@@ -3881,6 +3915,17 @@
   }
 
   window.addEventListener('DOMContentLoaded', startRecentScanFeed);
+
+  // Called on load and from the wallet listeners, but never defined, so every
+  // page load threw "renderPortfolioHeader is not defined". Shows the linked
+  // wallet in the portfolio header and changes nothing else.
+  function renderPortfolioHeader() {
+    const linked = (typeof apexPortfolioAddress !== 'undefined' && apexPortfolioAddress)
+      || ((typeof walletConnected !== 'undefined' && walletConnected && typeof walletAddress !== 'undefined') ? walletAddress : '');
+    const walletEl = document.getElementById('portfolioWallet');
+    if (!walletEl) return;
+    walletEl.textContent = linked ? `WALLET // ${String(linked).slice(0, 6)}...${String(linked).slice(-4)}` : '';
+  }
 
   window.addEventListener('load', async () => {
     installWalletListeners();

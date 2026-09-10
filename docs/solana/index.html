@@ -2330,7 +2330,9 @@ html{scrollbar-gutter:stable}
   // only endpoint that answers ignores `chain` entirely and serves AVAX rows.
   // Flip to true only together with a Solana-backed SOLANA_FEED_API.
   const SOLANA_FEED_ENABLED = false;
-  const SOLANA_FEED_API = 'https://rugbuster-api-production.up.railway.app/api/recent-scans?chain=solana&limit=10';
+  // No Solana-backed feed exists yet. The old URL pointed at a retired
+  // Avalanche service; it is left empty so nothing can call it by accident.
+  const SOLANA_FEED_API = '';
   let remoteRecentScans = [];
 
   // Glitch effect on stat numbers
