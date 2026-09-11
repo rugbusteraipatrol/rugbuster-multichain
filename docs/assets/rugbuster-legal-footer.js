@@ -47,6 +47,9 @@
     version.dataset.rbVersion = siteVersion;
     version.textContent = `RugBuster v${siteVersion}`;
     footer.append(copy, link, version);
+
+    // Version labels elsewhere on the page carry the same number.
+    document.querySelectorAll("[data-rb-site-version]").forEach((node) => { node.textContent = siteVersion; });
   }
 
   if (document.readyState === "loading") {
