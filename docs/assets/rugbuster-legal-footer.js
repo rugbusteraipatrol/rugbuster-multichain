@@ -1,4 +1,7 @@
 (() => {
+  // The site's release number. Raise it with every release that changes what users see.
+  const siteVersion = "1.04";
+  window.RUGBUSTER_VERSION = siteVersion;
   const termsUrl = "/terms/";
   const styleId = "rb-legal-footer-style";
 
@@ -17,6 +20,7 @@
           letter-spacing:.5px !important; text-align:center !important;
         }
         .rb-legal-footer__copy { max-width:760px; }
+        .rb-legal-footer__version { color:#60d9ff !important; white-space:nowrap; }
         .rb-legal-footer__link { color:#60d9ff !important; text-decoration:underline !important; text-underline-offset:3px !important; white-space:nowrap; }
         .rb-legal-footer__link:hover, .rb-legal-footer__link:focus-visible { color:#fff !important; outline:none; }
         @media (max-width:600px) { .rb-legal-footer { margin-top:32px !important; font-size:10px !important; } }
@@ -37,7 +41,12 @@
     link.dataset.rbLegalLink = "true";
     link.href = termsUrl;
     link.textContent = "Terms & Disclaimer";
-    footer.append(copy, link);
+
+    const version = document.createElement("span");
+    version.className = "rb-legal-footer__version";
+    version.dataset.rbVersion = siteVersion;
+    version.textContent = `RugBuster v${siteVersion}`;
+    footer.append(copy, link, version);
   }
 
   if (document.readyState === "loading") {
