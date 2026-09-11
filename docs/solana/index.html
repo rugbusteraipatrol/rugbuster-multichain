@@ -2463,7 +2463,7 @@ html{scrollbar-gutter:stable}
         <div>source=${escapeHtml(data.source || 'postgres_cache')} classifier=${escapeHtml(data.classifier_version || data.classifier || 'weighted_v2')} chain=SOLANA${riskText}</div>
       `;
     } catch (error) {
-      result.innerHTML = `<span style="color:#ff3d3d;">ERROR</span> // ${escapeHtml(error.message || 'Solana score API unavailable')}`;
+      result.innerHTML = `<span style="color:#ff3d3d;">ERROR</span> // ${escapeHtml(window.RugBusterShared ? RugBusterShared.friendlyScanError(error) : (error.message || 'Solana score API unavailable'))}`;
     }
   }
 
@@ -3195,6 +3195,7 @@ html{scrollbar-gutter:stable}
   }
 </script>
 
+<script src="/assets/rugbuster-shared.js"></script>
 <script src="/assets/rugbuster-legal-footer.js"></script>
 </body>
 </html>

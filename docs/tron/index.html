@@ -1109,9 +1109,9 @@
       await loadStats();
       await loadRecent();
     } catch (err) {
-      termLine(`<span class="danger">ERROR // ${escapeHtml(err.message || "scan failed")}</span>`);
+      termLine(`<span class="danger">ERROR // ${escapeHtml(window.RugBusterShared ? RugBusterShared.friendlyScanError(err) : (err.message || "scan failed"))}</span>`);
       setText("ciaState", "ERROR");
-      setText("ciaFinal", `Scan failed: ${err.message || "request failed"}`);
+      setText("ciaFinal", window.RugBusterShared ? RugBusterShared.friendlyScanError(err) : `Scan failed: ${err.message || "request failed"}`);
     } finally {
       btn.disabled = false;
       btn.textContent = "Scan Token";
@@ -1129,6 +1129,7 @@
   setInterval(loadStats, 60000);
   setInterval(loadRecent, 60000);
 </script>
+<script src="/assets/rugbuster-shared.js"></script>
 <script src="/assets/rugbuster-legal-footer.js"></script>
 </body>
 </html>

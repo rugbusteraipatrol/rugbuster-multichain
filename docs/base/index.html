@@ -2372,7 +2372,7 @@
 
       result.innerHTML = rendered;
     } catch (err) {
-      result.innerHTML = `<span style="color:#ff3d3d;">ERROR</span> // ${err.message || 'Builder API unavailable'}`;
+      result.innerHTML = `<span style="color:#ff3d3d;">ERROR</span> // ${escapeHtml(window.RugBusterShared ? RugBusterShared.friendlyScanError(err) : (err.message || 'Builder API unavailable'))}`;
     }
   }
 
@@ -3131,7 +3131,7 @@
     const res = await fetch(`${RUGBUSTER_BUILDER_API}/score?address=${encodeURIComponent(address)}`);
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error(data.error || `HTTP ${res.status} — RugBuster Builder API unavailable`);
+      throw new Error(data.message || data.error || `HTTP ${res.status} — RugBuster Builder API unavailable`);
     }
     return normalizeBuilderScoreReport(data);
   }
@@ -3429,6 +3429,8 @@
     if (report.rugStatus === 'HIGH' || report.speculationStatus === 'HIGH') return 'danger';
     if (report.rugStatus === 'ELEVATED' || report.speculationStatus === 'ELEVATED') return 'warn';
     if (blockingGapNote(report)) return 'warn';
+    // INCOMPLETE EVIDENCE was drawn in the clean green accent.
+    if (report.rugStatus === 'UNKNOWN' || report.speculationStatus === 'UNKNOWN') return 'warn';
     return 'complete';
   }
 
@@ -3473,7 +3475,8 @@
       renderFinalScanMetric('24H VOLUME', formatUsd(report.volume24h), 'var(--neon-pink)')
     ].join('');
     const gapNote = blockingGapNote(report);
-    document.getElementById('finalScanAi').textContent = (gapNote ? `${gapNote} ` : '') + (report.aiVerdict || 'Syndicate AI verdict unavailable; deterministic score remains active.');
+    const identityNote = window.RugBusterShared ? RugBusterShared.identityText('base', address) : '';
+    document.getElementById('finalScanAi').textContent = (identityNote ? `${identityNote} ` : '') + (gapNote ? `${gapNote} ` : '') + (report.aiVerdict || 'Syndicate AI verdict unavailable; deterministic score remains active.');
     modal.style.display = 'flex';
   }
 
@@ -3530,7 +3533,7 @@
     try {
       apexData = await fetchBaseScan(address);
     } catch (err) {
-      await termLineDelay(`<span class="t-danger">✗ SCAN FAILED: ${err.message}</span>`, 400);
+      await termLineDelay(`<span class="t-danger">✗ SCAN FAILED: ${escapeHtml(window.RugBusterShared ? RugBusterShared.friendlyScanError(err) : err.message)}</span>`, 400);
       await termLineDelay(`<span class="t-out">// Ensure this is a Base token address with live liquidity.</span>`, 200);
       termLine(`<span class="t-prompt">RB&gt;</span> <span class="cursor"></span>`);
       setCiaStatus('SCAN FAILED', 'danger');
@@ -3558,6 +3561,9 @@
 
       await termLineDelay(`<span class="t-cyan">✓ Network:</span>  <span class="t-cmd">BASE</span>`, 200);
       await termLineDelay(`<span class="t-cyan">✓ Token:</span>    <span class="t-cmd">${apexData.tokenName}</span>`, 220);
+      if (window.RugBusterShared && RugBusterShared.identityText('base', address)) {
+        await termLineDelay(`<span class="t-cyan">✓ Identity:</span> <span class="t-cmd">${escapeHtml(RugBusterShared.identityText('base', address))}</span>`, 160);
+      }
       await termLineDelay(`<span class="t-cyan">✓ Address:</span>  <span class="t-out">${short}</span>`, 180);
       await termLineDelay(`<span class="t-cyan">✓ Primary DEX:</span> <span class="t-cmd">${apexData.dexId}</span>`, 180);
       await termLineDelay(`<span class="t-cyan">✓ Pair:</span>     <span class="t-out">${apexData.pairLabel}</span>`, 180);
@@ -3783,6 +3789,7 @@
   });
 </script>
 
+<script src="/assets/rugbuster-shared.js"></script>
 <script src="/assets/rugbuster-legal-footer.js"></script>
 </body>
 </html>
